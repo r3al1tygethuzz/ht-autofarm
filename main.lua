@@ -1,6 +1,3 @@
--- language: Lua, file: photon_v11_cash_transfer.lua, target: Roblox (Delta)
--- PHOTON — v11 | + Cash Transfer tab
-
 local Players = game:GetService("Players")
 
 local Workspace = game:GetService("Workspace")
@@ -1133,10 +1130,10 @@ screenGui.ResetOnSpawn = false
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 920, 0, 600)
 mainFrame.Position = UDim2.new(0.5, -460, 0.5, -300)
-mainFrame.BackgroundColor3 = Color3.fromRGB(11, 13, 15)
+mainFrame.BackgroundColor3 = Color3.fromRGB(7, 10, 13)
 mainFrame.BorderSizePixel = 1
-mainFrame.BorderColor3 = Color3.fromRGB(29, 34, 40)
-mainFrame.BorderSizePixel = 0
+mainFrame.BorderColor3 = Color3.fromRGB(24, 36, 44)
+mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -1147,28 +1144,35 @@ corner.Parent = mainFrame
 
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 58)
-titleBar.BackgroundColor3 = Color3.fromRGB(11, 13, 15)
+titleBar.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
+
+local headerDivider = Instance.new("Frame")
+headerDivider.Size = UDim2.new(1, -28, 0, 1)
+headerDivider.Position = UDim2.new(0, 14, 1, -1)
+headerDivider.BackgroundColor3 = Color3.fromRGB(22, 33, 40)
+headerDivider.BorderSizePixel = 0
+headerDivider.Parent = titleBar
 
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0.6, 0, 1, 0)
 titleText.Position = UDim2.new(0, 20, 0, 0)
 titleText.BackgroundTransparency = 1
-titleText.Text = "✦ NYRA"
-titleText.TextColor3 = Color3.fromRGB(242, 243, 245)
-titleText.TextSize = 18
-titleText.Font = Enum.Font.Code
+titleText.Text = "NYRA  /  CONTROL"
+titleText.TextColor3 = Color3.fromRGB(232, 241, 244)
+titleText.TextSize = 19
+titleText.Font = Enum.Font.GothamSemibold
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.TextYAlignment = Enum.TextYAlignment.Center
 titleText.Parent = titleBar
 
 local subtitle = Instance.new("TextLabel")
 subtitle.Size = UDim2.new(0.4, 0, 1, 0)
-subtitle.Position = UDim2.new(0.24, 0, 0, 0)
+subtitle.Position = UDim2.new(0.34, 0, 0, 0)
 subtitle.BackgroundTransparency = 1
 subtitle.Text = "CONTROL DASHBOARD"
-subtitle.TextColor3 = Color3.fromRGB(139, 144, 152)
+subtitle.TextColor3 = Color3.fromRGB(101, 116, 125)
 subtitle.TextSize = 11
 subtitle.Font = Enum.Font.Code
 subtitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1191,33 +1195,51 @@ closeBtn.Size = UDim2.new(0, 32, 0, 32)
 closeBtn.Position = UDim2.new(1, -40, 0, 13)
 closeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
 closeBtn.Text = "✕"
-closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+closeBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
 closeBtn.TextSize = 16
 closeBtn.Font = Enum.Font.Code
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 
 local tabBar = Instance.new("Frame")
-tabBar.Size = UDim2.new(0, 220, 1, -58)
+tabBar.Size = UDim2.new(0, 208, 1, -58)
 tabBar.Position = UDim2.new(0, 0, 0, 58)
-tabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 14)
+tabBar.BackgroundColor3 = Color3.fromRGB(8, 12, 16)
 tabBar.BorderSizePixel = 1
-tabBar.BorderColor3 = Color3.fromRGB(25, 29, 34)
-tabBar.BorderSizePixel = 0
+tabBar.BorderColor3 = Color3.fromRGB(24, 36, 44)
 tabBar.Parent = mainFrame
 
 local tabs = {"Farms", "Cash Transfer", "Anti-Admin", "Config", "Settings"}
+
+local sidebarBrand = Instance.new("TextLabel")
+sidebarBrand.Size = UDim2.new(1, -28, 0, 58)
+sidebarBrand.Position = UDim2.new(0, 14, 0, 12)
+sidebarBrand.BackgroundTransparency = 1
+sidebarBrand.Text = "N  /  NYRA\nCONTROL SYSTEM"
+sidebarBrand.TextColor3 = Color3.fromRGB(232, 241, 244)
+sidebarBrand.TextSize = 14
+sidebarBrand.Font = Enum.Font.GothamSemibold
+sidebarBrand.TextXAlignment = Enum.TextXAlignment.Left
+sidebarBrand.TextYAlignment = Enum.TextYAlignment.Center
+sidebarBrand.Parent = tabBar
+
+local sidebarAccent = Instance.new("Frame")
+sidebarAccent.Size = UDim2.new(0, 3, 0, 30)
+sidebarAccent.Position = UDim2.new(0, 0, 0, 25)
+sidebarAccent.BackgroundColor3 = Color3.fromRGB(0, 217, 196)
+sidebarAccent.BorderSizePixel = 0
+sidebarAccent.Parent = tabBar
 local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -28, 0, 40)
-    btn.Position = UDim2.new(0, 14, 0, 82 + (i-1) * 46)
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(42, 20, 21) or Color3.fromRGB(17, 20, 24)
-    btn.Text = (i == 1 and "◆  " or "   ") .. name
-    btn.TextColor3 = i == 1 and Color3.fromRGB(242, 243, 245) or Color3.fromRGB(139, 144, 152)
+        btn.Size = UDim2.new(1, -28, 0, 38)
+    btn.Position = UDim2.new(0, 14, 0, 84 + (i-1) * 42)
+    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(13, 37, 43) or Color3.fromRGB(8, 12, 16)
+    btn.Text = (i == 1 and "▌  " or "   ") .. name
+    btn.TextColor3 = i == 1 and Color3.fromRGB(232, 241, 244) or Color3.fromRGB(101, 116, 125)
     btn.TextSize = 13
-    btn.Font = Enum.Font.Code
+        btn.Font = Enum.Font.GothamMedium
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.BorderSizePixel = 0
     btn.Parent = tabBar
@@ -1228,18 +1250,28 @@ for i, name in ipairs(tabs) do
 end
 
 local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -234, 1, -70)
-contentFrame.Position = UDim2.new(0, 234, 0, 64)
-contentFrame.BackgroundColor3 = Color3.fromRGB(13, 15, 18)
+contentFrame.Size = UDim2.new(1, -224, 1, -70)
+contentFrame.Position = UDim2.new(0, 224, 0, 64)
+contentFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
+contentFrame.BorderSizePixel = 0
 contentFrame.Parent = mainFrame
 
+local ambient = Instance.new("Frame")
+ambient.Size = UDim2.new(0, 360, 0, 360)
+ambient.Position = UDim2.new(1, -390, 0, 70)
+ambient.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
+ambient.BackgroundTransparency = 0.88
+ambient.BorderSizePixel = 0
+ambient.Parent = contentFrame
+
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -28, 1, -20)
-scroll.Position = UDim2.new(0, 14, 0, 10)
-scroll.BackgroundColor3 = Color3.fromRGB(13, 15, 18)
+scroll.Size = UDim2.new(1, -32, 1, -28)
+scroll.Position = UDim2.new(0, 16, 0, 14)
+scroll.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
+scroll.BackgroundTransparency = 0.12
 scroll.BorderSizePixel = 0
 scroll.ScrollBarThickness = 4
-scroll.ScrollBarImageColor3 = Color3.fromRGB(52, 57, 65)
+scroll.ScrollBarImageColor3 = Color3.fromRGB(38, 52, 59)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = contentFrame
 
@@ -1251,9 +1283,9 @@ contentList.Padding = UDim.new(0, 8)
 local function createToggle(parent, name, stateRef, key, callback, order)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, -8, 0, 46)
-    frame.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
+        frame.BackgroundColor3 = Color3.fromRGB(13, 19, 24)
     frame.BorderSizePixel = 1
-    frame.BorderColor3 = Color3.fromRGB(29, 34, 40)
+    frame.BorderColor3 = Color3.fromRGB(24, 36, 44)
     frame.LayoutOrder = order or 1
     frame.Parent = parent
     local corner2 = Instance.new("UICorner")
@@ -1265,40 +1297,51 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Color3.fromRGB(242, 243, 245)
-    label.TextSize = 13
-    label.Font = Enum.Font.Code
+        label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.TextYAlignment = Enum.TextYAlignment.Center
     label.Parent = frame
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 58, 0, 24)
-    btn.Position = UDim2.new(0.72, 0, 0.5, -12)
-    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(255, 59, 48) or Color3.fromRGB(39, 43, 49)
+    btn.Size = UDim2.new(0, 38, 0, 20)
+    btn.Position = UDim2.new(0.78, 0, 0.5, -10)
+        btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(8, 124, 120) or Color3.fromRGB(32, 42, 48)
     btn.Text = stateRef[key] and "ON" or "OFF"
-    btn.TextColor3 = stateRef[key] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
+    btn.TextColor3 = Color3.fromRGB(223, 255, 250)
     btn.TextSize = 10
     btn.Font = Enum.Font.Code
     btn.BorderSizePixel = 0
     btn.Parent = frame
-    local btnCorner = Instance.new("UICorner")
+        local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, 12)
     btnCorner.Parent = btn
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 14, 0, 14)
+    knob.Position = stateRef[key] and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+    knob.BackgroundColor3 = stateRef[key] and Color3.fromRGB(223, 255, 250) or Color3.fromRGB(102, 115, 122)
+    knob.BorderSizePixel = 0
+    knob.Parent = btn
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
     local status = Instance.new("TextLabel")
     status.Size = UDim2.new(0, 20, 0, 20)
     status.Position = UDim2.new(0.92, 0, 0.5, -10)
     status.BackgroundTransparency = 1
     status.Text = "●"
-    status.TextColor3 = stateRef[key] and Color3.fromRGB(255, 88, 98) or Color3.fromRGB(90, 55, 62)
+    status.TextColor3 = stateRef[key] and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(82, 97, 104)
     status.TextSize = 16
     status.Font = Enum.Font.SourceSans
     status.Parent = frame
     btn.MouseButton1Click:Connect(function()
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
-        btn.Text = val and "ON" or "OFF"
-        btn.BackgroundColor3 = val and Color3.fromRGB(255, 59, 48) or Color3.fromRGB(39, 43, 49)
-        btn.TextColor3 = val and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 155, 163)
-        status.TextColor3 = val and Color3.fromRGB(255, 88, 98) or Color3.fromRGB(82, 62, 68)
+                btn.Text = val and "ON" or "OFF"
+        btn.BackgroundColor3 = val and Color3.fromRGB(8, 124, 120) or Color3.fromRGB(32, 42, 48)
+        btn.TextColor3 = Color3.fromRGB(223, 255, 250)
+        knob.Position = val and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+        knob.BackgroundColor3 = val and Color3.fromRGB(223, 255, 250) or Color3.fromRGB(102, 115, 122)
+        status.TextColor3 = val and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(82, 97, 104)
         if callback then callback(val) end
     end)
     return frame
@@ -1321,7 +1364,7 @@ local function buildFarmsTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ FARMS (Cap: " .. TP_CAP .. " TPs) ═"
-    header.TextColor3 = Color3.fromRGB(242, 243, 245)
+    header.TextColor3 = Color3.fromRGB(232, 241, 244)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1384,7 +1427,7 @@ local function buildFarmsTab()
     counterLabel.Size = UDim2.new(1, 0, 1, 0)
     counterLabel.BackgroundTransparency = 1
     counterLabel.Text = "🔹 TPs: 0 / " .. TP_CAP
-    counterLabel.TextColor3 = Color3.fromRGB(225, 112, 120)
+    counterLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
     counterLabel.TextSize = 12
     counterLabel.Font = Enum.Font.Code
     counterLabel.TextXAlignment = Enum.TextXAlignment.Center
@@ -1394,7 +1437,7 @@ local function buildFarmsTab()
             local used = teleportSystem.usedTeleports
             local current = selectedFarmKey or "None"
             counterLabel.Text = "🔹 TPs: " .. used .. " / " .. TP_CAP .. " (" .. current .. ")"
-            counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 70, 80) or Color3.fromRGB(225, 112, 120)
+            counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(216, 180, 90) or Color3.fromRGB(0, 217, 196)
             task.wait(0.3)
         end
     end)
@@ -1404,7 +1447,7 @@ local function buildFarmsTab()
     resetBtn.Position = UDim2.new(0.3, 0, 0, 0)
     resetBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
     resetBtn.Text = "⟳ RESET"
-    resetBtn.TextColor3 = Color3.fromRGB(255, 200, 50)
+    resetBtn.TextColor3 = Color3.fromRGB(216, 180, 90)
     resetBtn.TextSize = 10
     resetBtn.Font = Enum.Font.Code
     resetBtn.BorderSizePixel = 0
@@ -1434,7 +1477,7 @@ local function buildCashTransferTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CASH TRANSFER ═"
-    header.TextColor3 = Color3.fromRGB(242, 243, 245)
+    header.TextColor3 = Color3.fromRGB(232, 241, 244)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1443,7 +1486,7 @@ local function buildCashTransferTab()
     -- Warning banner
     local warnFrame = Instance.new("Frame")
     warnFrame.Size = UDim2.new(1, -4, 0, 46)
-    warnFrame.BackgroundColor3 = Color3.fromRGB(50, 30, 10)
+    warnFrame.BackgroundColor3 = Color3.fromRGB(39, 39, 24)
     warnFrame.BorderSizePixel = 0
     warnFrame.LayoutOrder = order
     warnFrame.Parent = scroll
@@ -1455,7 +1498,7 @@ local function buildCashTransferTab()
     warnLabel.Position = UDim2.new(0, 8, 0, 0)
     warnLabel.BackgroundTransparency = 1
     warnLabel.Text = "⚠ This will reset your character, TP to the target,\nspam DropCash until your cash < 5000, then return to idle."
-    warnLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    warnLabel.TextColor3 = Color3.fromRGB(216, 180, 90)
     warnLabel.TextSize = 10
     warnLabel.Font = Enum.Font.Code
     warnLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1497,7 +1540,7 @@ local function buildCashTransferTab()
     searchInput.TextSize = 11
     searchInput.Font = Enum.Font.Code
     searchInput.BorderSizePixel = 0
-    searchInput.ClearTextOnFocus = false
+        searchInput.ClearTextOnFocus = false
     searchInput.Parent = searchFrame
     local searchInputCorner = Instance.new("UICorner")
     searchInputCorner.CornerRadius = UDim.new(0, 4)
@@ -1507,10 +1550,10 @@ local function buildCashTransferTab()
     searchBtn.Size = UDim2.new(0.18, 0, 0.7, 0)
     searchBtn.Position = UDim2.new(0.8, 0, 0.15, 0)
     searchBtn.BackgroundColor3 = Color3.fromRGB(30, 50, 70)
-    searchBtn.Text = "FIND"
+        searchBtn.Text = "FIND"
     searchBtn.TextColor3 = Color3.fromRGB(100, 200, 255)
     searchBtn.TextSize = 10
-    searchBtn.Font = Enum.Font.Code
+        searchBtn.Font = Enum.Font.Code
     searchBtn.BorderSizePixel = 0
     searchBtn.Parent = searchFrame
     local searchBtnCorner = Instance.new("UICorner")
@@ -1523,7 +1566,7 @@ local function buildCashTransferTab()
     foundDisplay.Size = UDim2.new(1, 0, 0, 20)
     foundDisplay.BackgroundTransparency = 1
     foundDisplay.Text = state.cashTransfer.selectedName ~= "" and ("✅ Selected: " .. state.cashTransfer.selectedName) or "Selected: None"
-    foundDisplay.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(255, 125, 135) or Color3.fromRGB(155, 145, 150)
+    foundDisplay.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(155, 145, 150)
     foundDisplay.TextSize = 11
     foundDisplay.Font = Enum.Font.Code
     foundDisplay.TextXAlignment = Enum.TextXAlignment.Left
@@ -1540,7 +1583,7 @@ local function buildCashTransferTab()
             if matched then
                 state.cashTransfer.selectedName = matched.Name
                 foundDisplay.Text = "✅ Auto-matched: " .. matched.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
+                foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
             end
         end
     end)
@@ -1556,10 +1599,10 @@ local function buildCashTransferTab()
         if matched then
             state.cashTransfer.selectedName = matched.Name
             foundDisplay.Text = "✅ Selected: " .. matched.Name
-            foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
+            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
         else
             foundDisplay.Text = "❌ Player not found: " .. query
-            foundDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
+            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
         end
     end)
 
@@ -1624,7 +1667,7 @@ local function buildCashTransferTab()
                 state.cashTransfer.selectedName = player.Name
                 searchInput.Text = player.Name
                 foundDisplay.Text = "✅ Selected: " .. player.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
+                foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
             end)
         end
         listContainer.Size = UDim2.new(1, -4, 0, math.max(1, #players) * 28)
@@ -1643,9 +1686,9 @@ local function buildCashTransferTab()
     -- Execute button
     local execBtn = Instance.new("TextButton")
     execBtn.Size = UDim2.new(1, -4, 0, 40)
-    execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
+    execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
     execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-    execBtn.TextColor3 = Color3.fromRGB(255, 130, 140)
+    execBtn.TextColor3 = Color3.fromRGB(239, 255, 252)
     execBtn.TextSize = 12
     execBtn.Font = Enum.Font.Code
     execBtn.BorderSizePixel = 0
@@ -1660,7 +1703,7 @@ local function buildCashTransferTab()
         if state.cashTransfer.running then
             state.cashTransfer.running = false
             execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
+            execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
             return
         end
         local targetName = state.cashTransfer.selectedName
@@ -1675,7 +1718,7 @@ local function buildCashTransferTab()
         end
         if not targetPlayer then
             foundDisplay.Text = "❌ Player no longer in server"
-            foundDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
+            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
             return
         end
         execBtn.Text = "⏹ STOP TRANSFER"
@@ -1683,7 +1726,7 @@ local function buildCashTransferTab()
         task.spawn(function()
             cashTransferLoop(targetPlayer)
             execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
+            execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
         end)
     end)
 
@@ -1718,7 +1761,7 @@ local function buildAntiAdminTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ ANTI-ADMIN TRACKER ═"
-    header.TextColor3 = Color3.fromRGB(255, 50, 50)
+    header.TextColor3 = Color3.fromRGB(0, 217, 196)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1799,7 +1842,7 @@ local function buildAntiAdminTab()
         bannerLabel.Position = UDim2.new(0, 4, 0, 0)
         bannerLabel.BackgroundTransparency = 1
         bannerLabel.Text = "🚨 " .. #antiAdmin.sameServerAdmins .. " ADMIN(S) IN YOUR SERVER"
-        bannerLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+        bannerLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
         bannerLabel.TextSize = 12
         bannerLabel.Font = Enum.Font.Code
         bannerLabel.TextXAlignment = Enum.TextXAlignment.Center
@@ -1811,7 +1854,7 @@ local function buildAntiAdminTab()
     watchHeader.Size = UDim2.new(1, 0, 0, 22)
     watchHeader.BackgroundTransparency = 1
     watchHeader.Text = "─ WATCHLIST (" .. #WATCHLIST .. ") ─"
-    watchHeader.TextColor3 = Color3.fromRGB(255, 100, 100)
+    watchHeader.TextColor3 = Color3.fromRGB(0, 217, 196)
     watchHeader.TextSize = 11
     watchHeader.Font = Enum.Font.Code
     watchHeader.LayoutOrder = order
@@ -1833,7 +1876,7 @@ local function buildAntiAdminTab()
         rowCorner.Parent = row
         local accent = Instance.new("Frame")
         accent.Size = UDim2.new(0, 4, 1, 0)
-        accent.BackgroundColor3 = inServer and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(180, 60, 60)
+        accent.BackgroundColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(180, 60, 60)
         accent.BorderSizePixel = 0
         accent.Parent = row
         local accentCorner = Instance.new("UICorner")
@@ -1844,7 +1887,7 @@ local function buildAntiAdminTab()
         nameLabel.Position = UDim2.new(0, 12, 0, 2)
         nameLabel.BackgroundTransparency = 1
         nameLabel.Text = entry.username .. " (" .. entry.displayName .. ")"
-        nameLabel.TextColor3 = inServer and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(230, 200, 200)
+        nameLabel.TextColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(230, 200, 200)
         nameLabel.TextSize = 11
         nameLabel.Font = Enum.Font.Code
         nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1864,7 +1907,7 @@ local function buildAntiAdminTab()
         statusLabel2.Position = UDim2.new(0.65, 0, 0, 0)
         statusLabel2.BackgroundTransparency = 1
         statusLabel2.Text = inServer and "⚠ IN SERVER" or "Not here"
-        statusLabel2.TextColor3 = inServer and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(120, 120, 140)
+        statusLabel2.TextColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(120, 120, 140)
         statusLabel2.TextSize = 11
         statusLabel2.Font = Enum.Font.Code
         statusLabel2.TextXAlignment = Enum.TextXAlignment.Right
@@ -1908,7 +1951,7 @@ local function buildAntiAdminTab()
         dot.Position = UDim2.new(0, 6, 0, 4)
         dot.BackgroundTransparency = 1
         dot.Text = "●"
-        if tracked.sameServer then dot.TextColor3 = Color3.fromRGB(255, 50, 50)
+        if tracked.sameServer then dot.TextColor3 = Color3.fromRGB(0, 217, 196)
         elseif tracked.isInGame then dot.TextColor3 = Color3.fromRGB(255, 200, 50)
         elseif tracked.isOnline then dot.TextColor3 = Color3.fromRGB(100, 255, 100)
         else dot.TextColor3 = Color3.fromRGB(80, 80, 90) end
@@ -1920,7 +1963,7 @@ local function buildAntiAdminTab()
         nameLabel.Position = UDim2.new(0, 26, 0, 2)
         nameLabel.BackgroundTransparency = 1
         nameLabel.Text = admin.username
-        nameLabel.TextColor3 = tracked.sameServer and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(220, 220, 230)
+        nameLabel.TextColor3 = tracked.sameServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(220, 220, 230)
         nameLabel.TextSize = 12
         nameLabel.Font = Enum.Font.Code
         nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1937,7 +1980,7 @@ local function buildAntiAdminTab()
         roleLabel.Parent = row
         local statusText = "Offline"
         local statusColor = Color3.fromRGB(120, 120, 130)
-        if tracked.sameServer then statusText = "⚠ IN YOUR SERVER"; statusColor = Color3.fromRGB(255, 80, 80)
+        if tracked.sameServer then statusText = "⚠ IN YOUR SERVER"; statusColor = Color3.fromRGB(0, 217, 196)
         elseif tracked.isInGame then statusText = "In game"; statusColor = Color3.fromRGB(255, 200, 100)
         elseif tracked.isOnline then statusText = "Online"; statusColor = Color3.fromRGB(100, 255, 100) end
         local statusLabel2 = Instance.new("TextLabel")
@@ -2010,7 +2053,7 @@ local function buildConfigTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CONFIG ═"
-    header.TextColor3 = Color3.fromRGB(242, 243, 245)
+    header.TextColor3 = Color3.fromRGB(232, 241, 244)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -2062,7 +2105,7 @@ local function buildConfigTab()
     saveBtn.Position = UDim2.new(0.69, 0, 0.15, 0)
     saveBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 40)
     saveBtn.Text = "SAVE"
-    saveBtn.TextColor3 = Color3.fromRGB(255, 125, 135)
+    saveBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
     saveBtn.TextSize = 11
     saveBtn.Font = Enum.Font.Code
     saveBtn.BorderSizePixel = 0
@@ -2101,7 +2144,7 @@ local function buildConfigTab()
             if state.currentTab == "Config" then buildConfigTab() end
         else
             statusLabel.Text = "❌ Failed to save"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            statusLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
             task.wait(2)
             if state.currentTab == "Config" then buildConfigTab() end
         end
@@ -2168,7 +2211,7 @@ local function buildConfigTab()
             b.Size = UDim2.new(0, 70, 1, 0)
             b.BackgroundColor3 = isActive and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(30, 30, 45)
             b.Text = cfgName:sub(1, 8)
-            b.TextColor3 = isActive and Color3.fromRGB(255, 125, 135) or Color3.fromRGB(180, 175, 180)
+            b.TextColor3 = isActive and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(180, 175, 180)
             b.TextSize = 10
             b.Font = Enum.Font.Code
             b.BorderSizePixel = 0
@@ -2262,7 +2305,7 @@ local function buildConfigTab()
         loadBtn.Position = UDim2.new(0.58, 0, 0.15, 0)
         loadBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 40)
         loadBtn.Text = "LOAD"
-        loadBtn.TextColor3 = Color3.fromRGB(255, 125, 135)
+        loadBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
         loadBtn.TextSize = 10
         loadBtn.Font = Enum.Font.Code
         loadBtn.BorderSizePixel = 0
@@ -2288,7 +2331,7 @@ local function buildConfigTab()
         delBtn.Position = UDim2.new(0.91, 0, 0.15, 0)
         delBtn.BackgroundColor3 = Color3.fromRGB(60, 25, 25)
         delBtn.Text = "✕"
-        delBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+        delBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
         delBtn.TextSize = 10
         delBtn.Font = Enum.Font.Code
         delBtn.BorderSizePixel = 0
@@ -2308,7 +2351,7 @@ local function buildConfigTab()
                 if state.currentTab == "Config" then buildConfigTab() end
             else
                 statusLabel.Text = "❌ Failed to load"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                statusLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
                 task.wait(2)
                 if state.currentTab == "Config" then buildConfigTab() end
             end
@@ -2400,9 +2443,9 @@ local function switchTab(name)
     state.currentTab = name
     for tabName, btn in pairs(tabButtons) do
         local isActive = tabName == name
-        btn.BackgroundColor3 = isActive and Color3.fromRGB(42, 20, 21) or Color3.fromRGB(17, 20, 24)
-        btn.TextColor3 = isActive and Color3.fromRGB(242, 243, 245) or Color3.fromRGB(139, 144, 152)
-        btn.Text = (isActive and "◆  " or "   ") .. tabName
+        btn.BackgroundColor3 = isActive and Color3.fromRGB(13, 37, 43) or Color3.fromRGB(8, 12, 16)
+        btn.TextColor3 = isActive and Color3.fromRGB(232, 241, 244) or Color3.fromRGB(101, 116, 125)
+        btn.Text = (isActive and "▌  " or "   ") .. tabName
     end
     if name == "Farms" then buildFarmsTab()
     
@@ -2421,9 +2464,9 @@ end
 local miniCircle = Instance.new("Frame")
 miniCircle.Size = UDim2.new(0, 0, 0, 0)
 miniCircle.Position = UDim2.new(0, 12, 0, 12)
-miniCircle.BackgroundColor3 = Color3.fromRGB(7, 18, 36)
+miniCircle.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
 miniCircle.BorderSizePixel = 1
-miniCircle.BorderColor3 = Color3.fromRGB(70, 170, 240)
+miniCircle.BorderColor3 = Color3.fromRGB(0, 217, 196)
 miniCircle.Parent = screenGui
 miniCircle.Visible = false
 miniCircle.Active = true
@@ -2434,7 +2477,7 @@ local circleText = Instance.new("TextLabel")
 circleText.Size = UDim2.new(1, 0, 1, 0)
 circleText.BackgroundTransparency = 1
 circleText.Text = "N"
-circleText.TextColor3 = Color3.fromRGB(105, 205, 255)
+circleText.TextColor3 = Color3.fromRGB(95, 255, 240)
 circleText.TextSize = 20
 circleText.Font = Enum.Font.Code
 circleText.TextScaled = true
