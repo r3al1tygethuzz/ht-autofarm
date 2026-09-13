@@ -2754,7 +2754,7 @@ task.spawn(function()
 end)
 
 print("══════════════════════════════════════════════")
-print(" PHOTON — v11 | Cash Transfer")
+print(" • Nyra New Hard Time")
 print(" • New Cash Transfer tab")
 print(" • Search players by name")
 print(" • Resets character → TP to target → spam DropCash")
