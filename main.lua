@@ -1309,9 +1309,9 @@ screenGui.Enabled = true
 screenGui.ResetOnSpawn = false
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 480, 0, 570)
-mainFrame.Position = UDim2.new(0.5, -240, 0.5, -285)
-mainFrame.BackgroundColor3 = Color3.fromRGB(7, 12, 24)
+mainFrame.Size = UDim2.new(0, 760, 0, 600)
+mainFrame.Position = UDim2.new(0.5, -380, 0.5, -300)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 mainFrame.Active = true
@@ -1322,18 +1322,18 @@ corner.CornerRadius = UDim.new(0, 14)
 corner.Parent = mainFrame
 
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 36)
-titleBar.BackgroundColor3 = Color3.fromRGB(10, 22, 43)
+titleBar.Size = UDim2.new(1, 0, 0, 48)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
 
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0.6, 0, 1, 0)
-titleText.Position = UDim2.new(0, 12, 0, 0)
+titleText.Position = UDim2.new(0, 20, 0, 0)
 titleText.BackgroundTransparency = 1
 titleText.Text = "✦ NYRA"
-titleText.TextColor3 = Color3.fromRGB(92, 190, 255)
-titleText.TextSize = 16
+titleText.TextColor3 = Color3.fromRGB(238, 238, 242)
+titleText.TextSize = 17
 titleText.Font = Enum.Font.Code
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.TextYAlignment = Enum.TextYAlignment.Center
@@ -1344,8 +1344,8 @@ subtitle.Size = UDim2.new(0.4, 0, 1, 0)
 subtitle.Position = UDim2.new(0.3, 0, 0, 0)
 subtitle.BackgroundTransparency = 1
 subtitle.Text = "N Y R A  /  CONTROL"
-subtitle.TextColor3 = Color3.fromRGB(105, 145, 190)
-subtitle.TextSize = 12
+subtitle.TextColor3 = Color3.fromRGB(125, 125, 135)
+subtitle.TextSize = 11
 subtitle.Font = Enum.Font.Code
 subtitle.TextXAlignment = Enum.TextXAlignment.Left
 subtitle.TextYAlignment = Enum.TextYAlignment.Center
@@ -1374,9 +1374,9 @@ closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 
 local tabBar = Instance.new("Frame")
-tabBar.Size = UDim2.new(1, 0, 0, 34)
-tabBar.Position = UDim2.new(0, 0, 0, 36)
-tabBar.BackgroundColor3 = Color3.fromRGB(5, 12, 26)
+tabBar.Size = UDim2.new(0, 178, 1, -48)
+tabBar.Position = UDim2.new(0, 0, 0, 48)
+tabBar.BackgroundColor3 = Color3.fromRGB(14, 14, 17)
 tabBar.BorderSizePixel = 0
 tabBar.Parent = mainFrame
 
@@ -1385,72 +1385,77 @@ local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 80, 1, 0)
-    btn.Position = UDim2.new(0, (i-1) * 80, 0, 0)
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(14, 35, 65) or Color3.fromRGB(5, 12, 26)
-    btn.Text = name
-    btn.TextColor3 = i == 1 and Color3.fromRGB(105, 205, 255) or Color3.fromRGB(125, 150, 180)
-    btn.TextSize = 9
+    btn.Size = UDim2.new(1, -20, 0, 38)
+    btn.Position = UDim2.new(0, 10, 0, 18 + (i-1) * 42)
+    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(68, 20, 24) or Color3.fromRGB(14, 14, 17)
+    btn.Text = (i == 1 and "◆  " or "   ") .. name
+    btn.TextColor3 = i == 1 and Color3.fromRGB(255, 94, 94) or Color3.fromRGB(160, 160, 170)
+    btn.TextSize = 11
     btn.Font = Enum.Font.Code
+    btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.BorderSizePixel = 0
     btn.Parent = tabBar
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 7)
+    tabCorner.Parent = btn
     tabButtons[name] = btn
 end
 
 local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -8, 1, -78)
-contentFrame.Position = UDim2.new(0, 4, 0, 74)
-contentFrame.BackgroundColor3 = Color3.fromRGB(7, 12, 24)
+contentFrame.Size = UDim2.new(1, -190, 1, -58)
+contentFrame.Position = UDim2.new(0, 186, 0, 52)
+contentFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 contentFrame.Parent = mainFrame
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -4, 1, -4)
-scroll.Position = UDim2.new(0, 2, 0, 2)
-scroll.BackgroundColor3 = Color3.fromRGB(7, 12, 24)
+scroll.Size = UDim2.new(1, -20, 1, -16)
+scroll.Position = UDim2.new(0, 10, 0, 8)
+scroll.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 scroll.BorderSizePixel = 0
-scroll.ScrollBarThickness = 5
-scroll.ScrollBarImageColor3 = Color3.fromRGB(45, 125, 205)
+scroll.ScrollBarThickness = 4
+scroll.ScrollBarImageColor3 = Color3.fromRGB(190, 42, 50)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = contentFrame
 
 local contentList = Instance.new("UIListLayout")
 contentList.Parent = scroll
 contentList.SortOrder = Enum.SortOrder.LayoutOrder
-contentList.Padding = UDim.new(0, 4)
+contentList.Padding = UDim.new(0, 8)
 
 local function createToggle(parent, name, stateRef, key, callback, order)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -4, 0, 32)
-    frame.BackgroundColor3 = Color3.fromRGB(11, 23, 43)
-    frame.BorderSizePixel = 0
+    frame.Size = UDim2.new(1, -8, 0, 42)
+    frame.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
+    frame.BorderSizePixel = 1
+    frame.BorderColor3 = Color3.fromRGB(42, 42, 48)
     frame.LayoutOrder = order or 1
     frame.Parent = parent
     local corner2 = Instance.new("UICorner")
     corner2.CornerRadius = UDim.new(0, 8)
     corner2.Parent = frame
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.5, 0, 1, 0)
-    label.Position = UDim2.new(0, 10, 0, 0)
+    label.Size = UDim2.new(0.58, 0, 1, 0)
+    label.Position = UDim2.new(0, 14, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
-    label.TextColor3 = Color3.fromRGB(200, 200, 210)
-    label.TextSize = 11
+    label.TextColor3 = Color3.fromRGB(232, 232, 238)
+    label.TextSize = 12
     label.Font = Enum.Font.Code
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.TextYAlignment = Enum.TextYAlignment.Center
     label.Parent = frame
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 60, 0, 24)
-    btn.Position = UDim2.new(0.7, 0, 0.5, -12)
-    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(18, 83, 103) or Color3.fromRGB(17, 34, 58)
+    btn.Size = UDim2.new(0, 58, 0, 25)
+    btn.Position = UDim2.new(0.72, 0, 0.5, -12)
+    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(190, 42, 50) or Color3.fromRGB(38, 38, 44)
     btn.Text = stateRef[key] and "ON" or "OFF"
-    btn.TextColor3 = stateRef[key] and Color3.fromRGB(115, 225, 255) or Color3.fromRGB(150, 165, 190)
+    btn.TextColor3 = stateRef[key] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
     btn.TextSize = 10
     btn.Font = Enum.Font.Code
     btn.BorderSizePixel = 0
     btn.Parent = frame
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 4)
+    btnCorner.CornerRadius = UDim.new(0, 12)
     btnCorner.Parent = btn
     local status = Instance.new("TextLabel")
     status.Size = UDim2.new(0, 20, 0, 20)
@@ -1465,9 +1470,9 @@ local function createToggle(parent, name, stateRef, key, callback, order)
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
         btn.Text = val and "ON" or "OFF"
-        btn.BackgroundColor3 = val and Color3.fromRGB(18, 83, 103) or Color3.fromRGB(17, 34, 58)
-        btn.TextColor3 = val and Color3.fromRGB(115, 225, 255) or Color3.fromRGB(150, 165, 190)
-        status.TextColor3 = val and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(60, 60, 80)
+        btn.BackgroundColor3 = val and Color3.fromRGB(190, 42, 50) or Color3.fromRGB(38, 38, 44)
+        btn.TextColor3 = val and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
+        status.TextColor3 = val and Color3.fromRGB(255, 75, 82) or Color3.fromRGB(70, 70, 78)
         if callback then callback(val) end
     end)
     return frame
@@ -1809,7 +1814,7 @@ local function buildCashTransferTab()
             btn.LayoutOrder = idx
             btn.Parent = listContainer
             local btnCorner = Instance.new("UICorner")
-            btnCorner.CornerRadius = UDim.new(0, 4)
+            btnCorner.CornerRadius = UDim.new(0, 12)
             btnCorner.Parent = btn
             local hasChar = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
             local statusDot = Instance.new("TextLabel")
@@ -2600,8 +2605,9 @@ local function switchTab(name)
     state.currentTab = name
     for tabName, btn in pairs(tabButtons) do
         local isActive = tabName == name
-        btn.BackgroundColor3 = isActive and Color3.fromRGB(14, 35, 65) or Color3.fromRGB(5, 12, 26)
-        btn.TextColor3 = isActive and Color3.fromRGB(105, 205, 255) or Color3.fromRGB(125, 150, 180)
+        btn.BackgroundColor3 = isActive and Color3.fromRGB(68, 20, 24) or Color3.fromRGB(14, 14, 17)
+        btn.TextColor3 = isActive and Color3.fromRGB(255, 94, 94) or Color3.fromRGB(160, 160, 170)
+        btn.Text = (isActive and "◆  " or "   ") .. tabName
     end
     if name == "Farms" then buildFarmsTab()
     elseif name == "ESP" then buildESPTab()
@@ -2671,8 +2677,8 @@ miniClick.MouseButton1Click:Connect(function()
     mainFrame.Size = UDim2.new(0, 0, 0, 0)
     mainFrame.Position = UDim2.new(0, 12, 0, 12)
     local expand = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 480, 0, 570),
-        Position = UDim2.new(0.5, -240, 0.5, -285)
+        Size = UDim2.new(0, 760, 0, 600),
+        Position = UDim2.new(0.5, -380, 0.5, -300)
     })
     expand:Play()
 end)
