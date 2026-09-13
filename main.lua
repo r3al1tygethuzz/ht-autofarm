@@ -2,7 +2,7 @@
 -- PHOTON — v11 | + Cash Transfer tab
 
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -91,7 +91,7 @@ end
 local function saveConfig(name)
     local data = {
         farms = state.farms,
-        esp = state.esp,
+        
         protection = state.protection,
         antiAdmin = { enabled = antiAdmin.enabled, autoLeave = antiAdmin.autoLeave },
         cashTransfer = state.cashTransfer
@@ -586,7 +586,7 @@ end
 -- ═══════════════════════════════
 local state = {
     farms = { Dumpster = false, Cash = false, Register = false, SuperFarm = false },
-    esp = { PlayerESP = false, Registers = false, Cash = false, Dumpsters = false, ATMs = false },
+    
     protection = { AntiAFK = false, AntiAdmin = true },
     cashTransfer = { selectedName = "", running = false },
     running = true, minimized = false, currentTab = "Farms",
@@ -1077,178 +1077,9 @@ startFarmModule = function(name)
     end
 end
 
--- ═══════════════════════════════
--- PLAYER ESP
--- ═══════════════════════════════
-local ESP_FOLDER_NAME = "SimpleESPFolder"
-local playerESPEnabled = false
-local ESPFolder = workspace:FindFirstChild(ESP_FOLDER_NAME)
-if not ESPFolder then
-    ESPFolder = Instance.new("Folder")
-    ESPFolder.Name = ESP_FOLDER_NAME
-    ESPFolder.Parent = workspace
-end
-local trackedPlayers = {}
 
-local function createESP(player)
-    if player == localPlayer or trackedPlayers[player] then return end
-    local espData = {
-        Highlight = Instance.new("Highlight"), Billboard = Instance.new("BillboardGui"),
-        TextLabel = Instance.new("TextLabel"), Box = Instance.new("BoxHandleAdornment")
-    }
-    espData.Highlight.FillColor = Color3.fromRGB(255, 0, 0)
-    espData.Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    espData.Highlight.FillTransparency = 0.5
-    espData.Highlight.OutlineTransparency = 0
-    espData.Highlight.Parent = ESPFolder
-    espData.Highlight.Enabled = false
-    espData.Billboard.Size = UDim2.new(0, 200, 0, 50)
-    espData.Billboard.StudsOffset = Vector3.new(0, 3, 0)
-    espData.Billboard.AlwaysOnTop = true
-    espData.Billboard.Parent = ESPFolder
-    espData.Billboard.Enabled = false
-    espData.TextLabel.Size = UDim2.new(1, 0, 1, 0)
-    espData.TextLabel.BackgroundTransparency = 1
-    espData.TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    espData.TextLabel.TextStrokeTransparency = 0
-    espData.TextLabel.TextSize = 14
-    espData.TextLabel.Font = Enum.Font.SourceSansBold
-    espData.TextLabel.Text = player.Name
-    espData.TextLabel.Parent = espData.Billboard
-    espData.Box.Size = Vector3.new(4, 5, 2)
-    espData.Box.Color3 = Color3.fromRGB(0, 255, 0)
-    espData.Box.Transparency = 0.7
-    espData.Box.AlwaysOnTop = true
-    espData.Box.ZIndex = 5
-    espData.Box.Parent = ESPFolder
-    espData.Box.Visible = false
-    trackedPlayers[player] = espData
-end
 
-local function removeESP(player)
-    local espData = trackedPlayers[player]
-    if espData then
-        if espData.Highlight then espData.Highlight:Destroy() end
-        if espData.Billboard then espData.Billboard:Destroy() end
-        if espData.Box then espData.Box:Destroy() end
-        trackedPlayers[player] = nil
-    end
-end
 
-local function updatePlayerESP()
-    local localRoot = getHRP()
-    for player, espData in pairs(trackedPlayers) do
-        local char = player.Character
-        local root = char and char:FindFirstChild("HumanoidRootPart")
-        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-        if playerESPEnabled and char and root and humanoid and humanoid.Health > 0 and localRoot then
-            espData.Highlight.Adornee = char
-            espData.Billboard.Adornee = root
-            espData.Box.Adornee = root
-            local distance = (root.Position - localRoot.Position).Magnitude
-            espData.TextLabel.Text = string.format("%s\n[%d m]", player.Name, math.floor(distance))
-            espData.Highlight.Enabled = true
-            espData.Billboard.Enabled = true
-            espData.Box.Visible = true
-        else
-            espData.Highlight.Adornee = nil
-            espData.Billboard.Adornee = nil
-            espData.Box.Adornee = nil
-            espData.Highlight.Enabled = false
-            espData.Billboard.Enabled = false
-            espData.Box.Visible = false
-        end
-    end
-end
-
--- ═══════════════════════════════
--- FARM HIGHLIGHTS
--- ═══════════════════════════════
-local farmHighlights = {
-    Registers = { enabled = false, color = Color3.fromRGB(255, 200, 0), objects = {}, label = "🏪 Register" },
-    Cash = { enabled = false, color = Color3.fromRGB(0, 255, 100), objects = {}, label = "💰 Cash" },
-    Dumpsters = { enabled = false, color = Color3.fromRGB(150, 100, 50), objects = {}, label = "🗑️ Dumpster" },
-    ATMs = { enabled = false, color = Color3.fromRGB(0, 150, 255), objects = {}, label = "🏧 ATM" }
-}
-
-local FARM_ESP_FOLDER = "PhotonFarmHighlights"
-local farmFolder = workspace:FindFirstChild(FARM_ESP_FOLDER)
-if not farmFolder then
-    farmFolder = Instance.new("Folder")
-    farmFolder.Name = FARM_ESP_FOLDER
-    farmFolder.Parent = workspace
-end
-
-local function createFarmHighlight(part, farmType)
-    if farmHighlights[farmType].objects[part] then
-        local existing = farmHighlights[farmType].objects[part]
-        if existing then existing:Destroy() end
-        farmHighlights[farmType].objects[part] = nil
-    end
-    local highlight = Instance.new("Highlight")
-    highlight.Adornee = part
-    highlight.FillColor = farmHighlights[farmType].color
-    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    highlight.FillTransparency = 0.6
-    highlight.OutlineTransparency = 0.3
-    highlight.Parent = farmFolder
-    highlight.Enabled = farmHighlights[farmType].enabled
-    local billboard = Instance.new("BillboardGui")
-    billboard.Size = UDim2.new(0, 120, 0, 30)
-    billboard.StudsOffset = Vector3.new(0, 3, 0)
-    billboard.AlwaysOnTop = true
-    billboard.Parent = farmFolder
-    billboard.Enabled = farmHighlights[farmType].enabled
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextStrokeTransparency = 0
-    label.TextSize = 12
-    label.Font = Enum.Font.SourceSansBold
-    label.Text = farmHighlights[farmType].label
-    label.Parent = billboard
-    farmHighlights[farmType].objects[part] = { Highlight = highlight, Billboard = billboard, Label = label, Part = part }
-end
-
-local function scanAndHighlightFarm(farmType)
-    for part, data in pairs(farmHighlights[farmType].objects) do
-        if data.Highlight then data.Highlight:Destroy() end
-        if data.Billboard then data.Billboard:Destroy() end
-        farmHighlights[farmType].objects[part] = nil
-    end
-    if not farmHighlights[farmType].enabled then return end
-    local map = Workspace:FindFirstChild("HardTime") or Workspace
-    for _, desc in ipairs(map:GetDescendants()) do
-        if desc:IsA("BasePart") then
-            local name = string.lower(desc.Name)
-            local pname = desc.Parent and string.lower(desc.Parent.Name) or ""
-            local shouldHighlight = false
-            if farmType == "Registers" then
-                if (name:find("register") or pname:find("register")) and not name:find("button") and not name:find("gui") then shouldHighlight = true end
-            elseif farmType == "Cash" then
-                if isValidFloorCash(desc) then shouldHighlight = true end
-            elseif farmType == "Dumpsters" then
-                if name:find("dumpster") or pname:find("dumpster") or name:find("searchable") or name:find("prop") then shouldHighlight = true end
-            elseif farmType == "ATMs" then
-                if (name:find("atm") or pname:find("atm")) and desc.Transparency < 0.5 then shouldHighlight = true end
-            end
-            if shouldHighlight then
-                local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
-                if prompt and prompt.Enabled then createFarmHighlight(desc, farmType) end
-            end
-        end
-    end
-end
-
-task.spawn(function()
-    while true do
-        task.wait(2)
-        for farmType, data in pairs(farmHighlights) do
-            if data.enabled then scanAndHighlightFarm(farmType) end
-        end
-    end
-end)
 
 -- ═══════════════════════════════
 -- APPLY CONFIG DATA
@@ -1269,16 +1100,7 @@ local function applyConfigData(data)
             startFarmModule(activeFarm)
         end
     end
-    if data.esp then
-        for k, v in pairs(data.esp) do state.esp[k] = v end
-        playerESPEnabled = state.esp.PlayerESP or false
-        for _, key in ipairs({"Registers", "Cash", "Dumpsters", "ATMs"}) do
-            if state.esp[key] then
-                farmHighlights[key].enabled = true
-                scanAndHighlightFarm(key)
-            end
-        end
-    end
+    
     if data.protection then
         for k, v in pairs(data.protection) do state.protection[k] = v end
         antiAdmin.enabled = state.protection.AntiAdmin ~= false
@@ -1311,7 +1133,7 @@ screenGui.ResetOnSpawn = false
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 760, 0, 600)
 mainFrame.Position = UDim2.new(0.5, -380, 0.5, -300)
-mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 10)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 mainFrame.Active = true
@@ -1323,7 +1145,7 @@ corner.Parent = mainFrame
 
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 48)
-titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+titleBar.BackgroundColor3 = Color3.fromRGB(18, 15, 17)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
 
@@ -1376,20 +1198,20 @@ closeBtn.Parent = titleBar
 local tabBar = Instance.new("Frame")
 tabBar.Size = UDim2.new(0, 178, 1, -48)
 tabBar.Position = UDim2.new(0, 0, 0, 48)
-tabBar.BackgroundColor3 = Color3.fromRGB(14, 14, 17)
+tabBar.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
 tabBar.BorderSizePixel = 0
 tabBar.Parent = mainFrame
 
-local tabs = {"Farms", "ESP", "Cash Transfer", "Anti-Admin", "Config", "Settings"}
+local tabs = {"Farms", "Cash Transfer", "Anti-Admin", "Config", "Settings"}
 local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -20, 0, 38)
     btn.Position = UDim2.new(0, 10, 0, 18 + (i-1) * 42)
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(68, 20, 24) or Color3.fromRGB(14, 14, 17)
+    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(76, 24, 30) or Color3.fromRGB(18, 18, 22)
     btn.Text = (i == 1 and "◆  " or "   ") .. name
-    btn.TextColor3 = i == 1 and Color3.fromRGB(255, 94, 94) or Color3.fromRGB(160, 160, 170)
+    btn.TextColor3 = i == 1 and Color3.fromRGB(255, 125, 125) or Color3.fromRGB(175, 168, 172)
     btn.TextSize = 11
     btn.Font = Enum.Font.Code
     btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -1413,7 +1235,7 @@ scroll.Position = UDim2.new(0, 10, 0, 8)
 scroll.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 scroll.BorderSizePixel = 0
 scroll.ScrollBarThickness = 4
-scroll.ScrollBarImageColor3 = Color3.fromRGB(190, 42, 50)
+scroll.ScrollBarImageColor3 = Color3.fromRGB(165, 45, 55)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = contentFrame
 
@@ -1425,9 +1247,9 @@ contentList.Padding = UDim.new(0, 8)
 local function createToggle(parent, name, stateRef, key, callback, order)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, -8, 0, 42)
-    frame.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
+    frame.BackgroundColor3 = Color3.fromRGB(24, 22, 25)
     frame.BorderSizePixel = 1
-    frame.BorderColor3 = Color3.fromRGB(42, 42, 48)
+    frame.BorderColor3 = Color3.fromRGB(58, 38, 43)
     frame.LayoutOrder = order or 1
     frame.Parent = parent
     local corner2 = Instance.new("UICorner")
@@ -1447,7 +1269,7 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 58, 0, 25)
     btn.Position = UDim2.new(0.72, 0, 0.5, -12)
-    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(190, 42, 50) or Color3.fromRGB(38, 38, 44)
+    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(180, 48, 58) or Color3.fromRGB(40, 38, 43)
     btn.Text = stateRef[key] and "ON" or "OFF"
     btn.TextColor3 = stateRef[key] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
     btn.TextSize = 10
@@ -1462,7 +1284,7 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     status.Position = UDim2.new(0.92, 0, 0.5, -10)
     status.BackgroundTransparency = 1
     status.Text = "●"
-    status.TextColor3 = stateRef[key] and Color3.fromRGB(90, 210, 255) or Color3.fromRGB(45, 70, 100)
+    status.TextColor3 = stateRef[key] and Color3.fromRGB(255, 88, 98) or Color3.fromRGB(90, 55, 62)
     status.TextSize = 16
     status.Font = Enum.Font.SourceSans
     status.Parent = frame
@@ -1470,9 +1292,9 @@ local function createToggle(parent, name, stateRef, key, callback, order)
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
         btn.Text = val and "ON" or "OFF"
-        btn.BackgroundColor3 = val and Color3.fromRGB(190, 42, 50) or Color3.fromRGB(38, 38, 44)
+        btn.BackgroundColor3 = val and Color3.fromRGB(180, 48, 58) or Color3.fromRGB(40, 38, 43)
         btn.TextColor3 = val and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
-        status.TextColor3 = val and Color3.fromRGB(255, 75, 82) or Color3.fromRGB(70, 70, 78)
+        status.TextColor3 = val and Color3.fromRGB(255, 88, 98) or Color3.fromRGB(82, 62, 68)
         if callback then callback(val) end
     end)
     return frame
@@ -1495,7 +1317,7 @@ local function buildFarmsTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ FARMS (Cap: " .. TP_CAP .. " TPs) ═"
-    header.TextColor3 = Color3.fromRGB(40, 210, 255)
+    header.TextColor3 = Color3.fromRGB(245, 105, 112)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1558,7 +1380,7 @@ local function buildFarmsTab()
     counterLabel.Size = UDim2.new(1, 0, 1, 0)
     counterLabel.BackgroundTransparency = 1
     counterLabel.Text = "🔹 TPs: 0 / " .. TP_CAP
-    counterLabel.TextColor3 = Color3.fromRGB(40, 210, 255)
+    counterLabel.TextColor3 = Color3.fromRGB(225, 112, 120)
     counterLabel.TextSize = 12
     counterLabel.Font = Enum.Font.Code
     counterLabel.TextXAlignment = Enum.TextXAlignment.Center
@@ -1568,7 +1390,7 @@ local function buildFarmsTab()
             local used = teleportSystem.usedTeleports
             local current = selectedFarmKey or "None"
             counterLabel.Text = "🔹 TPs: " .. used .. " / " .. TP_CAP .. " (" .. current .. ")"
-            counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(40, 210, 255)
+            counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 70, 80) or Color3.fromRGB(225, 112, 120)
             task.wait(0.3)
         end
     end)
@@ -1593,38 +1415,7 @@ local function buildFarmsTab()
     scroll.CanvasSize = UDim2.new(0, 0, 0, order * 36 + 60)
 end
 
--- ═══════════════════════════════
--- ESP TAB
--- ═══════════════════════════════
-local function buildESPTab()
-    clearContent()
-    local order = 1
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, 0, 0, 28)
-    header.BackgroundTransparency = 1
-    header.Text = "═ ESP TOGGLES ═"
-    header.TextColor3 = Color3.fromRGB(40, 210, 255)
-    header.TextSize = 12
-    header.Font = Enum.Font.Code
-    header.LayoutOrder = 0
-    header.Parent = scroll
-    createToggle(scroll, "Player ESP", state.esp, "PlayerESP", function(val) playerESPEnabled = val end, order)
-    order = order + 1
-    local farmToggles = {
-        {name = "Highlight Registers", key = "Registers"},
-        {name = "Highlight Cash (floor only)", key = "Cash"},
-        {name = "Highlight Dumpsters", key = "Dumpsters"},
-        {name = "Highlight ATMs", key = "ATMs"}
-    }
-    for _, toggle in ipairs(farmToggles) do
-        createToggle(scroll, toggle.name, state.esp, toggle.key, function(val)
-            farmHighlights[toggle.key].enabled = val
-            scanAndHighlightFarm(toggle.key)
-        end, order)
-        order = order + 1
-    end
-    scroll.CanvasSize = UDim2.new(0, 0, 0, order * 36 + 40)
-end
+
 
 -- ═══════════════════════════════
 -- CASH TRANSFER TAB
@@ -1639,7 +1430,7 @@ local function buildCashTransferTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CASH TRANSFER ═"
-    header.TextColor3 = Color3.fromRGB(100, 255, 150)
+    header.TextColor3 = Color3.fromRGB(245, 110, 120)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1728,7 +1519,7 @@ local function buildCashTransferTab()
     foundDisplay.Size = UDim2.new(1, 0, 0, 20)
     foundDisplay.BackgroundTransparency = 1
     foundDisplay.Text = state.cashTransfer.selectedName ~= "" and ("✅ Selected: " .. state.cashTransfer.selectedName) or "Selected: None"
-    foundDisplay.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(150, 150, 170)
+    foundDisplay.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(255, 125, 135) or Color3.fromRGB(155, 145, 150)
     foundDisplay.TextSize = 11
     foundDisplay.Font = Enum.Font.Code
     foundDisplay.TextXAlignment = Enum.TextXAlignment.Left
@@ -1745,7 +1536,7 @@ local function buildCashTransferTab()
             if matched then
                 state.cashTransfer.selectedName = matched.Name
                 foundDisplay.Text = "✅ Auto-matched: " .. matched.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(100, 255, 150)
+                foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
             end
         end
     end)
@@ -1761,7 +1552,7 @@ local function buildCashTransferTab()
         if matched then
             state.cashTransfer.selectedName = matched.Name
             foundDisplay.Text = "✅ Selected: " .. matched.Name
-            foundDisplay.TextColor3 = Color3.fromRGB(100, 255, 150)
+            foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
         else
             foundDisplay.Text = "❌ Player not found: " .. query
             foundDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -1829,7 +1620,7 @@ local function buildCashTransferTab()
                 state.cashTransfer.selectedName = player.Name
                 searchInput.Text = player.Name
                 foundDisplay.Text = "✅ Selected: " .. player.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(100, 255, 150)
+                foundDisplay.TextColor3 = Color3.fromRGB(255, 125, 135)
             end)
         end
         listContainer.Size = UDim2.new(1, -4, 0, math.max(1, #players) * 28)
@@ -1848,9 +1639,9 @@ local function buildCashTransferTab()
     -- Execute button
     local execBtn = Instance.new("TextButton")
     execBtn.Size = UDim2.new(1, -4, 0, 40)
-    execBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
+    execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
     execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-    execBtn.TextColor3 = Color3.fromRGB(100, 255, 150)
+    execBtn.TextColor3 = Color3.fromRGB(255, 130, 140)
     execBtn.TextSize = 12
     execBtn.Font = Enum.Font.Code
     execBtn.BorderSizePixel = 0
@@ -1865,7 +1656,7 @@ local function buildCashTransferTab()
         if state.cashTransfer.running then
             state.cashTransfer.running = false
             execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
+            execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
             return
         end
         local targetName = state.cashTransfer.selectedName
@@ -1888,7 +1679,7 @@ local function buildCashTransferTab()
         task.spawn(function()
             cashTransferLoop(targetPlayer)
             execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 50)
+            execBtn.BackgroundColor3 = Color3.fromRGB(78, 30, 38)
         end)
     end)
 
@@ -2196,9 +1987,9 @@ task.spawn(function()
             pcall(function()
                 local isThreat = antiAdmin.onSameServer
                 antiAdminUI.statusLabel.Text = "Status: " .. (isThreat and "🚨 THREAT DETECTED" or "Monitoring")
-                antiAdminUI.statusLabel.TextColor3 = isThreat and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(200, 200, 210)
+                antiAdminUI.statusLabel.TextColor3 = isThreat and Color3.fromRGB(255, 95, 105) or Color3.fromRGB(215, 190, 195)
                 antiAdminUI.threatLabel.Text = isThreat and ("Threat: " .. table.concat(antiAdmin.sameServerAdmins, ", ")) or "Threat: None detected"
-                antiAdminUI.threatLabel.TextColor3 = isThreat and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(100, 255, 100)
+                antiAdminUI.threatLabel.TextColor3 = isThreat and Color3.fromRGB(255, 95, 105) or Color3.fromRGB(220, 185, 190)
             end)
         end
     end
@@ -2215,7 +2006,7 @@ local function buildConfigTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CONFIG ═"
-    header.TextColor3 = Color3.fromRGB(100, 255, 150)
+    header.TextColor3 = Color3.fromRGB(245, 110, 120)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -2267,7 +2058,7 @@ local function buildConfigTab()
     saveBtn.Position = UDim2.new(0.69, 0, 0.15, 0)
     saveBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 40)
     saveBtn.Text = "SAVE"
-    saveBtn.TextColor3 = Color3.fromRGB(100, 255, 150)
+    saveBtn.TextColor3 = Color3.fromRGB(255, 125, 135)
     saveBtn.TextSize = 11
     saveBtn.Font = Enum.Font.Code
     saveBtn.BorderSizePixel = 0
@@ -2280,7 +2071,7 @@ local function buildConfigTab()
     statusLabel.Size = UDim2.new(1, 0, 0, 20)
     statusLabel.BackgroundTransparency = 1
     statusLabel.Text = ""
-    statusLabel.TextColor3 = Color3.fromRGB(150, 200, 150)
+    statusLabel.TextColor3 = Color3.fromRGB(210, 145, 150)
     statusLabel.TextSize = 10
     statusLabel.Font = Enum.Font.Code
     statusLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -2373,7 +2164,7 @@ local function buildConfigTab()
             b.Size = UDim2.new(0, 70, 1, 0)
             b.BackgroundColor3 = isActive and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(30, 30, 45)
             b.Text = cfgName:sub(1, 8)
-            b.TextColor3 = isActive and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(180, 180, 200)
+            b.TextColor3 = isActive and Color3.fromRGB(255, 125, 135) or Color3.fromRGB(180, 175, 180)
             b.TextSize = 10
             b.Font = Enum.Font.Code
             b.BorderSizePixel = 0
@@ -2467,7 +2258,7 @@ local function buildConfigTab()
         loadBtn.Position = UDim2.new(0.58, 0, 0.15, 0)
         loadBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 40)
         loadBtn.Text = "LOAD"
-        loadBtn.TextColor3 = Color3.fromRGB(100, 255, 150)
+        loadBtn.TextColor3 = Color3.fromRGB(255, 125, 135)
         loadBtn.TextSize = 10
         loadBtn.Font = Enum.Font.Code
         loadBtn.BorderSizePixel = 0
@@ -2605,12 +2396,12 @@ local function switchTab(name)
     state.currentTab = name
     for tabName, btn in pairs(tabButtons) do
         local isActive = tabName == name
-        btn.BackgroundColor3 = isActive and Color3.fromRGB(68, 20, 24) or Color3.fromRGB(14, 14, 17)
-        btn.TextColor3 = isActive and Color3.fromRGB(255, 94, 94) or Color3.fromRGB(160, 160, 170)
+        btn.BackgroundColor3 = isActive and Color3.fromRGB(76, 24, 30) or Color3.fromRGB(18, 18, 22)
+        btn.TextColor3 = isActive and Color3.fromRGB(255, 125, 125) or Color3.fromRGB(175, 168, 172)
         btn.Text = (isActive and "◆  " or "   ") .. tabName
     end
     if name == "Farms" then buildFarmsTab()
-    elseif name == "ESP" then buildESPTab()
+    
     elseif name == "Cash Transfer" then buildCashTransferTab()
     elseif name == "Anti-Admin" then buildAntiAdminTab()
     elseif name == "Config" then buildConfigTab()
@@ -2686,16 +2477,8 @@ end)
 closeBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
     state.running = false
-    for player, espData in pairs(trackedPlayers) do removeESP(player) end
-    if ESPFolder then ESPFolder:Destroy() end
 end)
 
-Players.PlayerAdded:Connect(createESP)
-Players.PlayerRemoving:Connect(removeESP)
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= localPlayer then createESP(player) end
-end
-RunService.RenderStepped:Connect(function() updatePlayerESP() end)
 
 localPlayer.Idled:Connect(function()
     pcall(function()
@@ -2753,11 +2536,4 @@ task.spawn(function()
     end
 end)
 
-print("══════════════════════════════════════════════")
-print(" • Nyra New Hard Time")
-print(" • New Cash Transfer tab")
-print(" • Search players by name")
-print(" • Resets character → TP to target → spam DropCash")
-print(" • Stops when cash < 5000 → TP to idle")
-print(" • DropCash event: " .. (DROP_CASH_EVENT and "✅" or "❌"))
-print("══════════════════════════════════════════════")
+print("Made by the OneAndOnlyXen.")
