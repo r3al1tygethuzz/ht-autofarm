@@ -1131,21 +1131,23 @@ screenGui.Enabled = true
 screenGui.ResetOnSpawn = false
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 760, 0, 600)
-mainFrame.Position = UDim2.new(0.5, -380, 0.5, -300)
-mainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 10)
+mainFrame.Size = UDim2.new(0, 920, 0, 600)
+mainFrame.Position = UDim2.new(0.5, -460, 0.5, -300)
+mainFrame.BackgroundColor3 = Color3.fromRGB(11, 13, 15)
+mainFrame.BorderSizePixel = 1
+mainFrame.BorderColor3 = Color3.fromRGB(29, 34, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 14)
+corner.CornerRadius = UDim.new(0, 11)
 corner.Parent = mainFrame
 
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 48)
-titleBar.BackgroundColor3 = Color3.fromRGB(18, 15, 17)
+titleBar.Size = UDim2.new(1, 0, 0, 58)
+titleBar.BackgroundColor3 = Color3.fromRGB(11, 13, 15)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
 
@@ -1154,8 +1156,8 @@ titleText.Size = UDim2.new(0.6, 0, 1, 0)
 titleText.Position = UDim2.new(0, 20, 0, 0)
 titleText.BackgroundTransparency = 1
 titleText.Text = "✦ NYRA"
-titleText.TextColor3 = Color3.fromRGB(238, 238, 242)
-titleText.TextSize = 17
+titleText.TextColor3 = Color3.fromRGB(242, 243, 245)
+titleText.TextSize = 18
 titleText.Font = Enum.Font.Code
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.TextYAlignment = Enum.TextYAlignment.Center
@@ -1163,10 +1165,10 @@ titleText.Parent = titleBar
 
 local subtitle = Instance.new("TextLabel")
 subtitle.Size = UDim2.new(0.4, 0, 1, 0)
-subtitle.Position = UDim2.new(0.3, 0, 0, 0)
+subtitle.Position = UDim2.new(0.24, 0, 0, 0)
 subtitle.BackgroundTransparency = 1
-subtitle.Text = "N Y R A  /  CONTROL"
-subtitle.TextColor3 = Color3.fromRGB(125, 125, 135)
+subtitle.Text = "CONTROL DASHBOARD"
+subtitle.TextColor3 = Color3.fromRGB(139, 144, 152)
 subtitle.TextSize = 11
 subtitle.Font = Enum.Font.Code
 subtitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1175,8 +1177,8 @@ subtitle.Parent = titleBar
 
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Size = UDim2.new(0, 32, 0, 32)
-minimizeBtn.Position = UDim2.new(1, -64, 0, 2)
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+minimizeBtn.Position = UDim2.new(1, -72, 0, 13)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
 minimizeBtn.Text = "─"
 minimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
 minimizeBtn.TextSize = 20
@@ -1186,8 +1188,8 @@ minimizeBtn.Parent = titleBar
 
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 32, 0, 32)
-closeBtn.Position = UDim2.new(1, -32, 0, 2)
-closeBtn.BackgroundColor3 = Color3.fromRGB(45, 20, 20)
+closeBtn.Position = UDim2.new(1, -40, 0, 13)
+closeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 closeBtn.TextSize = 16
@@ -1196,9 +1198,11 @@ closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 
 local tabBar = Instance.new("Frame")
-tabBar.Size = UDim2.new(0, 178, 1, -48)
-tabBar.Position = UDim2.new(0, 0, 0, 48)
-tabBar.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+tabBar.Size = UDim2.new(0, 220, 1, -58)
+tabBar.Position = UDim2.new(0, 0, 0, 58)
+tabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 14)
+tabBar.BorderSizePixel = 1
+tabBar.BorderColor3 = Color3.fromRGB(25, 29, 34)
 tabBar.BorderSizePixel = 0
 tabBar.Parent = mainFrame
 
@@ -1207,12 +1211,12 @@ local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -20, 0, 38)
-    btn.Position = UDim2.new(0, 10, 0, 18 + (i-1) * 42)
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(76, 24, 30) or Color3.fromRGB(18, 18, 22)
+    btn.Size = UDim2.new(1, -28, 0, 40)
+    btn.Position = UDim2.new(0, 14, 0, 82 + (i-1) * 46)
+    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(42, 20, 21) or Color3.fromRGB(17, 20, 24)
     btn.Text = (i == 1 and "◆  " or "   ") .. name
-    btn.TextColor3 = i == 1 and Color3.fromRGB(255, 125, 125) or Color3.fromRGB(175, 168, 172)
-    btn.TextSize = 11
+    btn.TextColor3 = i == 1 and Color3.fromRGB(242, 243, 245) or Color3.fromRGB(139, 144, 152)
+    btn.TextSize = 13
     btn.Font = Enum.Font.Code
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.BorderSizePixel = 0
@@ -1224,18 +1228,18 @@ for i, name in ipairs(tabs) do
 end
 
 local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -190, 1, -58)
-contentFrame.Position = UDim2.new(0, 186, 0, 52)
-contentFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+contentFrame.Size = UDim2.new(1, -234, 1, -70)
+contentFrame.Position = UDim2.new(0, 234, 0, 64)
+contentFrame.BackgroundColor3 = Color3.fromRGB(13, 15, 18)
 contentFrame.Parent = mainFrame
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -20, 1, -16)
-scroll.Position = UDim2.new(0, 10, 0, 8)
-scroll.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+scroll.Size = UDim2.new(1, -28, 1, -20)
+scroll.Position = UDim2.new(0, 14, 0, 10)
+scroll.BackgroundColor3 = Color3.fromRGB(13, 15, 18)
 scroll.BorderSizePixel = 0
 scroll.ScrollBarThickness = 4
-scroll.ScrollBarImageColor3 = Color3.fromRGB(165, 45, 55)
+scroll.ScrollBarImageColor3 = Color3.fromRGB(52, 57, 65)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = contentFrame
 
@@ -1246,30 +1250,30 @@ contentList.Padding = UDim.new(0, 8)
 
 local function createToggle(parent, name, stateRef, key, callback, order)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -8, 0, 42)
-    frame.BackgroundColor3 = Color3.fromRGB(24, 22, 25)
+    frame.Size = UDim2.new(1, -8, 0, 46)
+    frame.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
     frame.BorderSizePixel = 1
-    frame.BorderColor3 = Color3.fromRGB(58, 38, 43)
+    frame.BorderColor3 = Color3.fromRGB(29, 34, 40)
     frame.LayoutOrder = order or 1
     frame.Parent = parent
     local corner2 = Instance.new("UICorner")
-    corner2.CornerRadius = UDim.new(0, 8)
+    corner2.CornerRadius = UDim.new(0, 9)
     corner2.Parent = frame
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.58, 0, 1, 0)
     label.Position = UDim2.new(0, 14, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
-    label.TextColor3 = Color3.fromRGB(232, 232, 238)
-    label.TextSize = 12
+    label.TextColor3 = Color3.fromRGB(242, 243, 245)
+    label.TextSize = 13
     label.Font = Enum.Font.Code
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.TextYAlignment = Enum.TextYAlignment.Center
     label.Parent = frame
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 58, 0, 25)
+    btn.Size = UDim2.new(0, 58, 0, 24)
     btn.Position = UDim2.new(0.72, 0, 0.5, -12)
-    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(180, 48, 58) or Color3.fromRGB(40, 38, 43)
+    btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(255, 59, 48) or Color3.fromRGB(39, 43, 49)
     btn.Text = stateRef[key] and "ON" or "OFF"
     btn.TextColor3 = stateRef[key] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
     btn.TextSize = 10
@@ -1292,8 +1296,8 @@ local function createToggle(parent, name, stateRef, key, callback, order)
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
         btn.Text = val and "ON" or "OFF"
-        btn.BackgroundColor3 = val and Color3.fromRGB(180, 48, 58) or Color3.fromRGB(40, 38, 43)
-        btn.TextColor3 = val and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 160)
+        btn.BackgroundColor3 = val and Color3.fromRGB(255, 59, 48) or Color3.fromRGB(39, 43, 49)
+        btn.TextColor3 = val and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 155, 163)
         status.TextColor3 = val and Color3.fromRGB(255, 88, 98) or Color3.fromRGB(82, 62, 68)
         if callback then callback(val) end
     end)
@@ -1317,7 +1321,7 @@ local function buildFarmsTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ FARMS (Cap: " .. TP_CAP .. " TPs) ═"
-    header.TextColor3 = Color3.fromRGB(245, 105, 112)
+    header.TextColor3 = Color3.fromRGB(242, 243, 245)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1430,7 +1434,7 @@ local function buildCashTransferTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CASH TRANSFER ═"
-    header.TextColor3 = Color3.fromRGB(245, 110, 120)
+    header.TextColor3 = Color3.fromRGB(242, 243, 245)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -1596,7 +1600,7 @@ local function buildCashTransferTab()
         for idx, player in ipairs(players) do
             local btn = Instance.new("TextButton")
             btn.Size = UDim2.new(1, -4, 0, 26)
-            btn.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+            btn.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
             btn.Text = player.Name
             btn.TextColor3 = Color3.fromRGB(200, 200, 210)
             btn.TextSize = 10
@@ -2006,7 +2010,7 @@ local function buildConfigTab()
     header.Size = UDim2.new(1, 0, 0, 28)
     header.BackgroundTransparency = 1
     header.Text = "═ CONFIG ═"
-    header.TextColor3 = Color3.fromRGB(245, 110, 120)
+    header.TextColor3 = Color3.fromRGB(242, 243, 245)
     header.TextSize = 12
     header.Font = Enum.Font.Code
     header.LayoutOrder = 0
@@ -2235,7 +2239,7 @@ local function buildConfigTab()
     for _, name in ipairs(configs) do
         local row = Instance.new("Frame")
         row.Size = UDim2.new(1, -4, 0, 34)
-        row.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+        row.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
         row.BorderSizePixel = 0
         row.LayoutOrder = order
         row.Parent = scroll
@@ -2367,7 +2371,7 @@ local function buildSettingsTab()
     order = order + 1
     local infoFrame = Instance.new("Frame")
     infoFrame.Size = UDim2.new(1, -4, 0, 60)
-    infoFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+    infoFrame.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
     infoFrame.BorderSizePixel = 0
     infoFrame.LayoutOrder = order
     infoFrame.Parent = scroll
@@ -2396,8 +2400,8 @@ local function switchTab(name)
     state.currentTab = name
     for tabName, btn in pairs(tabButtons) do
         local isActive = tabName == name
-        btn.BackgroundColor3 = isActive and Color3.fromRGB(76, 24, 30) or Color3.fromRGB(18, 18, 22)
-        btn.TextColor3 = isActive and Color3.fromRGB(255, 125, 125) or Color3.fromRGB(175, 168, 172)
+        btn.BackgroundColor3 = isActive and Color3.fromRGB(42, 20, 21) or Color3.fromRGB(17, 20, 24)
+        btn.TextColor3 = isActive and Color3.fromRGB(242, 243, 245) or Color3.fromRGB(139, 144, 152)
         btn.Text = (isActive and "◆  " or "   ") .. tabName
     end
     if name == "Farms" then buildFarmsTab()
@@ -2468,8 +2472,8 @@ miniClick.MouseButton1Click:Connect(function()
     mainFrame.Size = UDim2.new(0, 0, 0, 0)
     mainFrame.Position = UDim2.new(0, 12, 0, 12)
     local expand = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 760, 0, 600),
-        Position = UDim2.new(0.5, -380, 0.5, -300)
+        Size = UDim2.new(0, 920, 0, 600),
+        Position = UDim2.new(0.5, -460, 0.5, -300)
     })
     expand:Play()
 end)
