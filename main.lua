@@ -1128,8 +1128,8 @@ screenGui.Enabled = true
 screenGui.ResetOnSpawn = false
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 920, 0, 600)
-mainFrame.Position = UDim2.new(0.5, -460, 0.5, -300)
+mainFrame.Size = UDim2.new(0, 780, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -390, 0.5, -250)
 mainFrame.BackgroundColor3 = Color3.fromRGB(7, 10, 13)
 mainFrame.BorderSizePixel = 1
 mainFrame.BorderColor3 = Color3.fromRGB(24, 36, 44)
@@ -1139,11 +1139,11 @@ mainFrame.Active = true
 mainFrame.Draggable = true
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 11)
+corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = mainFrame
 
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 58)
+titleBar.Size = UDim2.new(1, 0, 0, 48)
 titleBar.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
@@ -1157,11 +1157,11 @@ headerDivider.Parent = titleBar
 
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0.6, 0, 1, 0)
-titleText.Position = UDim2.new(0, 20, 0, 0)
+titleText.Position = UDim2.new(0, 14, 0, 0)
 titleText.BackgroundTransparency = 1
 titleText.Text = "NYRA  /  CONTROL"
 titleText.TextColor3 = Color3.fromRGB(232, 241, 244)
-titleText.TextSize = 19
+titleText.TextSize = 16
 titleText.Font = Enum.Font.GothamSemibold
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.TextYAlignment = Enum.TextYAlignment.Center
@@ -1173,7 +1173,7 @@ subtitle.Position = UDim2.new(0.34, 0, 0, 0)
 subtitle.BackgroundTransparency = 1
 subtitle.Text = "CONTROL DASHBOARD"
 subtitle.TextColor3 = Color3.fromRGB(101, 116, 125)
-subtitle.TextSize = 11
+subtitle.TextSize = 10
 subtitle.Font = Enum.Font.Code
 subtitle.TextXAlignment = Enum.TextXAlignment.Left
 subtitle.TextYAlignment = Enum.TextYAlignment.Center
@@ -1202,22 +1202,22 @@ closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 
 local tabBar = Instance.new("Frame")
-tabBar.Size = UDim2.new(0, 208, 1, -58)
-tabBar.Position = UDim2.new(0, 0, 0, 58)
+tabBar.Size = UDim2.new(0, 180, 1, -48)
+tabBar.Position = UDim2.new(0, 0, 0, 48)
 tabBar.BackgroundColor3 = Color3.fromRGB(8, 12, 16)
 tabBar.BorderSizePixel = 1
 tabBar.BorderColor3 = Color3.fromRGB(24, 36, 44)
 tabBar.Parent = mainFrame
 
-local tabs = {"Farms", "Cash Transfer", "Anti-Admin", "Config", "Settings"}
+local tabs = {"Farms", "Cash Transfer", "Config", "Settings"}
 
 local sidebarBrand = Instance.new("TextLabel")
-sidebarBrand.Size = UDim2.new(1, -28, 0, 58)
-sidebarBrand.Position = UDim2.new(0, 14, 0, 12)
+sidebarBrand.Size = UDim2.new(1, -20, 0, 48)
+sidebarBrand.Position = UDim2.new(0, 10, 0, 10)
 sidebarBrand.BackgroundTransparency = 1
 sidebarBrand.Text = "N  /  NYRA\nCONTROL SYSTEM"
 sidebarBrand.TextColor3 = Color3.fromRGB(232, 241, 244)
-sidebarBrand.TextSize = 14
+sidebarBrand.TextSize = 12
 sidebarBrand.Font = Enum.Font.GothamSemibold
 sidebarBrand.TextXAlignment = Enum.TextXAlignment.Left
 sidebarBrand.TextYAlignment = Enum.TextYAlignment.Center
@@ -1233,12 +1233,12 @@ local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -28, 0, 38)
-    btn.Position = UDim2.new(0, 14, 0, 84 + (i-1) * 42)
+        btn.Size = UDim2.new(1, -20, 0, 34)
+    btn.Position = UDim2.new(0, 10, 0, 78 + (i-1) * 38)
     btn.BackgroundColor3 = i == 1 and Color3.fromRGB(13, 37, 43) or Color3.fromRGB(8, 12, 16)
     btn.Text = (i == 1 and "▌  " or "   ") .. name
     btn.TextColor3 = i == 1 and Color3.fromRGB(232, 241, 244) or Color3.fromRGB(101, 116, 125)
-    btn.TextSize = 13
+    btn.TextSize = 11
         btn.Font = Enum.Font.GothamMedium
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.BorderSizePixel = 0
@@ -1250,23 +1250,23 @@ for i, name in ipairs(tabs) do
 end
 
 local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -224, 1, -70)
-contentFrame.Position = UDim2.new(0, 224, 0, 64)
+contentFrame.Size = UDim2.new(1, -192, 1, -60)
+contentFrame.Position = UDim2.new(0, 192, 0, 54)
 contentFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
 contentFrame.BorderSizePixel = 0
 contentFrame.Parent = mainFrame
 
 local ambient = Instance.new("Frame")
-ambient.Size = UDim2.new(0, 360, 0, 360)
-ambient.Position = UDim2.new(1, -390, 0, 70)
+ambient.Size = UDim2.new(0, 240, 0, 240)
+ambient.Position = UDim2.new(1, -250, 0, 54)
 ambient.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
 ambient.BackgroundTransparency = 0.88
 ambient.BorderSizePixel = 0
 ambient.Parent = contentFrame
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -32, 1, -28)
-scroll.Position = UDim2.new(0, 16, 0, 14)
+scroll.Size = UDim2.new(1, -24, 1, -24)
+scroll.Position = UDim2.new(0, 12, 0, 12)
 scroll.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
 scroll.BackgroundTransparency = 0.12
 scroll.BorderSizePixel = 0
@@ -1282,7 +1282,7 @@ contentList.Padding = UDim.new(0, 8)
 
 local function createToggle(parent, name, stateRef, key, callback, order)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -8, 0, 46)
+    frame.Size = UDim2.new(1, -8, 0, 40)
         frame.BackgroundColor3 = Color3.fromRGB(13, 19, 24)
     frame.BorderSizePixel = 1
     frame.BorderColor3 = Color3.fromRGB(24, 36, 44)
@@ -1293,7 +1293,7 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     corner2.Parent = frame
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.58, 0, 1, 0)
-    label.Position = UDim2.new(0, 14, 0, 0)
+    label.Position = UDim2.new(0, 11, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Color3.fromRGB(242, 243, 245)
@@ -1303,8 +1303,8 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     label.TextYAlignment = Enum.TextYAlignment.Center
     label.Parent = frame
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 38, 0, 20)
-    btn.Position = UDim2.new(0.78, 0, 0.5, -10)
+    btn.Size = UDim2.new(0, 34, 0, 18)
+    btn.Position = UDim2.new(0.78, 0, 0.5, -9)
         btn.BackgroundColor3 = stateRef[key] and Color3.fromRGB(8, 124, 120) or Color3.fromRGB(32, 42, 48)
     btn.Text = stateRef[key] and "ON" or "OFF"
     btn.TextColor3 = Color3.fromRGB(223, 255, 250)
@@ -1325,8 +1325,8 @@ local function createToggle(parent, name, stateRef, key, callback, order)
     knobCorner.CornerRadius = UDim.new(1, 0)
     knobCorner.Parent = knob
     local status = Instance.new("TextLabel")
-    status.Size = UDim2.new(0, 20, 0, 20)
-    status.Position = UDim2.new(0.92, 0, 0.5, -10)
+    status.Size = UDim2.new(0, 16, 0, 16)
+    status.Position = UDim2.new(0.92, 0, 0.5, -8)
     status.BackgroundTransparency = 1
     status.Text = "●"
     status.TextColor3 = stateRef[key] and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(82, 97, 104)
@@ -1754,6 +1754,7 @@ end
 -- ═══════════════════════════════
 local antiAdminUI = {}
 
+-- Admin monitoring remains active in the background; its page is intentionally hidden.
 local function buildAntiAdminTab()
     clearContent()
     local order = 1
@@ -1830,7 +1831,7 @@ local function buildAntiAdminTab()
     if #antiAdmin.sameServerAdmins > 0 then
         local banner = Instance.new("Frame")
         banner.Size = UDim2.new(1, -4, 0, 36)
-        banner.BackgroundColor3 = Color3.fromRGB(80, 20, 20)
+        banner.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
         banner.BorderSizePixel = 0
         banner.LayoutOrder = order
         banner.Parent = scroll
@@ -2027,20 +2028,7 @@ local function buildAntiAdminTab()
     scroll.CanvasSize = UDim2.new(0, 0, 0, order * 38 + 100)
 end
 
-task.spawn(function()
-    while state.running do
-        task.wait(2)
-        if state.currentTab == "Anti-Admin" and antiAdminUI.statusLabel then
-            pcall(function()
-                local isThreat = antiAdmin.onSameServer
-                antiAdminUI.statusLabel.Text = "Status: " .. (isThreat and "🚨 THREAT DETECTED" or "Monitoring")
-                antiAdminUI.statusLabel.TextColor3 = isThreat and Color3.fromRGB(255, 95, 105) or Color3.fromRGB(215, 190, 195)
-                antiAdminUI.threatLabel.Text = isThreat and ("Threat: " .. table.concat(antiAdmin.sameServerAdmins, ", ")) or "Threat: None detected"
-                antiAdminUI.threatLabel.TextColor3 = isThreat and Color3.fromRGB(255, 95, 105) or Color3.fromRGB(220, 185, 190)
-            end)
-        end
-    end
-end)
+
 
 -- ═══════════════════════════════
 -- CONFIG TAB
@@ -2062,7 +2050,7 @@ local function buildConfigTab()
     if not hasFileAPI then
         local warnLabel = Instance.new("TextLabel")
         warnLabel.Size = UDim2.new(1, -4, 0, 50)
-        warnLabel.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+        warnLabel.BackgroundColor3 = Color3.fromRGB(13, 19, 24)
         warnLabel.BorderSizePixel = 0
         warnLabel.Text = "⚠ File API not available.\nConfigs cannot be saved."
         warnLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
@@ -2450,7 +2438,6 @@ local function switchTab(name)
     if name == "Farms" then buildFarmsTab()
     
     elseif name == "Cash Transfer" then buildCashTransferTab()
-    elseif name == "Anti-Admin" then buildAntiAdminTab()
     elseif name == "Config" then buildConfigTab()
     elseif name == "Settings" then buildSettingsTab()
     end
@@ -2491,7 +2478,7 @@ miniClick.Parent = miniCircle
 minimizeBtn.MouseButton1Click:Connect(function()
     if state.minimized then return end
     state.minimized = true
-    local shrink = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+    local shrink = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0, 12, 0, 12)
     })
@@ -2500,7 +2487,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
     miniCircle.Visible = true
     miniCircle.Size = UDim2.new(0, 0, 0, 0)
-    local expand = TweenService:Create(miniCircle, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 48, 0, 48)})
+    local expand = TweenService:Create(miniCircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 48, 0, 48)})
     expand:Play()
 end)
 
@@ -2514,9 +2501,9 @@ miniClick.MouseButton1Click:Connect(function()
     mainFrame.Visible = true
     mainFrame.Size = UDim2.new(0, 0, 0, 0)
     mainFrame.Position = UDim2.new(0, 12, 0, 12)
-    local expand = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 920, 0, 600),
-        Position = UDim2.new(0.5, -460, 0.5, -300)
+    local expand = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 780, 0, 500),
+        Position = UDim2.new(0.5, -390, 0.5, -250)
     })
     expand:Play()
 end)
