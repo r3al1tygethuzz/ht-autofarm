@@ -1076,8 +1076,6 @@ end
 
 
 
-
-
 -- ═══════════════════════════════
 -- APPLY CONFIG DATA
 -- ═══════════════════════════════
@@ -1128,319 +1126,255 @@ screenGui.Enabled = true
 screenGui.ResetOnSpawn = false
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 920, 0, 600)
-mainFrame.Position = UDim2.new(0.5, -460, 0.5, -300)
-mainFrame.BackgroundColor3 = Color3.fromRGB(7, 10, 13)
-mainFrame.BorderSizePixel = 1
-mainFrame.BorderColor3 = Color3.fromRGB(24, 36, 44)
+mainFrame.Size = UDim2.new(0, 780, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -390, 0.5, -250)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 11, 14)
+mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
+corner.CornerRadius = UDim.new(0, 9)
 corner.Parent = mainFrame
 
--- Subtle background effect
 local bgGradient = Instance.new("UIGradient")
 bgGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(7, 10, 13)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 30))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(8, 11, 14)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 26, 36))
 }
 bgGradient.Parent = mainFrame
 
 local leftSidebar = Instance.new("Frame")
-leftSidebar.Size = UDim2.new(0, 210, 1, 0)
-leftSidebar.BackgroundColor3 = Color3.fromRGB(8, 12, 16)
-leftSidebar.BorderSizePixel = 1
-leftSidebar.BorderColor3 = Color3.fromRGB(24, 36, 44)
+leftSidebar.Size = UDim2.new(0, 120, 1, 0)
+leftSidebar.BackgroundColor3 = Color3.fromRGB(16, 20, 25)
+leftSidebar.BorderSizePixel = 0
 leftSidebar.Parent = mainFrame
 
 local logoArea = Instance.new("Frame")
-logoArea.Size = UDim2.new(1, -28, 0, 70)
-logoArea.Position = UDim2.new(0, 14, 0, 14)
+logoArea.Size = UDim2.new(1, -16, 0, 60)
+logoArea.Position = UDim2.new(0, 8, 0, 12)
 logoArea.BackgroundTransparency = 1
 logoArea.Parent = leftSidebar
 
 local logoText = Instance.new("TextLabel")
-logoText.Size = UDim2.new(1, 0, 0.6, 0)
+logoText.Size = UDim2.new(1, 0, 1, 0)
 logoText.BackgroundTransparency = 1
 logoText.Text = "NYRA"
-logoText.TextColor3 = Color3.fromRGB(232, 241, 244)
+logoText.TextColor3 = Color3.fromRGB(234, 247, 245)
 logoText.TextSize = 18
 logoText.Font = Enum.Font.GothamSemibold
-logoText.TextXAlignment = Enum.TextXAlignment.Left
+logoText.TextXAlignment = Enum.TextXAlignment.Center
 logoText.Parent = logoArea
 
-local logoAccent = Instance.new("Frame")
-logoAccent.Size = UDim2.new(0, 4, 0.6, 0)
-logoAccent.Position = UDim2.new(0, -6, 0, 0)
-logoAccent.BackgroundColor3 = Color3.fromRGB(0, 217, 196)
-logoAccent.BorderSizePixel = 0
-logoAccent.Parent = logoText
-
-local logoSub = Instance.new("TextLabel")
-logoSub.Size = UDim2.new(1, 0, 0.4, 0)
-logoSub.Position = UDim2.new(0, 0, 0.6, 0)
-logoSub.BackgroundTransparency = 1
-logoSub.Text = "CONTROL SYSTEM"
-logoSub.TextColor3 = Color3.fromRGB(101, 116, 125)
-logoSub.TextSize = 10
-logoSub.Font = Enum.Font.Code
-logoSub.TextXAlignment = Enum.TextXAlignment.Left
-logoSub.Parent = logoArea
-
 local navContainer = Instance.new("Frame")
-navContainer.Size = UDim2.new(1, -28, 0, 200)
-navContainer.Position = UDim2.new(0, 14, 0, 100)
+navContainer.Size = UDim2.new(1, -16, 0, 300)
+navContainer.Position = UDim2.new(0, 8, 0, 80)
 navContainer.BackgroundTransparency = 1
 navContainer.Parent = leftSidebar
 
 local navList = Instance.new("UIListLayout")
 navList.Parent = navContainer
 navList.SortOrder = Enum.SortOrder.LayoutOrder
-navList.Padding = UDim.new(0, 8)
+navList.Padding = UDim.new(0, 6)
 
-local tabs = {"Farms", "Cash Transfer", "Config", "Settings"}
+local tabs = {"Farms", "Cash Transfer", "Anti-Admin"}
 local tabButtons = {}
 
 for i, name in ipairs(tabs) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 38)
-    btn.BackgroundTransparency = i == 1 and 0 or 1
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(13, 32, 43) or Color3.fromRGB(8, 12, 16)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(232, 241, 244)
-    btn.TextSize = 13
-    btn.Font = Enum.Font.GothamMedium
-    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Size = UDim2.new(1, 0, 0, 50)
+    btn.BackgroundTransparency = 1
+    btn.Text = ""
     btn.BorderSizePixel = 0
     btn.LayoutOrder = i
     btn.Parent = navContainer
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.CornerRadius = UDim.new(0, 8)
     btnCorner.Parent = btn
+    local icon = Instance.new("TextLabel")
+    icon.Size = UDim2.new(0, 22, 0, 22)
+    icon.Position = UDim2.new(0, 10, 0, 5)
+    icon.BackgroundTransparency = 1
+    icon.Text = (name == "Farms" and "⚡") or (name == "Cash Transfer" and "💸") or "🛡️"
+    icon.TextSize = 20
+    icon.Font = Enum.Font.SourceSans
+    icon.Parent = btn
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -32, 0, 18)
+    label.Position = UDim2.new(0, 10, 0, 27)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextSize = 11
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = btn
     if i == 1 then
-        local accent = Instance.new("Frame")
-        accent.Size = UDim2.new(0, 3, 1, 0)
-        accent.BackgroundColor3 = Color3.fromRGB(0, 217, 196)
-        accent.BorderSizePixel = 0
-        accent.Parent = btn
+        btn.BackgroundTransparency = 0
+        btn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+        icon.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
         local glow = Instance.new("UIGradient")
-        glow.Color = ColorSequence.new(Color3.fromRGB(0, 217, 196), Color3.fromRGB(0, 150, 150))
-        glow.Parent = accent
+        glow.Color = ColorSequence.new(Color3.fromRGB(58, 159, 232), Color3.fromRGB(0, 217, 196))
+        glow.Parent = btn
+    else
+        icon.TextColor3 = Color3.fromRGB(155, 167, 173)
+        label.TextColor3 = Color3.fromRGB(120, 133, 140)
     end
     tabButtons[name] = btn
 end
 
 local headerBar = Instance.new("Frame")
-headerBar.Size = UDim2.new(1, -210, 0, 58)
-headerBar.Position = UDim2.new(0, 210, 0, 0)
-headerBar.BackgroundColor3 = Color3.fromRGB(10, 15, 19)
+headerBar.Size = UDim2.new(1, -120, 0, 50)
+headerBar.Position = UDim2.new(0, 120, 0, 0)
+headerBar.BackgroundColor3 = Color3.fromRGB(11, 15, 19)
 headerBar.BorderSizePixel = 0
 headerBar.Parent = mainFrame
 
 local headerDivider = Instance.new("Frame")
-headerDivider.Size = UDim2.new(1, -28, 0, 1)
-headerDivider.Position = UDim2.new(0, 14, 1, -1)
-headerDivider.BackgroundColor3 = Color3.fromRGB(22, 33, 40)
+headerDivider.Size = UDim2.new(1, -20, 0, 1)
+headerDivider.Position = UDim2.new(0, 10, 1, -1)
+headerDivider.BackgroundColor3 = Color3.fromRGB(37, 46, 53)
 headerDivider.BorderSizePixel = 0
 headerDivider.Parent = headerBar
 
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0.7, 0, 1, 0)
-titleText.Position = UDim2.new(0, 14, 0, 0)
+titleText.Position = UDim2.new(0, 12, 0, 0)
 titleText.BackgroundTransparency = 1
 titleText.Text = "Farms"
-titleText.TextColor3 = Color3.fromRGB(232, 241, 244)
-titleText.TextSize = 18
+titleText.TextColor3 = Color3.fromRGB(241, 245, 246)
+titleText.TextSize = 20
 titleText.Font = Enum.Font.GothamSemibold
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.TextYAlignment = Enum.TextYAlignment.Center
 titleText.Parent = headerBar
 
 local minimizeBtn = Instance.new("TextButton")
-minimizeBtn.Size = UDim2.new(0, 32, 0, 32)
-minimizeBtn.Position = UDim2.new(1, -72, 0, 13)
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
+minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+minimizeBtn.Position = UDim2.new(1, -70, 0, 10)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(35, 38, 41)
 minimizeBtn.Text = "─"
 minimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-minimizeBtn.TextSize = 20
-minimizeBtn.Font = Enum.Font.Code
+minimizeBtn.TextSize = 16
+minimizeBtn.Font = Enum.Font.Gotham
 minimizeBtn.BorderSizePixel = 0
 minimizeBtn.Parent = headerBar
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 6)
+minCorner.Parent = minimizeBtn
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 32, 0, 32)
-closeBtn.Position = UDim2.new(1, -40, 0, 13)
-closeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 10)
+closeBtn.BackgroundColor3 = Color3.fromRGB(35, 38, 41)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
-closeBtn.TextSize = 16
-closeBtn.Font = Enum.Font.Code
+closeBtn.TextSize = 14
+closeBtn.Font = Enum.Font.Gotham
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = headerBar
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.Parent = closeBtn
 
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -210, 1, -58)
-contentArea.Position = UDim2.new(0, 210, 0, 58)
+contentArea.Size = UDim2.new(1, -120, 1, -50)
+contentArea.Position = UDim2.new(0, 120, 0, 50)
 contentArea.BackgroundTransparency = 1
 contentArea.Parent = mainFrame
 
--- Subtle radial glow
-local radialGlow = Instance.new("Frame")
-radialGlow.Size = UDim2.new(0, 300, 0, 300)
-radialGlow.Position = UDim2.new(0.5, -150, 0.5, -150)
-radialGlow.BackgroundColor3 = Color3.fromRGB(10, 26, 36)
-radialGlow.BackgroundTransparency = 0.95
-radialGlow.BorderSizePixel = 0
-radialGlow.Parent = contentArea
-local glowCorner = Instance.new("UICorner")
-glowCorner.CornerRadius = UDim.new(1, 0)
-glowCorner.Parent = radialGlow
-
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -32, 1, -24)
-scroll.Position = UDim2.new(0, 16, 0, 12)
+scroll.Size = UDim2.new(1, -20, 1, -12)
+scroll.Position = UDim2.new(0, 10, 0, 6)
 scroll.BackgroundTransparency = 1
 scroll.BorderSizePixel = 0
-scroll.ScrollBarThickness = 5
-scroll.ScrollBarImageColor3 = Color3.fromRGB(38, 52, 59)
+scroll.ScrollBarThickness = 4
+scroll.ScrollBarImageColor3 = Color3.fromRGB(48, 52, 59)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = contentArea
 
-local contentGrid = Instance.new("UIGridLayout")
-contentGrid.Parent = scroll
-contentGrid.SortOrder = Enum.SortOrder.LayoutOrder
-contentGrid.CellSize = UDim2.new(0, 320, 0, 0)
-contentGrid.CellPadding = UDim2.new(0, 12, 0, 12)
-contentGrid.FillDirectionMaxCells = 2
+local contentList = Instance.new("UIListLayout")
+contentList.Parent = scroll
+contentList.SortOrder = Enum.SortOrder.LayoutOrder
+contentList.Padding = UDim.new(0, 0)
 
-local function createCard(parent, title, icon)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, 0, 0, 0)
-    card.BackgroundColor3 = Color3.fromRGB(13, 19, 24)
-    card.BorderSizePixel = 1
-    card.BorderColor3 = Color3.fromRGB(24, 36, 44)
-    card.Parent = parent
-    local cardCorner = Instance.new("UICorner")
-    cardCorner.CornerRadius = UDim.new(0, 9)
-    cardCorner.Parent = card
+local function createRow(parent, label, rightElement)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, 0, 0, 48)
+    row.BackgroundTransparency = 1
+    row.Parent = parent
 
-    local header = Instance.new("Frame")
-    header.Size = UDim2.new(1, -24, 0, 30)
-    header.Position = UDim2.new(0, 12, 0, 12)
-    header.BackgroundTransparency = 1
-    header.Parent = card
+    local labelText = Instance.new("TextLabel")
+    labelText.Size = UDim2.new(0.5, 0, 1, 0)
+    labelText.BackgroundTransparency = 1
+    labelText.Text = label
+    labelText.TextColor3 = Color3.fromRGB(241, 245, 246)
+    labelText.TextSize = 13
+    labelText.Font = Enum.Font.GothamMedium
+    labelText.TextXAlignment = Enum.TextXAlignment.Left
+    labelText.Parent = row
 
-    local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 18, 1, 0)
-    iconLabel.BackgroundTransparency = 1
-    iconLabel.Text = icon or "●"
-    iconLabel.TextColor3 = Color3.fromRGB(0, 191, 174)
-    iconLabel.TextSize = 16
-    iconLabel.Font = Enum.Font.SourceSans
-    iconLabel.Parent = header
+    if rightElement then
+        rightElement.Size = UDim2.new(0, 0, 1, 0)
+        rightElement.Position = UDim2.new(1, -rightElement.Size.X.Offset, 0, 0)
+        rightElement.Parent = row
+    end
 
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -24, 1, 0)
-    titleLabel.Position = UDim2.new(0, 24, 0, 0)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = Color3.fromRGB(220, 232, 236)
-    titleLabel.TextSize = 14
-    titleLabel.Font = Enum.Font.GothamSemibold
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = header
-
-    local content = Instance.new("Frame")
-    content.Size = UDim2.new(1, -24, 0, 0)
-    content.Position = UDim2.new(0, 12, 0, 48)
-    content.BackgroundTransparency = 1
-    content.Parent = card
-
-    local list = Instance.new("UIListLayout")
-    list.Parent = content
-    list.SortOrder = Enum.SortOrder.LayoutOrder
-    list.Padding = UDim.new(0, 8)
-
-    return card, content
+    return row
 end
 
-local function createToggle(parent, name, stateRef, key, callback)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 0, 40)
-    frame.BackgroundTransparency = 1
-    frame.Parent = parent
+local function createDivider(parent)
+    local div = Instance.new("Frame")
+    div.Size = UDim2.new(1, 0, 0, 1)
+    div.BackgroundColor3 = Color3.fromRGB(37, 46, 53)
+    div.BorderSizePixel = 0
+    div.Parent = parent
+    return div
+end
 
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.6, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = name
-    label.TextColor3 = Color3.fromRGB(242, 243, 245)
-    label.TextSize = 13
-    label.Font = Enum.Font.GothamMedium
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.TextYAlignment = Enum.TextYAlignment.Center
-    label.Parent = frame
+local function createToggle(parent, label, stateRef, key, callback)
+    local row = createRow(parent, label)
 
     local toggle = Instance.new("Frame")
     toggle.Size = UDim2.new(0, 38, 0, 20)
     toggle.Position = UDim2.new(1, -38, 0.5, -10)
-    toggle.BackgroundColor3 = stateRef[key] and Color3.fromRGB(8, 124, 120) or Color3.fromRGB(32, 42, 48)
+    toggle.BackgroundColor3 = stateRef[key] and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
     toggle.BorderSizePixel = 0
-    toggle.Parent = frame
+    toggle.Parent = row
     local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 12)
+    toggleCorner.CornerRadius = UDim.new(0, 10)
     toggleCorner.Parent = toggle
 
     local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 14, 0, 14)
-    knob.Position = stateRef[key] and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
-    knob.BackgroundColor3 = stateRef[key] and Color3.fromRGB(223, 255, 250) or Color3.fromRGB(102, 115, 122)
+    knob.Size = UDim2.new(0, 16, 0, 16)
+    knob.Position = stateRef[key] and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     knob.BorderSizePixel = 0
     knob.Parent = toggle
     local knobCorner = Instance.new("UICorner")
     knobCorner.CornerRadius = UDim.new(1, 0)
     knobCorner.Parent = knob
 
-    if stateRef[key] then
-        local glow = Instance.new("UIGradient")
-        glow.Color = ColorSequence.new(Color3.fromRGB(0, 217, 196), Color3.fromRGB(0, 150, 150))
-        glow.Transparency = NumberSequence.new(0.8, 1)
-        glow.Parent = toggle
-    end
-
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 1, 0)
     btn.BackgroundTransparency = 1
     btn.Text = ""
-    btn.Parent = frame
+    btn.Parent = row
     btn.MouseButton1Click:Connect(function()
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
-        toggle.BackgroundColor3 = val and Color3.fromRGB(8, 124, 120) or Color3.fromRGB(32, 42, 48)
-        knob.Position = val and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
-        knob.BackgroundColor3 = val and Color3.fromRGB(223, 255, 250) or Color3.fromRGB(102, 115, 122)
-        if val then
-            local glow = Instance.new("UIGradient")
-            glow.Color = ColorSequence.new(Color3.fromRGB(0, 217, 196), Color3.fromRGB(0, 150, 150))
-            glow.Transparency = NumberSequence.new(0.8, 1)
-            glow.Parent = toggle
-        else
-            for _, child in ipairs(toggle:GetChildren()) do
-                if child:IsA("UIGradient") then child:Destroy() end
-            end
-        end
+        toggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        knob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if callback then callback(val) end
     end)
-    return frame
+    return row
 end
 
 local function clearContent()
     for _, child in ipairs(scroll:GetChildren()) do
-        if child ~= contentGrid then child:Destroy() end
+        if child ~= contentList then child:Destroy() end
     end
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 end
@@ -1452,8 +1386,7 @@ local function buildFarmsTab()
     clearContent()
     titleText.Text = "Farms"
 
-    local card1, content1 = createCard(scroll, "Farm Controls", "⚡")
-    createToggle(content1, "Super Farm (Reg → Cash → Dump)", state.farms, "SuperFarm", function(val)
+    createToggle(scroll, "Super Farm", state.farms, "SuperFarm", function(val)
         if val then
             for _, key in ipairs({"Dumpster", "Cash", "Register"}) do state.farms[key] = false end
             state.farms.SuperFarm = true
@@ -1466,7 +1399,9 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
-    createToggle(content1, "Dumpster Farm", state.farms, "Dumpster", function(val)
+    createDivider(scroll)
+
+    createToggle(scroll, "Dumpster Farm", state.farms, "Dumpster", function(val)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Dumpster" then state.farms[k] = false end
@@ -1481,7 +1416,9 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
-    createToggle(content1, "Floor Cash", state.farms, "Cash", function(val)
+    createDivider(scroll)
+
+    createToggle(scroll, "Floor Cash", state.farms, "Cash", function(val)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Cash" then state.farms[k] = false end
@@ -1496,7 +1433,9 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
-    createToggle(content1, "Register Farm", state.farms, "Register", function(val)
+    createDivider(scroll)
+
+    createToggle(scroll, "Register Farm", state.farms, "Register", function(val)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Register" then state.farms[k] = false end
@@ -1511,27 +1450,35 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
+    createDivider(scroll)
 
-    local card2, content2 = createCard(scroll, "Status & Actions", "🔹")
+    local statusRow = createRow(scroll, "Status")
     local counterLabel = Instance.new("TextLabel")
-    counterLabel.Size = UDim2.new(1, 0, 0, 20)
-    counterLabel.BackgroundTransparency = 1
-    counterLabel.Text = "TPs: 0 / " .. TP_CAP
+    counterLabel.Size = UDim2.new(0, 120, 0, 24)
+    counterLabel.Position = UDim2.new(1, -120, 0.5, -12)
+    counterLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    counterLabel.Text = "0 / " .. TP_CAP
     counterLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
     counterLabel.TextSize = 12
-    counterLabel.Font = Enum.Font.Code
-    counterLabel.TextXAlignment = Enum.TextXAlignment.Left
-    counterLabel.Parent = content2
+    counterLabel.Font = Enum.Font.Gotham
+    counterLabel.TextXAlignment = Enum.TextXAlignment.Center
+    counterLabel.Parent = statusRow
+    local counterCorner = Instance.new("UICorner")
+    counterCorner.CornerRadius = UDim.new(0, 6)
+    counterCorner.Parent = counterLabel
+    createDivider(scroll)
 
+    local resetRow = createRow(scroll, "Actions")
     local resetBtn = Instance.new("TextButton")
-    resetBtn.Size = UDim2.new(1, 0, 0, 32)
-    resetBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
-    resetBtn.Text = "⟳ RESET"
-    resetBtn.TextColor3 = Color3.fromRGB(239, 255, 252)
+    resetBtn.Size = UDim2.new(0, 80, 0, 28)
+    resetBtn.Position = UDim2.new(1, -80, 0.5, -14)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    resetBtn.Text = "Reset"
+    resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 12
-    resetBtn.Font = Enum.Font.Code
+    resetBtn.Font = Enum.Font.GothamMedium
     resetBtn.BorderSizePixel = 0
-    resetBtn.Parent = content2
+    resetBtn.Parent = resetRow
     local resetCorner = Instance.new("UICorner")
     resetCorner.CornerRadius = UDim.new(0, 6)
     resetCorner.Parent = resetBtn
@@ -1539,20 +1486,29 @@ local function buildFarmsTab()
         task.spawn(function() forceResetCharacter() end)
     end)
 
-    task.spawn(function()
-        while state.running do
-            local used = teleportSystem.usedTeleports
-            local current = selectedFarmKey or "None"
-            counterLabel.Text = "TPs: " .. used .. " / " .. TP_CAP .. " (" .. current .. ")"
-            counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(216, 180, 90) or Color3.fromRGB(0, 217, 196)
-            task.wait(0.3)
+    -- Update status
+    local updateStatus = function()
+        local used = teleportSystem.usedTeleports
+        local current = selectedFarmKey or "None"
+        counterLabel.Text = used .. " / " .. TP_CAP
+        counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 200, 100) or Color3.fromRGB(0, 217, 196)
+    end
+    updateStatus()
+    local statusUpdater = task.spawn(function()
+        while state.running and state.currentTab == "Farms" do
+            updateStatus()
+            task.wait(0.5)
         end
     end)
+    -- Store for cleanup
+    if not scroll:FindFirstChild("StatusUpdater") then
+        local conn = Instance.new("ObjectValue")
+        conn.Name = "StatusUpdater"
+        conn.Value = statusUpdater
+        conn.Parent = scroll
+    end
 
-    -- Adjust card sizes
-    card1.Size = UDim2.new(1, 0, 0, content1.UIListLayout.AbsoluteContentSize.Y + 60)
-    card2.Size = UDim2.new(1, 0, 0, content2.UIListLayout.AbsoluteContentSize.Y + 60)
-    scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 24)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
 end
 
 
@@ -1564,98 +1520,70 @@ local function buildCashTransferTab()
     clearContent()
     titleText.Text = "Cash Transfer"
 
-    local card1, content1 = createCard(scroll, "Player Selection", "👤")
-    local searchFrame = Instance.new("Frame")
-    searchFrame.Size = UDim2.new(1, 0, 0, 32)
-    searchFrame.BackgroundColor3 = Color3.fromRGB(16, 25, 37)
-    searchFrame.BorderSizePixel = 1
-    searchFrame.BorderColor3 = Color3.fromRGB(36, 51, 63)
-    searchFrame.Parent = content1
-    local searchCorner = Instance.new("UICorner")
-    searchCorner.CornerRadius = UDim.new(0, 6)
-    searchCorner.Parent = searchFrame
-
+    local searchRow = createRow(scroll, "Target player")
     local searchInput = Instance.new("TextBox")
-    searchInput.Size = UDim2.new(0.7, 0, 0.8, 0)
-    searchInput.Position = UDim2.new(0, 8, 0.1, 0)
-    searchInput.BackgroundTransparency = 1
+    searchInput.Size = UDim2.new(0, 320, 0, 32)
+    searchInput.Position = UDim2.new(1, -320, 0.5, -16)
+    searchInput.BackgroundColor3 = Color3.fromRGB(41, 47, 53)
     searchInput.Text = state.cashTransfer.selectedName or ""
     searchInput.PlaceholderText = "Enter player name..."
-    searchInput.TextColor3 = Color3.fromRGB(220, 232, 236)
-    searchInput.PlaceholderColor3 = Color3.fromRGB(100, 100, 120)
+    searchInput.TextColor3 = Color3.fromRGB(229, 235, 237)
+    searchInput.PlaceholderColor3 = Color3.fromRGB(160, 171, 179)
     searchInput.TextSize = 12
-    searchInput.Font = Enum.Font.Code
+    searchInput.Font = Enum.Font.Gotham
     searchInput.BorderSizePixel = 0
-    searchInput.Parent = searchFrame
+    searchInput.Parent = searchRow
+    local searchCorner = Instance.new("UICorner")
+    searchCorner.CornerRadius = UDim.new(0, 8)
+    searchCorner.Parent = searchInput
+    createDivider(scroll)
 
-    local searchBtn = Instance.new("TextButton")
-    searchBtn.Size = UDim2.new(0.25, 0, 0.8, 0)
-    searchBtn.Position = UDim2.new(0.72, 0, 0.1, 0)
-    searchBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 80)
-    searchBtn.Text = "FIND"
-    searchBtn.TextColor3 = Color3.fromRGB(100, 200, 255)
-    searchBtn.TextSize = 10
-    searchBtn.Font = Enum.Font.Code
-    searchBtn.BorderSizePixel = 0
-    searchBtn.Parent = searchFrame
-    local searchBtnCorner = Instance.new("UICorner")
-    searchBtnCorner.CornerRadius = UDim.new(0, 4)
-    searchBtnCorner.Parent = searchBtn
+    local findRow = createRow(scroll, "Find player")
+    local findBtn = Instance.new("TextButton")
+    findBtn.Size = UDim2.new(0, 100, 0, 32)
+    findBtn.Position = UDim2.new(1, -100, 0.5, -16)
+    findBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+    findBtn.Text = "Find"
+    findBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+    findBtn.TextSize = 12
+    findBtn.Font = Enum.Font.GothamMedium
+    findBtn.BorderSizePixel = 0
+    findBtn.Parent = findRow
+    local findCorner = Instance.new("UICorner")
+    findCorner.CornerRadius = UDim.new(0, 8)
+    findCorner.Parent = findBtn
+    createDivider(scroll)
 
-    local foundDisplay = Instance.new("TextLabel")
-    foundDisplay.Size = UDim2.new(1, 0, 0, 20)
-    foundDisplay.BackgroundTransparency = 1
-    foundDisplay.Text = state.cashTransfer.selectedName ~= "" and ("✅ Selected: " .. state.cashTransfer.selectedName) or "Selected: None"
-    foundDisplay.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(155, 145, 150)
-    foundDisplay.TextSize = 11
-    foundDisplay.Font = Enum.Font.Code
-    foundDisplay.TextXAlignment = Enum.TextXAlignment.Left
-    foundDisplay.Parent = content1
+    local selectedRow = createRow(scroll, "Selected")
+    local selectedLabel = Instance.new("TextLabel")
+    selectedLabel.Size = UDim2.new(0, 320, 0, 24)
+    selectedLabel.Position = UDim2.new(1, -320, 0.5, -12)
+    selectedLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    selectedLabel.Text = state.cashTransfer.selectedName ~= "" and state.cashTransfer.selectedName or "None"
+    selectedLabel.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(129, 133, 137)
+    selectedLabel.TextSize = 12
+    selectedLabel.Font = Enum.Font.Gotham
+    selectedLabel.TextXAlignment = Enum.TextXAlignment.Center
+    selectedLabel.Parent = selectedRow
+    local selectedCorner = Instance.new("UICorner")
+    selectedCorner.CornerRadius = UDim.new(0, 6)
+    selectedCorner.Parent = selectedLabel
+    createDivider(scroll)
 
-    searchInput:GetPropertyChangedSignal("Text"):Connect(function()
-        local query = searchInput.Text
-        if #query >= 2 then
-            local matched = findPlayerByName(query)
-            if matched then
-                state.cashTransfer.selectedName = matched.Name
-                foundDisplay.Text = "✅ Auto-matched: " .. matched.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
-            end
-        end
-    end)
-
-    searchBtn.MouseButton1Click:Connect(function()
-        local query = searchInput.Text
-        if query == "" then
-            foundDisplay.Text = "⚠ Enter a name"
-            foundDisplay.TextColor3 = Color3.fromRGB(255, 150, 100)
-            return
-        end
-        local matched = findPlayerByName(query)
-        if matched then
-            state.cashTransfer.selectedName = matched.Name
-            foundDisplay.Text = "✅ Selected: " .. matched.Name
-            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
-        else
-            foundDisplay.Text = "❌ Player not found: " .. query
-            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
-        end
-    end)
-
-    local card2, content2 = createCard(scroll, "Players in Server", "📋")
-    local listContainer = Instance.new("Frame")
-    listContainer.Size = UDim2.new(1, 0, 0, 200)
-    listContainer.BackgroundTransparency = 1
-    listContainer.Parent = content2
-
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Parent = listContainer
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Padding = UDim.new(0, 4)
+    local playersHeader = Instance.new("TextLabel")
+    playersHeader.Size = UDim2.new(1, 0, 0, 28)
+    playersHeader.BackgroundTransparency = 1
+    playersHeader.Text = "Players in server"
+    playersHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    playersHeader.TextSize = 14
+    playersHeader.Font = Enum.Font.GothamSemibold
+    playersHeader.Parent = scroll
+    createDivider(scroll)
 
     local function refreshPlayerList()
-        for _, child in ipairs(listContainer:GetChildren()) do
-            if child ~= listLayout then child:Destroy() end
+        -- Clear existing player rows
+        for _, child in ipairs(scroll:GetChildren()) do
+            if child.Name == "PlayerRow" then child:Destroy() end
         end
         local players = {}
         for _, player in ipairs(Players:GetPlayers()) do
@@ -1663,79 +1591,59 @@ local function buildCashTransferTab()
         end
         table.sort(players, function(a,b) return a.Name < b.Name end)
         for _, player in ipairs(players) do
-            local btn = Instance.new("TextButton")
-            btn.Size = UDim2.new(1, 0, 0, 28)
-            btn.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
-            btn.Text = player.Name
-            btn.TextColor3 = Color3.fromRGB(200, 200, 210)
-            btn.TextSize = 11
-            btn.Font = Enum.Font.Code
-            btn.BorderSizePixel = 0
-            btn.Parent = listContainer
-            local btnCorner = Instance.new("UICorner")
-            btnCorner.CornerRadius = UDim.new(0, 6)
-            btnCorner.Parent = btn
-            local hasChar = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            local statusDot = Instance.new("TextLabel")
-            statusDot.Size = UDim2.new(0, 12, 1, 0)
-            statusDot.Position = UDim2.new(1, -16, 0, 0)
-            statusDot.BackgroundTransparency = 1
-            statusDot.Text = hasChar and "🟢" or "🔴"
-            statusDot.TextSize = 12
-            statusDot.Font = Enum.Font.SourceSans
-            statusDot.Parent = btn
-            btn.MouseButton1Click:Connect(function()
+            local playerRow = createRow(scroll, player.Name)
+            playerRow.Name = "PlayerRow"
+            local selectBtn = Instance.new("TextButton")
+            selectBtn.Size = UDim2.new(0, 80, 0, 28)
+            selectBtn.Position = UDim2.new(1, -80, 0.5, -14)
+            selectBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+            selectBtn.Text = "Select"
+            selectBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+            selectBtn.TextSize = 12
+            selectBtn.Font = Enum.Font.GothamMedium
+            selectBtn.BorderSizePixel = 0
+            selectBtn.Parent = playerRow
+            local selectCorner = Instance.new("UICorner")
+            selectCorner.CornerRadius = UDim.new(0, 6)
+            selectCorner.Parent = selectBtn
+            selectBtn.MouseButton1Click:Connect(function()
                 state.cashTransfer.selectedName = player.Name
                 searchInput.Text = player.Name
-                foundDisplay.Text = "✅ Selected: " .. player.Name
-                foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
+                selectedLabel.Text = player.Name
+                selectedLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
             end)
+            createDivider(scroll)
         end
+        scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
     end
 
     refreshPlayerList()
-    task.spawn(function()
-        while state.running do
-            task.wait(5)
-            if state.currentTab == "Cash Transfer" then refreshPlayerList() end
-        end
-    end)
 
-    local card3, content3 = createCard(scroll, "Execution", "💸")
-    local warnLabel = Instance.new("TextLabel")
-    warnLabel.Size = UDim2.new(1, 0, 0, 40)
-    warnLabel.BackgroundTransparency = 1
-    warnLabel.Text = "⚠ This will reset your character, TP to the target, spam DropCash until your cash < 5000, then return to idle."
-    warnLabel.TextColor3 = Color3.fromRGB(216, 180, 90)
-    warnLabel.TextSize = 10
-    warnLabel.Font = Enum.Font.Code
-    warnLabel.TextWrapped = true
-    warnLabel.Parent = content3
-
+    local execRow = createRow(scroll, "Execute transfer")
     local execBtn = Instance.new("TextButton")
-    execBtn.Size = UDim2.new(1, 0, 0, 36)
-    execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
-    execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-    execBtn.TextColor3 = Color3.fromRGB(239, 255, 252)
+    execBtn.Size = UDim2.new(0, 120, 0, 32)
+    execBtn.Position = UDim2.new(1, -120, 0.5, -16)
+    execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    execBtn.Text = "Execute"
+    execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     execBtn.TextSize = 12
-    execBtn.Font = Enum.Font.Code
+    execBtn.Font = Enum.Font.GothamMedium
     execBtn.BorderSizePixel = 0
-    execBtn.Parent = content3
+    execBtn.Parent = execRow
     local execCorner = Instance.new("UICorner")
-    execCorner.CornerRadius = UDim.new(0, 6)
+    execCorner.CornerRadius = UDim.new(0, 8)
     execCorner.Parent = execBtn
-
     execBtn.MouseButton1Click:Connect(function()
         if state.cashTransfer.running then
             state.cashTransfer.running = false
-            execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
+            execBtn.Text = "Execute"
+            execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
             return
         end
         local targetName = state.cashTransfer.selectedName
         if not targetName or targetName == "" then
-            foundDisplay.Text = "⚠ No player selected"
-            foundDisplay.TextColor3 = Color3.fromRGB(255, 150, 100)
+            selectedLabel.Text = "No player selected"
+            selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
             return
         end
         local targetPlayer = nil
@@ -1743,212 +1651,138 @@ local function buildCashTransferTab()
             if p.Name == targetName then targetPlayer = p; break end
         end
         if not targetPlayer then
-            foundDisplay.Text = "❌ Player no longer in server"
-            foundDisplay.TextColor3 = Color3.fromRGB(0, 217, 196)
+            selectedLabel.Text = "Player no longer in server"
+            selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
             return
         end
-        execBtn.Text = "⏹ STOP TRANSFER"
+        execBtn.Text = "Stop"
         execBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30)
         task.spawn(function()
             cashTransferLoop(targetPlayer)
-            execBtn.Text = "💸 EXECUTE CASH TRANSFER"
-            execBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
+            execBtn.Text = "Execute"
+            execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
         end)
     end)
+    createDivider(scroll)
 
-    local info = Instance.new("TextLabel")
-    info.Size = UDim2.new(1, 0, 0, 60)
-    info.BackgroundTransparency = 1
-    info.Text = "DropCash event: " .. (DROP_CASH_EVENT and "✅ Found" or "❌ Not found")
-    info.TextColor3 = Color3.fromRGB(150, 150, 170)
-    info.TextSize = 10
-    info.Font = Enum.Font.Code
-    info.Parent = content3
+    local infoRow = createRow(scroll, "Event status")
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(0, 320, 0, 24)
+    infoLabel.Position = UDim2.new(1, -320, 0.5, -12)
+    infoLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    infoLabel.Text = "DropCash: " .. (DROP_CASH_EVENT and "Found" or "Not found")
+    infoLabel.TextColor3 = DROP_CASH_EVENT and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(255, 150, 150)
+    infoLabel.TextSize = 12
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+    infoLabel.Parent = infoRow
+    local infoCorner = Instance.new("UICorner")
+    infoCorner.CornerRadius = UDim.new(0, 6)
+    infoCorner.Parent = infoLabel
+    createDivider(scroll)
 
-    -- Adjust sizes
-    card1.Size = UDim2.new(1, 0, 0, 100)
-    card2.Size = UDim2.new(1, 0, 0, 220)
-    card3.Size = UDim2.new(1, 0, 0, 150)
-    scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 24)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
 end
 
 -- ═══════════════════════════════
 -- ANTI-ADMIN TAB
 -- ═══════════════════════════════
-local antiAdminUI = {}
-
--- Admin monitoring remains active in the background; its page is intentionally hidden.
 local function buildAntiAdminTab()
     clearContent()
-    local order = 1
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, 0, 0, 28)
-    header.BackgroundTransparency = 1
-    header.Text = "═ ANTI-ADMIN TRACKER ═"
-    header.TextColor3 = Color3.fromRGB(0, 217, 196)
-    header.TextSize = 12
-    header.Font = Enum.Font.Code
-    header.LayoutOrder = 0
-    header.Parent = scroll
-    local statusFrame = Instance.new("Frame")
-    statusFrame.Size = UDim2.new(1, -4, 0, 44)
-    statusFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-    statusFrame.BorderSizePixel = 0
-    statusFrame.LayoutOrder = order
-    statusFrame.Parent = scroll
-    local statusCorner = Instance.new("UICorner")
-    statusCorner.CornerRadius = UDim.new(0, 4)
-    statusCorner.Parent = statusFrame
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    statusLabel.Position = UDim2.new(0, 8, 0, 4)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Text = "Status: Monitoring"
-    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
-    statusLabel.TextSize = 12
-    statusLabel.Font = Enum.Font.Code
-    statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-    statusLabel.Parent = statusFrame
-    local threatLabel = Instance.new("TextLabel")
-    threatLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    threatLabel.Position = UDim2.new(0, 8, 0.5, -2)
-    threatLabel.BackgroundTransparency = 1
-    threatLabel.Text = "Threat: None detected"
-    threatLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    threatLabel.TextSize = 11
-    threatLabel.Font = Enum.Font.Code
-    threatLabel.TextXAlignment = Enum.TextXAlignment.Left
-    threatLabel.Parent = statusFrame
-    antiAdminUI.statusLabel = statusLabel
-    antiAdminUI.threatLabel = threatLabel
-    order = order + 1
-    createToggle(scroll, "Anti-Admin Protection", state.protection, "AntiAdmin", function(val)
+    titleText.Text = "Anti-Admin"
+
+    createToggle(scroll, "Protection", state.protection, "AntiAdmin", function(val)
         antiAdmin.enabled = val
         antiAdmin.autoLeave = val
-    end, order)
-    order = order + 1
+    end)
+    createDivider(scroll)
+
+    local refreshRow = createRow(scroll, "Tracker")
     local refreshBtn = Instance.new("TextButton")
-    refreshBtn.Size = UDim2.new(1, -4, 0, 30)
-    refreshBtn.BackgroundColor3 = Color3.fromRGB(30, 50, 70)
+    refreshBtn.Size = UDim2.new(0, 100, 0, 32)
+    refreshBtn.Position = UDim2.new(1, -100, 0.5, -16)
+    refreshBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+    refreshBtn.Text = "Refresh"
+    refreshBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+    refreshBtn.TextSize = 12
+    refreshBtn.Font = Enum.Font.GothamMedium
     refreshBtn.BorderSizePixel = 0
-    refreshBtn.Text = "⟳ REFRESH TRACKER"
-    refreshBtn.TextColor3 = Color3.fromRGB(100, 200, 255)
-    refreshBtn.TextSize = 11
-    refreshBtn.Font = Enum.Font.Code
-    refreshBtn.LayoutOrder = order
-    refreshBtn.Parent = scroll
+    refreshBtn.Parent = refreshRow
     local refreshCorner = Instance.new("UICorner")
-    refreshCorner.CornerRadius = UDim.new(0, 4)
+    refreshCorner.CornerRadius = UDim.new(0, 8)
     refreshCorner.Parent = refreshBtn
     refreshBtn.MouseButton1Click:Connect(function()
-        refreshBtn.Text = "⟳ FETCHING..."
+        refreshBtn.Text = "Fetching..."
         antiAdmin.lastGroupFetch = 0
         task.spawn(function()
             local success = pcall(updateAdminTracker)
-            refreshBtn.Text = success and "⟳ REFRESH TRACKER" or "⟳ FAILED — RETRY"
-            if not success then task.wait(2); refreshBtn.Text = "⟳ REFRESH TRACKER" end
+            refreshBtn.Text = success and "Refresh" or "Failed"
+            if not success then task.wait(2); refreshBtn.Text = "Refresh" end
             if state.currentTab == "Anti-Admin" then buildAntiAdminTab() end
         end)
     end)
-    order = order + 1
+    createDivider(scroll)
+
     if #antiAdmin.sameServerAdmins > 0 then
-        local banner = Instance.new("Frame")
-        banner.Size = UDim2.new(1, -4, 0, 36)
-        banner.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
-        banner.BorderSizePixel = 0
-        banner.LayoutOrder = order
-        banner.Parent = scroll
-        local bannerCorner = Instance.new("UICorner")
-        bannerCorner.CornerRadius = UDim.new(0, 4)
-        bannerCorner.Parent = banner
-        local bannerLabel = Instance.new("TextLabel")
-        bannerLabel.Size = UDim2.new(1, -8, 1, 0)
-        bannerLabel.Position = UDim2.new(0, 4, 0, 0)
-        bannerLabel.BackgroundTransparency = 1
-        bannerLabel.Text = "🚨 " .. #antiAdmin.sameServerAdmins .. " ADMIN(S) IN YOUR SERVER"
-        bannerLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
-        bannerLabel.TextSize = 12
-        bannerLabel.Font = Enum.Font.Code
-        bannerLabel.TextXAlignment = Enum.TextXAlignment.Center
-        bannerLabel.TextYAlignment = Enum.TextYAlignment.Center
-        bannerLabel.Parent = banner
-        order = order + 1
+        local alertRow = createRow(scroll, "Alert")
+        local alertLabel = Instance.new("TextLabel")
+        alertLabel.Size = UDim2.new(0, 280, 0, 24)
+        alertLabel.Position = UDim2.new(1, -280, 0.5, -12)
+        alertLabel.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+        alertLabel.Text = #antiAdmin.sameServerAdmins .. " admin(s) in server"
+        alertLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+        alertLabel.TextSize = 12
+        alertLabel.Font = Enum.Font.Gotham
+        alertLabel.TextXAlignment = Enum.TextXAlignment.Center
+        alertLabel.Parent = alertRow
+        local alertCorner = Instance.new("UICorner")
+        alertCorner.CornerRadius = UDim.new(0, 6)
+        alertCorner.Parent = alertLabel
+        createDivider(scroll)
     end
-    local watchHeader = Instance.new("TextLabel")
-    watchHeader.Size = UDim2.new(1, 0, 0, 22)
-    watchHeader.BackgroundTransparency = 1
-    watchHeader.Text = "─ WATCHLIST (" .. #WATCHLIST .. ") ─"
-    watchHeader.TextColor3 = Color3.fromRGB(0, 217, 196)
-    watchHeader.TextSize = 11
-    watchHeader.Font = Enum.Font.Code
-    watchHeader.LayoutOrder = order
-    watchHeader.Parent = scroll
-    order = order + 1
+
+    local watchlistHeader = Instance.new("TextLabel")
+    watchlistHeader.Size = UDim2.new(1, 0, 0, 28)
+    watchlistHeader.BackgroundTransparency = 1
+    watchlistHeader.Text = "Watchlist (" .. #WATCHLIST .. ")"
+    watchlistHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    watchlistHeader.TextSize = 14
+    watchlistHeader.Font = Enum.Font.GothamSemibold
+    watchlistHeader.Parent = scroll
+    createDivider(scroll)
+
     for userId, entry in pairs(WATCHLIST) do
         local inServer = false
         for _, player in ipairs(Players:GetPlayers()) do
             if player.UserId == userId then inServer = true break end
         end
-        local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, -4, 0, 40)
-        row.BackgroundColor3 = inServer and Color3.fromRGB(80, 20, 20) or Color3.fromRGB(25, 20, 20)
-        row.BorderSizePixel = 0
-        row.LayoutOrder = order
-        row.Parent = scroll
-        local rowCorner = Instance.new("UICorner")
-        rowCorner.CornerRadius = UDim.new(0, 4)
-        rowCorner.Parent = row
-        local accent = Instance.new("Frame")
-        accent.Size = UDim2.new(0, 4, 1, 0)
-        accent.BackgroundColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(180, 60, 60)
-        accent.BorderSizePixel = 0
-        accent.Parent = row
-        local accentCorner = Instance.new("UICorner")
-        accentCorner.CornerRadius = UDim.new(0, 4)
-        accentCorner.Parent = accent
-        local nameLabel = Instance.new("TextLabel")
-        nameLabel.Size = UDim2.new(0.6, 0, 0, 20)
-        nameLabel.Position = UDim2.new(0, 12, 0, 2)
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.Text = entry.username .. " (" .. entry.displayName .. ")"
-        nameLabel.TextColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(230, 200, 200)
-        nameLabel.TextSize = 11
-        nameLabel.Font = Enum.Font.Code
-        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-        nameLabel.Parent = row
-        local idLabel = Instance.new("TextLabel")
-        idLabel.Size = UDim2.new(0.6, 0, 0, 14)
-        idLabel.Position = UDim2.new(0, 12, 0, 22)
-        idLabel.BackgroundTransparency = 1
-        idLabel.Text = "ID: " .. userId
-        idLabel.TextColor3 = Color3.fromRGB(150, 130, 130)
-        idLabel.TextSize = 10
-        idLabel.Font = Enum.Font.Code
-        idLabel.TextXAlignment = Enum.TextXAlignment.Left
-        idLabel.Parent = row
-        local statusLabel2 = Instance.new("TextLabel")
-        statusLabel2.Size = UDim2.new(0.35, 0, 1, 0)
-        statusLabel2.Position = UDim2.new(0.65, 0, 0, 0)
-        statusLabel2.BackgroundTransparency = 1
-        statusLabel2.Text = inServer and "⚠ IN SERVER" or "Not here"
-        statusLabel2.TextColor3 = inServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(120, 120, 140)
-        statusLabel2.TextSize = 11
-        statusLabel2.Font = Enum.Font.Code
-        statusLabel2.TextXAlignment = Enum.TextXAlignment.Right
-        statusLabel2.TextYAlignment = Enum.TextYAlignment.Center
-        statusLabel2.Parent = row
-        order = order + 1
+        local watchRow = createRow(scroll, entry.username)
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(0, 120, 0, 24)
+        statusLabel.Position = UDim2.new(1, -120, 0.5, -12)
+        statusLabel.BackgroundColor3 = inServer and Color3.fromRGB(60, 30, 30) or Color3.fromRGB(36, 43, 49)
+        statusLabel.Text = inServer and "In Server" or "Not Here"
+        statusLabel.TextColor3 = inServer and Color3.fromRGB(255, 150, 150) or Color3.fromRGB(129, 133, 137)
+        statusLabel.TextSize = 12
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Center
+        statusLabel.Parent = watchRow
+        local statusCorner = Instance.new("UICorner")
+        statusCorner.CornerRadius = UDim.new(0, 6)
+        statusCorner.Parent = statusLabel
+        createDivider(scroll)
     end
-    local listHeader = Instance.new("TextLabel")
-    listHeader.Size = UDim2.new(1, 0, 0, 22)
-    listHeader.BackgroundTransparency = 1
-    listHeader.Text = "─ GROUP ADMINS (" .. #antiAdmin.groupMembers .. ") ─"
-    listHeader.TextColor3 = Color3.fromRGB(150, 150, 170)
-    listHeader.TextSize = 11
-    listHeader.Font = Enum.Font.Code
-    listHeader.LayoutOrder = order
-    listHeader.Parent = scroll
-    order = order + 1
+
+    local groupHeader = Instance.new("TextLabel")
+    groupHeader.Size = UDim2.new(1, 0, 0, 28)
+    groupHeader.BackgroundTransparency = 1
+    groupHeader.Text = "Group Admins (" .. #antiAdmin.groupMembers .. ")"
+    groupHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    groupHeader.TextSize = 14
+    groupHeader.Font = Enum.Font.GothamSemibold
+    groupHeader.Parent = scroll
+    createDivider(scroll)
+
     local sortedAdmins = {}
     for _, admin in ipairs(antiAdmin.groupMembers) do table.insert(sortedAdmins, admin) end
     table.sort(sortedAdmins, function(a, b)
@@ -1959,450 +1793,75 @@ local function buildAntiAdminTab()
         if aScore ~= bScore then return aScore > bScore end
         return a.username < b.username
     end)
+
     for _, admin in ipairs(sortedAdmins) do
         local tracked = antiAdmin.trackedAdmins[admin.userId] or {}
-        local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, -4, 0, 46)
-        row.BackgroundColor3 = tracked.sameServer and Color3.fromRGB(60, 20, 20) or Color3.fromRGB(22, 22, 35)
-        row.BorderSizePixel = 0
-        row.LayoutOrder = order
-        row.Parent = scroll
-        local rowCorner = Instance.new("UICorner")
-        rowCorner.CornerRadius = UDim.new(0, 4)
-        rowCorner.Parent = row
-        local dot = Instance.new("TextLabel")
-        dot.Size = UDim2.new(0, 20, 0, 20)
-        dot.Position = UDim2.new(0, 6, 0, 4)
-        dot.BackgroundTransparency = 1
-        dot.Text = "●"
-        if tracked.sameServer then dot.TextColor3 = Color3.fromRGB(0, 217, 196)
-        elseif tracked.isInGame then dot.TextColor3 = Color3.fromRGB(255, 200, 50)
-        elseif tracked.isOnline then dot.TextColor3 = Color3.fromRGB(100, 255, 100)
-        else dot.TextColor3 = Color3.fromRGB(80, 80, 90) end
-        dot.TextSize = 18
-        dot.Font = Enum.Font.SourceSans
-        dot.Parent = row
-        local nameLabel = Instance.new("TextLabel")
-        nameLabel.Size = UDim2.new(0.45, 0, 0, 20)
-        nameLabel.Position = UDim2.new(0, 26, 0, 2)
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.Text = admin.username
-        nameLabel.TextColor3 = tracked.sameServer and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(220, 220, 230)
-        nameLabel.TextSize = 12
-        nameLabel.Font = Enum.Font.Code
-        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-        nameLabel.Parent = row
-        local roleLabel = Instance.new("TextLabel")
-        roleLabel.Size = UDim2.new(0.45, 0, 0, 14)
-        roleLabel.Position = UDim2.new(0, 26, 0, 22)
-        roleLabel.BackgroundTransparency = 1
-        roleLabel.Text = admin.role
-        roleLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
-        roleLabel.TextSize = 10
-        roleLabel.Font = Enum.Font.Code
-        roleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        roleLabel.Parent = row
+        local adminRow = createRow(scroll, admin.username)
         local statusText = "Offline"
-        local statusColor = Color3.fromRGB(120, 120, 130)
-        if tracked.sameServer then statusText = "⚠ IN YOUR SERVER"; statusColor = Color3.fromRGB(0, 217, 196)
-        elseif tracked.isInGame then statusText = "In game"; statusColor = Color3.fromRGB(255, 200, 100)
+        local statusColor = Color3.fromRGB(129, 133, 137)
+        if tracked.sameServer then statusText = "In Server"; statusColor = Color3.fromRGB(255, 150, 150)
+        elseif tracked.isInGame then statusText = "In Game"; statusColor = Color3.fromRGB(255, 200, 100)
         elseif tracked.isOnline then statusText = "Online"; statusColor = Color3.fromRGB(100, 255, 100) end
-        local statusLabel2 = Instance.new("TextLabel")
-        statusLabel2.Size = UDim2.new(0.45, 0, 0, 14)
-        statusLabel2.Position = UDim2.new(0.5, 0, 0, 2)
-        statusLabel2.BackgroundTransparency = 1
-        statusLabel2.Text = statusText
-        statusLabel2.TextColor3 = statusColor
-        statusLabel2.TextSize = 11
-        statusLabel2.Font = Enum.Font.Code
-        statusLabel2.TextXAlignment = Enum.TextXAlignment.Right
-        statusLabel2.Parent = row
-        local gameLabel = Instance.new("TextLabel")
-        gameLabel.Size = UDim2.new(0.5, -6, 0, 20)
-        gameLabel.Position = UDim2.new(0.5, 0, 0, 22)
-        gameLabel.BackgroundTransparency = 1
-        local gameText = "—"
-        if tracked.sameServer then gameText = "This server"
-        elseif tracked.currentGameName then
-            gameText = tracked.currentGameName
-            if #gameText > 22 then gameText = gameText:sub(1, 20) .. "..." end
-        elseif tracked.isInGame then gameText = "Unknown game" end
-        gameLabel.Text = gameText
-        gameLabel.TextColor3 = Color3.fromRGB(170, 170, 190)
-        gameLabel.TextSize = 10
-        gameLabel.Font = Enum.Font.Code
-        gameLabel.TextXAlignment = Enum.TextXAlignment.Right
-        gameLabel.Parent = row
-        order = order + 1
+        local adminStatus = Instance.new("TextLabel")
+        adminStatus.Size = UDim2.new(0, 120, 0, 24)
+        adminStatus.Position = UDim2.new(1, -120, 0.5, -12)
+        adminStatus.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        adminStatus.Text = statusText
+        adminStatus.TextColor3 = statusColor
+        adminStatus.TextSize = 12
+        adminStatus.Font = Enum.Font.Gotham
+        adminStatus.TextXAlignment = Enum.TextXAlignment.Center
+        adminStatus.Parent = adminRow
+        local adminCorner = Instance.new("UICorner")
+        adminCorner.CornerRadius = UDim.new(0, 6)
+        adminStatus.Parent = adminRow
+        createDivider(scroll)
     end
+
     if #sortedAdmins == 0 then
+        local emptyRow = createRow(scroll, "No admins cached")
         local emptyLabel = Instance.new("TextLabel")
-        emptyLabel.Size = UDim2.new(1, -4, 0, 60)
-        emptyLabel.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-        emptyLabel.BorderSizePixel = 0
-        emptyLabel.Text = "No admins cached.\nTap REFRESH to fetch."
-        emptyLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
-        emptyLabel.TextSize = 11
-        emptyLabel.Font = Enum.Font.Code
-        emptyLabel.LayoutOrder = order
-        emptyLabel.Parent = scroll
-        order = order + 1
-    end
-    scroll.CanvasSize = UDim2.new(0, 0, 0, order * 38 + 100)
-end
-
-
-
--- ═══════════════════════════════
--- CONFIG TAB
--- ═══════════════════════════════
-local function buildConfigTab()
-    clearContent()
-    titleText.Text = "Config"
-
-    if not hasFileAPI then
-        local card1, content1 = createCard(scroll, "File API Warning", "⚠️")
-        local warnLabel = Instance.new("TextLabel")
-        warnLabel.Size = UDim2.new(1, 0, 0, 50)
-        warnLabel.BackgroundTransparency = 1
-        warnLabel.Text = "File API not available.\nConfigs cannot be saved."
-        warnLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
-        warnLabel.TextSize = 11
-        warnLabel.Font = Enum.Font.Code
-        warnLabel.Parent = content1
-        card1.Size = UDim2.new(1, 0, 0, 100)
-    end
-
-    local card2, content2 = createCard(scroll, "Save Configuration", "💾")
-    local saveInput = Instance.new("TextBox")
-    saveInput.Size = UDim2.new(0.7, 0, 0, 32)
-    saveInput.BackgroundColor3 = Color3.fromRGB(16, 25, 37)
-    saveInput.BorderSizePixel = 1
-    saveInput.BorderColor3 = Color3.fromRGB(36, 51, 63)
-    saveInput.Text = state.loadedConfigName or ""
-    saveInput.PlaceholderText = "Config name..."
-    saveInput.TextColor3 = Color3.fromRGB(220, 232, 236)
-    saveInput.PlaceholderColor3 = Color3.fromRGB(100, 100, 120)
-    saveInput.TextSize = 12
-    saveInput.Font = Enum.Font.Code
-    saveInput.Parent = content2
-    local saveInputCorner = Instance.new("UICorner")
-    saveInputCorner.CornerRadius = UDim.new(0, 6)
-    saveInputCorner.Parent = saveInput
-
-    local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0.25, 0, 0, 32)
-    saveBtn.BackgroundColor3 = Color3.fromRGB(8, 124, 120)
-    saveBtn.Text = "SAVE"
-    saveBtn.TextColor3 = Color3.fromRGB(239, 255, 252)
-    saveBtn.TextSize = 11
-    saveBtn.Font = Enum.Font.Code
-    saveBtn.BorderSizePixel = 0
-    saveBtn.Parent = content2
-    local saveBtnCorner = Instance.new("UICorner")
-    saveBtnCorner.CornerRadius = UDim.new(0, 6)
-    saveBtnCorner.Parent = saveBtn
-
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(1, 0, 0, 20)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Text = ""
-    statusLabel.TextColor3 = Color3.fromRGB(210, 145, 150)
-    statusLabel.TextSize = 10
-    statusLabel.Font = Enum.Font.Code
-    statusLabel.Parent = content2
-
-    saveBtn.MouseButton1Click:Connect(function()
-        local name = saveInput.Text
-        if not name or name == "" then
-            statusLabel.Text = "⚠ Enter a name first"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
-            task.wait(2)
-            if state.currentTab == "Config" then buildConfigTab() end
-            return
-        end
-        local ok = saveConfig(name)
-        if ok then
-            state.loadedConfigName = name
-            statusLabel.Text = "✅ Saved: " .. name
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 150)
-            task.wait(1.5)
-            if state.currentTab == "Config" then buildConfigTab() end
-        else
-            statusLabel.Text = "❌ Failed to save"
-            statusLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
-            task.wait(2)
-            if state.currentTab == "Config" then buildConfigTab() end
-        end
-    end)
-
-    local card3, content3 = createCard(scroll, "Auto-Load Settings", "⟳")
-    local autoLabel = Instance.new("TextLabel")
-    autoLabel.Size = UDim2.new(1, 0, 0, 20)
-    autoLabel.BackgroundTransparency = 1
-    autoLabel.Text = "Load on hop: " .. (getAutoLoadConfig() or "None")
-    autoLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
-    autoLabel.TextSize = 12
-    autoLabel.Font = Enum.Font.Code
-    autoLabel.Parent = content3
-
-    local btnHolder = Instance.new("Frame")
-    btnHolder.Size = UDim2.new(1, 0, 0, 38)
-    btnHolder.BackgroundTransparency = 1
-    btnHolder.Parent = content3
-    local btnList = Instance.new("UIListLayout")
-    btnList.Parent = btnHolder
-    btnList.SortOrder = Enum.SortOrder.LayoutOrder
-    btnList.FillDirection = Enum.FillDirection.Horizontal
-    btnList.Padding = UDim.new(0, 4)
-
-    local configs = listConfigs()
-    if #configs == 0 then
-        local noCfg = Instance.new("TextLabel")
-        noCfg.Size = UDim2.new(1, 0, 1, 0)
-        noCfg.BackgroundTransparency = 1
-        noCfg.Text = "No configs saved yet"
-        noCfg.TextColor3 = Color3.fromRGB(120, 120, 140)
-        noCfg.TextSize = 10
-        noCfg.Font = Enum.Font.Code
-        noCfg.Parent = btnHolder
-    else
-        for idx, cfgName in ipairs(configs) do
-            if idx > 4 then break end
-            local isActive = (getAutoLoadConfig() == cfgName)
-            local b = Instance.new("TextButton")
-            b.Size = UDim2.new(0, 70, 1, 0)
-            b.BackgroundColor3 = isActive and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(30, 30, 45)
-            b.Text = cfgName:sub(1, 8)
-            b.TextColor3 = isActive and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(180, 175, 180)
-            b.TextSize = 10
-            b.Font = Enum.Font.Code
-            b.BorderSizePixel = 0
-            b.Parent = btnHolder
-            local bCorner = Instance.new("UICorner")
-            bCorner.CornerRadius = UDim.new(0, 4)
-            bCorner.Parent = b
-            b.MouseButton1Click:Connect(function()
-                setAutoLoadConfig(cfgName)
-                state.loadedConfigName = cfgName
-                statusLabel.Text = "✅ Auto-load set to: " .. cfgName
-                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 150)
-                task.wait(1)
-                if state.currentTab == "Config" then buildConfigTab() end
-            end)
-        end
-        local noneBtn = Instance.new("TextButton")
-        noneBtn.Size = UDim2.new(0, 50, 1, 0)
-        noneBtn.BackgroundColor3 = Color3.fromRGB(40, 25, 25)
-        noneBtn.Text = "None"
-        noneBtn.TextColor3 = Color3.fromRGB(255, 150, 150)
-        noneBtn.TextSize = 10
-        noneBtn.Font = Enum.Font.Code
-        noneBtn.BorderSizePixel = 0
-        noneBtn.Parent = btnHolder
-        local noneCorner = Instance.new("UICorner")
-        noneCorner.CornerRadius = UDim.new(0, 4)
-        noneCorner.Parent = noneBtn
-        noneBtn.MouseButton1Click:Connect(function()
-            setAutoLoadConfig(nil)
-            state.loadedConfigName = nil
-            statusLabel.Text = "Auto-load disabled"
-            statusLabel.TextColor3 = Color3.fromRGB(200, 150, 150)
-            task.wait(1)
-            if state.currentTab == "Config" then buildConfigTab() end
-        end)
-    end
-
-    createToggle(content3, "Auto Re-Execute on Hop", state, "autoReExecute", function(val) state.autoReExecute = val end)
-
-    local card4, content4 = createCard(scroll, "Saved Configurations", "📁")
-    if #configs == 0 then
-        local emptyLabel = Instance.new("TextLabel")
-        emptyLabel.Size = UDim2.new(1, 0, 0, 40)
-        emptyLabel.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-        emptyLabel.Text = "No configs saved yet."
-        emptyLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
-        emptyLabel.TextSize = 11
-        emptyLabel.Font = Enum.Font.Code
-        emptyLabel.Parent = content4
+        emptyLabel.Size = UDim2.new(0, 280, 0, 24)
+        emptyLabel.Position = UDim2.new(1, -280, 0.5, -12)
+        emptyLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        emptyLabel.Text = "Tap refresh to fetch"
+        emptyLabel.TextColor3 = Color3.fromRGB(129, 133, 137)
+        emptyLabel.TextSize = 12
+        emptyLabel.Font = Enum.Font.Gotham
+        emptyLabel.TextXAlignment = Enum.TextXAlignment.Center
+        emptyLabel.Parent = emptyRow
         local emptyCorner = Instance.new("UICorner")
         emptyCorner.CornerRadius = UDim.new(0, 6)
         emptyCorner.Parent = emptyLabel
-    else
-        for _, name in ipairs(configs) do
-            local row = Instance.new("Frame")
-            row.Size = UDim2.new(1, 0, 0, 36)
-            row.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
-            row.BorderSizePixel = 0
-            row.Parent = content4
-            local rowCorner = Instance.new("UICorner")
-            rowCorner.CornerRadius = UDim.new(0, 6)
-            rowCorner.Parent = row
-            local nameLabel = Instance.new("TextLabel")
-            nameLabel.Size = UDim2.new(0.5, 0, 1, 0)
-            nameLabel.Position = UDim2.new(0, 10, 0, 0)
-            nameLabel.BackgroundTransparency = 1
-            nameLabel.Text = name
-            nameLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
-            nameLabel.TextSize = 12
-            nameLabel.Font = Enum.Font.Code
-            nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-            nameLabel.Parent = row
-            local loadBtn = Instance.new("TextButton")
-            loadBtn.Size = UDim2.new(0, 50, 0, 28)
-            loadBtn.Position = UDim2.new(0.55, 0, 0.5, -14)
-            loadBtn.BackgroundColor3 = Color3.fromRGB(30, 60, 40)
-            loadBtn.Text = "LOAD"
-            loadBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
-            loadBtn.TextSize = 10
-            loadBtn.Font = Enum.Font.Code
-            loadBtn.BorderSizePixel = 0
-            loadBtn.Parent = row
-            local loadCorner = Instance.new("UICorner")
-            loadCorner.CornerRadius = UDim.new(0, 4)
-            loadCorner.Parent = loadBtn
-            local overwriteBtn = Instance.new("TextButton")
-            overwriteBtn.Size = UDim2.new(0, 50, 0, 28)
-            overwriteBtn.Position = UDim2.new(0.7, 0, 0.5, -14)
-            overwriteBtn.BackgroundColor3 = Color3.fromRGB(60, 50, 30)
-            overwriteBtn.Text = "SAVE"
-            overwriteBtn.TextColor3 = Color3.fromRGB(255, 200, 100)
-            overwriteBtn.TextSize = 10
-            overwriteBtn.Font = Enum.Font.Code
-            overwriteBtn.BorderSizePixel = 0
-            overwriteBtn.Parent = row
-            local overwriteCorner = Instance.new("UICorner")
-            overwriteCorner.CornerRadius = UDim.new(0, 4)
-            overwriteCorner.Parent = overwriteBtn
-            local delBtn = Instance.new("TextButton")
-            delBtn.Size = UDim2.new(0, 35, 0, 28)
-            delBtn.Position = UDim2.new(0.88, 0, 0.5, -14)
-            delBtn.BackgroundColor3 = Color3.fromRGB(60, 25, 25)
-            delBtn.Text = "✕"
-            delBtn.TextColor3 = Color3.fromRGB(0, 217, 196)
-            delBtn.TextSize = 10
-            delBtn.Font = Enum.Font.Code
-            delBtn.BorderSizePixel = 0
-            delBtn.Parent = row
-            local delCorner = Instance.new("UICorner")
-            delCorner.CornerRadius = UDim.new(0, 4)
-            delCorner.Parent = delBtn
-
-            loadBtn.MouseButton1Click:Connect(function()
-                local data = loadConfigData(name)
-                if data then
-                    state.loadedConfigName = name
-                    applyConfigData(data)
-                    statusLabel.Text = "✅ Loaded: " .. name
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 150)
-                    task.wait(1.5)
-                    if state.currentTab == "Config" then buildConfigTab() end
-                else
-                    statusLabel.Text = "❌ Failed to load"
-                    statusLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
-                    task.wait(2)
-                    if state.currentTab == "Config" then buildConfigTab() end
-                end
-            end)
-
-            overwriteBtn.MouseButton1Click:Connect(function()
-                local ok = saveConfig(name)
-                if ok then
-                    state.loadedConfigName = name
-                    statusLabel.Text = "💾 Overwrote: " .. name
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-                    task.wait(1.5)
-                    if state.currentTab == "Config" then buildConfigTab() end
-                end
-            end)
-
-            delBtn.MouseButton1Click:Connect(function()
-                deleteConfig(name)
-                if getAutoLoadConfig() == name then setAutoLoadConfig(nil) end
-                statusLabel.Text = "🗑️ Deleted: " .. name
-                statusLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
-                task.wait(1)
-                if state.currentTab == "Config" then buildConfigTab() end
-            end)
-        end
+        createDivider(scroll)
     end
 
-    -- Adjust sizes
-    card2.Size = UDim2.new(1, 0, 0, 120)
-    card3.Size = UDim2.new(1, 0, 0, content3.UIListLayout.AbsoluteContentSize.Y + 60)
-    card4.Size = UDim2.new(1, 0, 0, content4.UIListLayout.AbsoluteContentSize.Y + 60)
-    scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 24)
-end
-
--- ═══════════════════════════════
--- SETTINGS TAB
--- ═══════════════════════════════
-local function buildSettingsTab()
-    clearContent()
-    local order = 1
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, 0, 0, 28)
-    header.BackgroundTransparency = 1
-    header.Text = "═ SYSTEM ═"
-    header.TextColor3 = Color3.fromRGB(200, 200, 200)
-    header.TextSize = 12
-    header.Font = Enum.Font.Code
-    header.LayoutOrder = 0
-    header.Parent = scroll
-    createToggle(scroll, "Anti-AFK", state.protection, "AntiAFK", function(val)
-        if val then
-            if antiAFKConnection then antiAFKConnection:Disconnect() end
-            antiAFKConnection = localPlayer.Idled:Connect(function()
-                pcall(function()
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
-                end)
-            end)
-        else
-            if antiAFKConnection then antiAFKConnection:Disconnect(); antiAFKConnection = nil end
-        end
-    end, order)
-    order = order + 1
-    local infoFrame = Instance.new("Frame")
-    infoFrame.Size = UDim2.new(1, -4, 0, 60)
-    infoFrame.BackgroundColor3 = Color3.fromRGB(17, 20, 24)
-    infoFrame.BorderSizePixel = 0
-    infoFrame.LayoutOrder = order
-    infoFrame.Parent = scroll
-    local infoCorner = Instance.new("UICorner")
-    infoCorner.CornerRadius = UDim.new(0, 4)
-    infoCorner.Parent = infoFrame
-    local infoLabel = Instance.new("TextLabel")
-    infoLabel.Size = UDim2.new(1, -10, 1, 0)
-    infoLabel.Position = UDim2.new(0, 8, 0, 0)
-    infoLabel.BackgroundTransparency = 1
-    infoLabel.Text = "File API: " .. (hasFileAPI and "✅" or "❌")
-        .. "\nqueue_on_teleport: " .. (hasQueue and "✅" or "❌")
-        .. "\nDropCash event: " .. (DROP_CASH_EVENT and "✅" or "❌")
-        .. "\nExecutor: Delta"
-    infoLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-    infoLabel.TextSize = 11
-    infoLabel.Font = Enum.Font.Code
-    infoLabel.TextXAlignment = Enum.TextXAlignment.Left
-    infoLabel.TextYAlignment = Enum.TextYAlignment.Center
-    infoLabel.Parent = infoFrame
-    order = order + 1
-    scroll.CanvasSize = UDim2.new(0, 0, 0, order * 36 + 80)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
 end
 
 local function switchTab(name)
     state.currentTab = name
     for tabName, btn in pairs(tabButtons) do
         local isActive = tabName == name
-        btn.BackgroundColor3 = isActive and Color3.fromRGB(13, 37, 43) or Color3.fromRGB(8, 12, 16)
-        btn.TextColor3 = isActive and Color3.fromRGB(232, 241, 244) or Color3.fromRGB(101, 116, 125)
-        btn.Text = (isActive and "▌  " or "   ") .. tabName
+        btn.BackgroundTransparency = isActive and 0 or 1
+        if isActive then
+            btn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+            btn.Icon.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            local glow = Instance.new("UIGradient")
+            glow.Color = ColorSequence.new(Color3.fromRGB(58, 159, 232), Color3.fromRGB(0, 217, 196))
+            glow.Parent = btn
+        else
+            btn.Icon.TextColor3 = Color3.fromRGB(155, 167, 173)
+            btn.Label.TextColor3 = Color3.fromRGB(120, 133, 140)
+            for _, child in ipairs(btn:GetChildren()) do
+                if child:IsA("UIGradient") then child:Destroy() end
+            end
+        end
     end
     if name == "Farms" then buildFarmsTab()
-    
     elseif name == "Cash Transfer" then buildCashTransferTab()
-    elseif name == "Config" then buildConfigTab()
-    elseif name == "Settings" then buildSettingsTab()
+    elseif name == "Anti-Admin" then buildAntiAdminTab()
     end
 end
 
