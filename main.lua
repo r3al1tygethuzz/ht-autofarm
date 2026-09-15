@@ -1251,7 +1251,7 @@ titleText.Parent = headerBar
 
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Size = UDim2.new(0, 32, 0, 32)
-minimizeBtn.Position = UDim2.new(1, -72, 0, 13)
+minimizeBtn.Position = UDim2.new(1, -72, 0, 12)
 minimizeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
 minimizeBtn.Text = "—"
 minimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
@@ -1262,7 +1262,7 @@ minimizeBtn.Parent = headerBar
 
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 32, 0, 32)
-closeBtn.Position = UDim2.new(1, -40, 0, 13)
+closeBtn.Position = UDim2.new(1, -40, 0, 12)
 closeBtn.BackgroundColor3 = Color3.fromRGB(23, 26, 30)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(0, 198, 188)
@@ -1271,33 +1271,47 @@ closeBtn.Font = Enum.Font.GothamMedium
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = headerBar
 
--- NYRA identity watermark
+-- NYRA identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
-watermark.Size = UDim2.new(0, 205, 0, 38)
-watermark.Position = UDim2.new(1, -265, 0, 9)
-watermark.BackgroundColor3 = Color3.fromRGB(15, 21, 26)
-watermark.BackgroundTransparency = 0.18
+watermark.Name = "NYRAWatermark"
+watermark.Size = UDim2.new(0, 190, 0, 42)
+watermark.AnchorPoint = Vector2.new(1, 0)
+watermark.Position = UDim2.new(1, -18, 0, 16)
+watermark.BackgroundColor3 = Color3.fromRGB(12, 18, 22)
+watermark.BackgroundTransparency = 0.08
 watermark.BorderSizePixel = 0
-watermark.Parent = headerBar
+watermark.ZIndex = 100
+watermark.Parent = screenGui
 local watermarkCorner = Instance.new("UICorner")
-watermarkCorner.CornerRadius = UDim.new(0, 19)
+watermarkCorner.CornerRadius = UDim.new(0, 12)
 watermarkCorner.Parent = watermark
+local watermarkStroke = Instance.new("UIStroke")
+watermarkStroke.Color = Color3.fromRGB(0, 169, 157)
+watermarkStroke.Transparency = 0.72
+watermarkStroke.Thickness = 1
+watermarkStroke.Parent = watermark
 local watermarkName = Instance.new("TextLabel")
-watermarkName.Size = UDim2.new(0, 58, 1, 0)
+watermarkName.Size = UDim2.new(0, 52, 1, 0)
 watermarkName.Position = UDim2.new(0, 12, 0, 0)
 watermarkName.BackgroundTransparency = 1
 watermarkName.Text = "NYRA"
-watermarkName.TextColor3 = Color3.fromRGB(92, 215, 239)
-watermarkName.TextSize = 12
+watermarkName.TextColor3 = Color3.fromRGB(95, 235, 222)
+watermarkName.TextSize = 13
 watermarkName.Font = Enum.Font.GothamBold
 watermarkName.TextXAlignment = Enum.TextXAlignment.Left
 watermarkName.Parent = watermark
+local watermarkDivider = Instance.new("Frame")
+watermarkDivider.Size = UDim2.new(0, 1, 0, 20)
+watermarkDivider.Position = UDim2.new(0, 66, 0.5, -10)
+watermarkDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
+watermarkDivider.BorderSizePixel = 0
+watermarkDivider.Parent = watermark
 local watermarkUser = Instance.new("TextLabel")
-watermarkUser.Size = UDim2.new(1, -78, 1, 0)
-watermarkUser.Position = UDim2.new(0, 68, 0, 0)
+watermarkUser.Size = UDim2.new(1, -84, 1, 0)
+watermarkUser.Position = UDim2.new(0, 78, 0, 0)
 watermarkUser.BackgroundTransparency = 1
 watermarkUser.Text = "@" .. localPlayer.Name
-watermarkUser.TextColor3 = Color3.fromRGB(187, 198, 203)
+watermarkUser.TextColor3 = Color3.fromRGB(203, 214, 218)
 watermarkUser.TextSize = 10
 watermarkUser.Font = Enum.Font.GothamMedium
 watermarkUser.TextXAlignment = Enum.TextXAlignment.Left
@@ -1308,7 +1322,7 @@ local routeStatus = Instance.new("TextLabel")
 routeStatus.Size = UDim2.new(0, 78, 0, 18)
 routeStatus.Position = UDim2.new(1, -88, 1, -21)
 routeStatus.BackgroundTransparency = 1
-routeStatus.Text = "Route 0/" .. tostring(TP_CAP)
+routeStatus.Text = "0 / " .. tostring(TP_CAP)
 routeStatus.TextColor3 = Color3.fromRGB(95, 255, 240)
 routeStatus.TextSize = 9
 routeStatus.Font = Enum.Font.GothamMedium
@@ -1475,7 +1489,7 @@ local function buildFarmsTab()
     titleText.Text = "Automation"
 
     local card1, content1 = createCard(scroll, "Automation", "⚡")
-    createToggle(content1, "Smart Route", state.farms, "SuperFarm", function(val)
+    createToggle(content1, "All Routes", state.farms, "SuperFarm", function(val)
         if val then
             for _, key in ipairs({"Dumpster", "Cash", "Register"}) do state.farms[key] = false end
             state.farms.SuperFarm = true
@@ -1488,7 +1502,7 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
-    createToggle(content1, "Waste Route", state.farms, "Dumpster", function(val)
+    createToggle(content1, "Bin Route", state.farms, "Dumpster", function(val)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Dumpster" then state.farms[k] = false end
@@ -1503,7 +1517,7 @@ local function buildFarmsTab()
             teleportToIdleForce()
         end
     end)
-    createToggle(content1, "Floor Sweep", state.farms, "Cash", function(val)
+    createToggle(content1, "Cash Route", state.farms, "Cash", function(val)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Cash" then state.farms[k] = false end
@@ -1570,7 +1584,7 @@ local function buildFarmsTab()
             if used ~= lastUsed or current ~= lastCurrent then
                 counterLabel.Text = "Route " .. used .. " / " .. TP_CAP .. "  •  " .. current
                 counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 196, 92) or Color3.fromRGB(0, 217, 196)
-                routeStatus.Text = "Route " .. used .. "/" .. TP_CAP
+                routeStatus.Text = used .. " / " .. TP_CAP
                 lastUsed = used
                 lastCurrent = current
             end
