@@ -1210,6 +1210,8 @@ for i, name in ipairs(tabs) do
     label.Font = Enum.Font.GothamMedium
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = btn
+    btn.Icon = icon
+    btn.Label = label
     if i == 1 then
         btn.BackgroundTransparency = 0
         btn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
@@ -1386,7 +1388,35 @@ local function buildFarmsTab()
     clearContent()
     titleText.Text = "Farms"
 
-    createToggle(scroll, "Super Farm", state.farms, "SuperFarm", function(val)
+    local superFarmRow = createRow(scroll, "Super Farm")
+    local superFarmToggle = Instance.new("Frame")
+    superFarmToggle.Size = UDim2.new(0, 38, 0, 20)
+    superFarmToggle.Position = UDim2.new(1, -38, 0.5, -10)
+    superFarmToggle.BackgroundColor3 = state.farms.SuperFarm and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+    superFarmToggle.BorderSizePixel = 0
+    superFarmToggle.Parent = superFarmRow
+    local superFarmCorner = Instance.new("UICorner")
+    superFarmCorner.CornerRadius = UDim.new(0, 10)
+    superFarmCorner.Parent = superFarmToggle
+    local superFarmKnob = Instance.new("Frame")
+    superFarmKnob.Size = UDim2.new(0, 16, 0, 16)
+    superFarmKnob.Position = state.farms.SuperFarm and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    superFarmKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    superFarmKnob.BorderSizePixel = 0
+    superFarmKnob.Parent = superFarmToggle
+    local superFarmKnobCorner = Instance.new("UICorner")
+    superFarmKnobCorner.CornerRadius = UDim.new(1, 0)
+    superFarmKnobCorner.Parent = superFarmKnob
+    local superFarmBtn = Instance.new("TextButton")
+    superFarmBtn.Size = UDim2.new(1, 0, 1, 0)
+    superFarmBtn.BackgroundTransparency = 1
+    superFarmBtn.Text = ""
+    superFarmBtn.Parent = superFarmRow
+    superFarmBtn.MouseButton1Click:Connect(function()
+        local val = not state.farms.SuperFarm
+        state.farms.SuperFarm = val
+        superFarmToggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        superFarmKnob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if val then
             for _, key in ipairs({"Dumpster", "Cash", "Register"}) do state.farms[key] = false end
             state.farms.SuperFarm = true
@@ -1401,7 +1431,35 @@ local function buildFarmsTab()
     end)
     createDivider(scroll)
 
-    createToggle(scroll, "Dumpster Farm", state.farms, "Dumpster", function(val)
+    local dumpsterRow = createRow(scroll, "Dumpster Farm")
+    local dumpsterToggle = Instance.new("Frame")
+    dumpsterToggle.Size = UDim2.new(0, 38, 0, 20)
+    dumpsterToggle.Position = UDim2.new(1, -38, 0.5, -10)
+    dumpsterToggle.BackgroundColor3 = state.farms.Dumpster and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+    dumpsterToggle.BorderSizePixel = 0
+    dumpsterToggle.Parent = dumpsterRow
+    local dumpsterCorner = Instance.new("UICorner")
+    dumpsterCorner.CornerRadius = UDim.new(0, 10)
+    dumpsterCorner.Parent = dumpsterToggle
+    local dumpsterKnob = Instance.new("Frame")
+    dumpsterKnob.Size = UDim2.new(0, 16, 0, 16)
+    dumpsterKnob.Position = state.farms.Dumpster and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    dumpsterKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    dumpsterKnob.BorderSizePixel = 0
+    dumpsterKnob.Parent = dumpsterToggle
+    local dumpsterKnobCorner = Instance.new("UICorner")
+    dumpsterKnobCorner.CornerRadius = UDim.new(1, 0)
+    dumpsterKnobCorner.Parent = dumpsterKnob
+    local dumpsterBtn = Instance.new("TextButton")
+    dumpsterBtn.Size = UDim2.new(1, 0, 1, 0)
+    dumpsterBtn.BackgroundTransparency = 1
+    dumpsterBtn.Text = ""
+    dumpsterBtn.Parent = dumpsterRow
+    dumpsterBtn.MouseButton1Click:Connect(function()
+        local val = not state.farms.Dumpster
+        state.farms.Dumpster = val
+        dumpsterToggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        dumpsterKnob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Dumpster" then state.farms[k] = false end
@@ -1418,7 +1476,35 @@ local function buildFarmsTab()
     end)
     createDivider(scroll)
 
-    createToggle(scroll, "Floor Cash", state.farms, "Cash", function(val)
+    local cashRow = createRow(scroll, "Floor Cash")
+    local cashToggle = Instance.new("Frame")
+    cashToggle.Size = UDim2.new(0, 38, 0, 20)
+    cashToggle.Position = UDim2.new(1, -38, 0.5, -10)
+    cashToggle.BackgroundColor3 = state.farms.Cash and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+    cashToggle.BorderSizePixel = 0
+    cashToggle.Parent = cashRow
+    local cashCorner = Instance.new("UICorner")
+    cashCorner.CornerRadius = UDim.new(0, 10)
+    cashCorner.Parent = cashToggle
+    local cashKnob = Instance.new("Frame")
+    cashKnob.Size = UDim2.new(0, 16, 0, 16)
+    cashKnob.Position = state.farms.Cash and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    cashKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    cashKnob.BorderSizePixel = 0
+    cashKnob.Parent = cashToggle
+    local cashKnobCorner = Instance.new("UICorner")
+    cashKnobCorner.CornerRadius = UDim.new(1, 0)
+    cashKnobCorner.Parent = cashKnob
+    local cashBtn = Instance.new("TextButton")
+    cashBtn.Size = UDim2.new(1, 0, 1, 0)
+    cashBtn.BackgroundTransparency = 1
+    cashBtn.Text = ""
+    cashBtn.Parent = cashRow
+    cashBtn.MouseButton1Click:Connect(function()
+        local val = not state.farms.Cash
+        state.farms.Cash = val
+        cashToggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        cashKnob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Cash" then state.farms[k] = false end
@@ -1435,7 +1521,35 @@ local function buildFarmsTab()
     end)
     createDivider(scroll)
 
-    createToggle(scroll, "Register Farm", state.farms, "Register", function(val)
+    local registerRow = createRow(scroll, "Register Farm")
+    local registerToggle = Instance.new("Frame")
+    registerToggle.Size = UDim2.new(0, 38, 0, 20)
+    registerToggle.Position = UDim2.new(1, -38, 0.5, -10)
+    registerToggle.BackgroundColor3 = state.farms.Register and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+    registerToggle.BorderSizePixel = 0
+    registerToggle.Parent = registerRow
+    local registerCorner = Instance.new("UICorner")
+    registerCorner.CornerRadius = UDim.new(0, 10)
+    registerCorner.Parent = registerToggle
+    local registerKnob = Instance.new("Frame")
+    registerKnob.Size = UDim2.new(0, 16, 0, 16)
+    registerKnob.Position = state.farms.Register and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    registerKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    registerKnob.BorderSizePixel = 0
+    registerKnob.Parent = registerToggle
+    local registerKnobCorner = Instance.new("UICorner")
+    registerKnobCorner.CornerRadius = UDim.new(1, 0)
+    registerKnobCorner.Parent = registerKnob
+    local registerBtn = Instance.new("TextButton")
+    registerBtn.Size = UDim2.new(1, 0, 1, 0)
+    registerBtn.BackgroundTransparency = 1
+    registerBtn.Text = ""
+    registerBtn.Parent = registerRow
+    registerBtn.MouseButton1Click:Connect(function()
+        local val = not state.farms.Register
+        state.farms.Register = val
+        registerToggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        registerKnob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if val then
             for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
                 if k ~= "Register" then state.farms[k] = false end
@@ -1451,6 +1565,629 @@ local function buildFarmsTab()
         end
     end)
     createDivider(scroll)
+
+    local statusRow = createRow(scroll, "Status")
+    local counterLabel = Instance.new("TextLabel")
+    counterLabel.Size = UDim2.new(0, 120, 0, 24)
+    counterLabel.Position = UDim2.new(1, -120, 0.5, -12)
+    counterLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    counterLabel.Text = "0 / " .. TP_CAP
+    counterLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
+    counterLabel.TextSize = 12
+    counterLabel.Font = Enum.Font.Gotham
+    counterLabel.TextXAlignment = Enum.TextXAlignment.Center
+    counterLabel.Parent = statusRow
+    local counterCorner = Instance.new("UICorner")
+    counterCorner.CornerRadius = UDim.new(0, 6)
+    counterCorner.Parent = counterLabel
+    createDivider(scroll)
+
+    local resetRow = createRow(scroll, "Actions")
+    local resetBtn = Instance.new("TextButton")
+    resetBtn.Size = UDim2.new(0, 80, 0, 28)
+    resetBtn.Position = UDim2.new(1, -80, 0.5, -14)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    resetBtn.Text = "Reset"
+    resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    resetBtn.TextSize = 12
+    resetBtn.Font = Enum.Font.GothamMedium
+    resetBtn.BorderSizePixel = 0
+    resetBtn.Parent = resetRow
+    local resetCorner = Instance.new("UICorner")
+    resetCorner.CornerRadius = UDim.new(0, 6)
+    resetCorner.Parent = resetBtn
+    resetBtn.MouseButton1Click:Connect(function()
+        task.spawn(function() forceResetCharacter() end)
+    end)
+
+    -- Update status
+    local updateStatus = function()
+        local used = teleportSystem.usedTeleports
+        local current = selectedFarmKey or "None"
+        counterLabel.Text = used .. " / " .. TP_CAP
+        counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 200, 100) or Color3.fromRGB(0, 217, 196)
+    end
+    updateStatus()
+    local statusUpdater = task.spawn(function()
+        while state.running and state.currentTab == "Farms" do
+            updateStatus()
+            task.wait(0.5)
+        end
+    end)
+    -- Store for cleanup
+    if not scroll:FindFirstChild("StatusUpdater") then
+        local conn = Instance.new("ObjectValue")
+        conn.Name = "StatusUpdater"
+        conn.Value = statusUpdater
+        conn.Parent = scroll
+    end
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+-- ═══════════════════════════════
+-- CASH TRANSFER TAB
+-- ═══════════════════════════════
+local function buildCashTransferTab()
+    clearContent()
+    titleText.Text = "Cash Transfer"
+
+    local searchRow = createRow(scroll, "Target player")
+    local searchInput = Instance.new("TextBox")
+    searchInput.Size = UDim2.new(0, 320, 0, 32)
+    searchInput.Position = UDim2.new(1, -320, 0.5, -16)
+    searchInput.BackgroundColor3 = Color3.fromRGB(41, 47, 53)
+    searchInput.Text = state.cashTransfer.selectedName or ""
+    searchInput.PlaceholderText = "Enter player name..."
+    searchInput.TextColor3 = Color3.fromRGB(229, 235, 237)
+    searchInput.PlaceholderColor3 = Color3.fromRGB(160, 171, 179)
+    searchInput.TextSize = 12
+    searchInput.Font = Enum.Font.Gotham
+    searchInput.BorderSizePixel = 0
+    searchInput.Parent = searchRow
+    local searchCorner = Instance.new("UICorner")
+    searchCorner.CornerRadius = UDim.new(0, 8)
+    searchCorner.Parent = searchInput
+    createDivider(scroll)
+
+    local findRow = createRow(scroll, "Find player")
+    local findBtn = Instance.new("TextButton")
+    findBtn.Size = UDim2.new(0, 100, 0, 32)
+    findBtn.Position = UDim2.new(1, -100, 0.5, -16)
+    findBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+    findBtn.Text = "Find"
+    findBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+    findBtn.TextSize = 12
+    findBtn.Font = Enum.Font.GothamMedium
+    findBtn.BorderSizePixel = 0
+    findBtn.Parent = findRow
+    local findCorner = Instance.new("UICorner")
+    findCorner.CornerRadius = UDim.new(0, 8)
+    findCorner.Parent = findBtn
+    createDivider(scroll)
+
+    local selectedRow = createRow(scroll, "Selected")
+    local selectedLabel = Instance.new("TextLabel")
+    selectedLabel.Size = UDim2.new(0, 320, 0, 24)
+    selectedLabel.Position = UDim2.new(1, -320, 0.5, -12)
+    selectedLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    selectedLabel.Text = state.cashTransfer.selectedName ~= "" and state.cashTransfer.selectedName or "None"
+    selectedLabel.TextColor3 = state.cashTransfer.selectedName ~= "" and Color3.fromRGB(0, 217, 196) or Color3.fromRGB(129, 133, 137)
+    selectedLabel.TextSize = 12
+    selectedLabel.Font = Enum.Font.Gotham
+    selectedLabel.TextXAlignment = Enum.TextXAlignment.Center
+    selectedLabel.Parent = selectedRow
+    local selectedCorner = Instance.new("UICorner")
+    selectedCorner.CornerRadius = UDim.new(0, 6)
+    selectedCorner.Parent = selectedLabel
+    createDivider(scroll)
+
+    local playersHeader = Instance.new("TextLabel")
+    playersHeader.Size = UDim2.new(1, 0, 0, 28)
+    playersHeader.BackgroundTransparency = 1
+    playersHeader.Text = "Players in server"
+    playersHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    playersHeader.TextSize = 14
+    playersHeader.Font = Enum.Font.GothamSemibold
+    playersHeader.Parent = scroll
+    createDivider(scroll)
+
+    local function refreshPlayerList()
+        -- Clear existing player rows
+        for _, child in ipairs(scroll:GetChildren()) do
+            if child.Name == "PlayerRow" then child:Destroy() end
+        end
+        local players = {}
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= localPlayer then table.insert(players, player) end
+        end
+        table.sort(players, function(a,b) return a.Name < b.Name end)
+        for _, player in ipairs(players) do
+            local playerRow = createRow(scroll, player.Name)
+            playerRow.Name = "PlayerRow"
+            local selectBtn = Instance.new("TextButton")
+            selectBtn.Size = UDim2.new(0, 80, 0, 28)
+            selectBtn.Position = UDim2.new(1, -80, 0.5, -14)
+            selectBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+            selectBtn.Text = "Select"
+            selectBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+            selectBtn.TextSize = 12
+            selectBtn.Font = Enum.Font.GothamMedium
+            selectBtn.BorderSizePixel = 0
+            selectBtn.Parent = playerRow
+            local selectCorner = Instance.new("UICorner")
+            selectCorner.CornerRadius = UDim.new(0, 6)
+            selectCorner.Parent = selectBtn
+            selectBtn.MouseButton1Click:Connect(function()
+                state.cashTransfer.selectedName = player.Name
+                searchInput.Text = player.Name
+                selectedLabel.Text = player.Name
+                selectedLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
+            end)
+            createDivider(scroll)
+        end
+        scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+    end
+
+    refreshPlayerList()
+
+    local execRow = createRow(scroll, "Execute transfer")
+    local execBtn = Instance.new("TextButton")
+    execBtn.Size = UDim2.new(0, 120, 0, 32)
+    execBtn.Position = UDim2.new(1, -120, 0.5, -16)
+    execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    execBtn.Text = "Execute"
+    execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    execBtn.TextSize = 12
+    execBtn.Font = Enum.Font.GothamMedium
+    execBtn.BorderSizePixel = 0
+    execBtn.Parent = execRow
+    local execCorner = Instance.new("UICorner")
+    execCorner.CornerRadius = UDim.new(0, 8)
+    execCorner.Parent = execBtn
+    execBtn.MouseButton1Click:Connect(function()
+        if state.cashTransfer.running then
+            state.cashTransfer.running = false
+            execBtn.Text = "Execute"
+            execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+            return
+        end
+        local targetName = state.cashTransfer.selectedName
+        if not targetName or targetName == "" then
+            selectedLabel.Text = "No player selected"
+            selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
+            return
+        end
+        local targetPlayer = nil
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Name == targetName then targetPlayer = p; break end
+        end
+        if not targetPlayer then
+            selectedLabel.Text = "Player no longer in server"
+            selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
+            return
+        end
+        execBtn.Text = "Stop"
+        execBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30)
+        task.spawn(function()
+            cashTransferLoop(targetPlayer)
+            execBtn.Text = "Execute"
+            execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+        end)
+    end)
+    createDivider(scroll)
+
+    local infoRow = createRow(scroll, "Event status")
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(0, 320, 0, 24)
+    infoLabel.Position = UDim2.new(1, -320, 0.5, -12)
+    infoLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    infoLabel.Text = "DropCash: " .. (DROP_CASH_EVENT and "Found" or "Not found")
+    infoLabel.TextColor3 = DROP_CASH_EVENT and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(255, 150, 150)
+    infoLabel.TextSize = 12
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+    infoLabel.Parent = infoRow
+    local infoCorner = Instance.new("UICorner")
+    infoCorner.CornerRadius = UDim.new(0, 6)
+    infoCorner.Parent = infoLabel
+    createDivider(scroll)
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+-- ═══════════════════════════════
+-- ANTI-ADMIN TAB
+-- ═══════════════════════════════
+local function buildAntiAdminTab()
+    clearContent()
+    titleText.Text = "Anti-Admin"
+
+    createToggle(scroll, "Protection", state.protection, "AntiAdmin", function(val)
+        antiAdmin.enabled = val
+        antiAdmin.autoLeave = val
+    end)
+    createDivider(scroll)
+
+    local refreshRow = createRow(scroll, "Tracker")
+    local refreshBtn = Instance.new("TextButton")
+    refreshBtn.Size = UDim2.new(0, 100, 0, 32)
+    refreshBtn.Position = UDim2.new(1, -100, 0.5, -16)
+    refreshBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+    refreshBtn.Text = "Refresh"
+    refreshBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+    refreshBtn.TextSize = 12
+    refreshBtn.Font = Enum.Font.GothamMedium
+    refreshBtn.BorderSizePixel = 0
+    refreshBtn.Parent = refreshRow
+    local refreshCorner = Instance.new("UICorner")
+    refreshCorner.CornerRadius = UDim.new(0, 8)
+    refreshCorner.Parent = refreshBtn
+    refreshBtn.MouseButton1Click:Connect(function()
+        refreshBtn.Text = "Fetching..."
+        antiAdmin.lastGroupFetch = 0
+        task.spawn(function()
+            local success = pcall(updateAdminTracker)
+            refreshBtn.Text = success and "Refresh" or "Failed"
+            if not success then task.wait(2); refreshBtn.Text = "Refresh" end
+            if state.currentTab == "Anti-Admin" then buildAntiAdminTab() end
+        end)
+    end)
+    createDivider(scroll)
+
+    if #antiAdmin.sameServerAdmins > 0 then
+        local alertRow = createRow(scroll, "Alert")
+        local alertLabel = Instance.new("TextLabel")
+        alertLabel.Size = UDim2.new(0, 280, 0, 24)
+        alertLabel.Position = UDim2.new(1, -280, 0.5, -12)
+        alertLabel.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+        alertLabel.Text = #antiAdmin.sameServerAdmins .. " admin(s) in server"
+        alertLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+        alertLabel.TextSize = 12
+        alertLabel.Font = Enum.Font.Gotham
+        alertLabel.TextXAlignment = Enum.TextXAlignment.Center
+        alertLabel.Parent = alertRow
+        local alertCorner = Instance.new("UICorner")
+        alertCorner.CornerRadius = UDim.new(0, 6)
+        alertCorner.Parent = alertLabel
+        createDivider(scroll)
+    end
+
+    local watchlistHeader = Instance.new("TextLabel")
+    watchlistHeader.Size = UDim2.new(1, 0, 0, 28)
+    watchlistHeader.BackgroundTransparency = 1
+    watchlistHeader.Text = "Watchlist (" .. #WATCHLIST .. ")"
+    watchlistHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    watchlistHeader.TextSize = 14
+    watchlistHeader.Font = Enum.Font.GothamSemibold
+    watchlistHeader.Parent = scroll
+    createDivider(scroll)
+
+    for userId, entry in pairs(WATCHLIST) do
+        local inServer = false
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.UserId == userId then inServer = true break end
+        end
+        local watchRow = createRow(scroll, entry.username)
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(0, 120, 0, 24)
+        statusLabel.Position = UDim2.new(1, -120, 0.5, -12)
+        statusLabel.BackgroundColor3 = inServer and Color3.fromRGB(60, 30, 30) or Color3.fromRGB(36, 43, 49)
+        statusLabel.Text = inServer and "In Server" or "Not Here"
+        statusLabel.TextColor3 = inServer and Color3.fromRGB(255, 150, 150) or Color3.fromRGB(129, 133, 137)
+        statusLabel.TextSize = 12
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Center
+        statusLabel.Parent = watchRow
+        local statusCorner = Instance.new("UICorner")
+        statusCorner.CornerRadius = UDim.new(0, 6)
+        statusCorner.Parent = watchRow
+        createDivider(scroll)
+    end
+
+    local groupHeader = Instance.new("TextLabel")
+    groupHeader.Size = UDim2.new(1, 0, 0, 28)
+    groupHeader.BackgroundTransparency = 1
+    groupHeader.Text = "Group Admins (" .. #antiAdmin.groupMembers .. ")"
+    groupHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    groupHeader.TextSize = 14
+    groupHeader.Font = Enum.Font.GothamSemibold
+    groupHeader.Parent = scroll
+    createDivider(scroll)
+
+    local sortedAdmins = {}
+    for _, admin in ipairs(antiAdmin.groupMembers) do table.insert(sortedAdmins, admin) end
+    table.sort(sortedAdmins, function(a, b)
+        local aTrack = antiAdmin.trackedAdmins[a.userId]
+        local bTrack = antiAdmin.trackedAdmins[b.userId]
+        local aScore = (aTrack and aTrack.sameServer and 4) or (aTrack and aTrack.isOnline and 3) or (aTrack and aTrack.isInGame and 2) or 1
+        local bScore = (bTrack and bTrack.sameServer and 4) or (bTrack and bTrack.isOnline and 3) or (bTrack and bTrack.isInGame and 2) or 1
+        if aScore ~= bScore then return aScore > bScore end
+        return a.username < b.username
+    end)
+
+    for _, admin in ipairs(sortedAdmins) do
+        local tracked = antiAdmin.trackedAdmins[admin.userId] or {}
+        local adminRow = createRow(scroll, admin.username)
+        local statusText = "Offline"
+        local statusColor = Color3.fromRGB(129, 133, 137)
+        if tracked.sameServer then statusText = "In Server"; statusColor = Color3.fromRGB(255, 150, 150)
+        elseif tracked.isInGame then statusText = "In Game"; statusColor = Color3.fromRGB(255, 200, 100)
+        elseif tracked.isOnline then statusText = "Online"; statusColor = Color3.fromRGB(100, 255, 100) end
+        local adminStatus = Instance.new("TextLabel")
+        adminStatus.Size = UDim2.new(0, 120, 0, 24)
+        adminStatus.Position = UDim2.new(1, -120, 0.5, -12)
+        adminStatus.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        adminStatus.Text = statusText
+        adminStatus.TextColor3 = statusColor
+        adminStatus.TextSize = 12
+        adminStatus.Font = Enum.Font.Gotham
+        adminStatus.TextXAlignment = Enum.TextXAlignment.Center
+        adminStatus.Parent = adminRow
+        local adminCorner = Instance.new("UICorner")
+        adminCorner.CornerRadius = UDim.new(0, 6)
+        adminStatus.Parent = adminRow
+        createDivider(scroll)
+    end
+
+    if #sortedAdmins == 0 then
+        local emptyRow = createRow(scroll, "No admins cached")
+        local emptyLabel = Instance.new("TextLabel")
+        emptyLabel.Size = UDim2.new(0, 320, 0, 24)
+        emptyLabel.Position = UDim2.new(1, -320, 0.5, -12)
+        emptyLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        emptyLabel.Text = "Tap refresh to fetch"
+        emptyLabel.TextColor3 = Color3.fromRGB(129, 133, 137)
+        emptyLabel.TextSize = 12
+        emptyLabel.Font = Enum.Font.Gotham
+        emptyLabel.TextXAlignment = Enum.TextXAlignment.Center
+        emptyLabel.Parent = emptyRow
+        local emptyCorner = Instance.new("UICorner")
+        emptyCorner.CornerRadius = UDim.new(0, 6)
+        emptyCorner.Parent = emptyLabel
+        createDivider(scroll)
+    end
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+local function switchTab(name)
+    state.currentTab = name
+    for tabName, btn in pairs(tabButtons) do
+        local isActive = tabName == name
+        btn.BackgroundTransparency = isActive and 0 or 1
+        if isActive then
+            btn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+            btn.Icon.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            local glow = Instance.new("UIGradient")
+            glow.Color = ColorSequence.new(Color3.fromRGB(58, 159, 232), Color3.fromRGB(0, 217, 196))
+            glow.Parent = btn
+        else
+            btn.Icon.TextColor3 = Color3.fromRGB(155, 167, 173)
+            btn.Label.TextColor3 = Color3.fromRGB(120, 133, 140)
+            for _, child in ipairs(btn:GetChildren()) do
+                if child:IsA("UIGradient") then child:Destroy() end
+            end
+        end
+    end
+    if name == "Farms" then buildFarmsTab()
+    elseif name == "Cash Transfer" then buildCashTransferTab()
+    elseif name == "Anti-Admin" then buildAntiAdminTab()
+    end
+end
+
+for name, btn in pairs(tabButtons) do
+    btn.MouseButton1Click:Connect(function() switchTab(name) end)
+end
+
+-- Minimize
+local miniCircle = Instance.new("Frame")
+miniCircle.Size = UDim2.new(0, 0, 0, 0)
+miniCircle.Position = UDim2.new(0, 12, 0, 12)
+miniCircle.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
+miniCircle.BorderSizePixel = 1
+miniCircle.BorderColor3 = Color3.fromRGB(0, 217, 196)
+miniCircle.Parent = screenGui
+miniCircle.Visible = false
+miniCircle.Active = true
+local circleCorner = Instance.new("UICorner")
+circleCorner.CornerRadius = UDim.new(1, 0)
+circleCorner.Parent = miniCircle
+local circleText = Instance.new("TextLabel")
+circleText.Size = UDim2.new(1, 0, 1, 0)
+circleText.BackgroundTransparency = 1
+circleText.Text = "N"
+circleText.TextColor3 = Color3.fromRGB(95, 255, 240)
+circleText.TextSize = 20
+circleText.Font = Enum.Font.Code
+circleText.TextScaled = true
+circleText.Parent = miniCircle
+local miniClick = Instance.new("TextButton")
+miniClick.Size = UDim2.new(1, 0, 1, 0)
+miniClick.BackgroundTransparency = 1
+miniClick.Text = ""
+miniClick.Parent = miniCircle
+
+minimizeBtn.MouseButton1Click:Connect(function()
+    if state.minimized then return end
+    state.minimized = true
+    local shrink = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0, 12, 0, 12)
+    })
+    shrink:Play()
+    shrink.Completed:Wait()
+    mainFrame.Visible = false
+    miniCircle.Visible = true
+    miniCircle.Size = UDim2.new(0, 0, 0, 0)
+    local expand = TweenService:Create(miniCircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 48, 0, 48)})
+    expand:Play()
+end)
+
+miniClick.MouseButton1Click:Connect(function()
+    if not state.minimized then return end
+    state.minimized = false
+    local shrink = TweenService:Create(miniCircle, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
+    shrink:Play()
+    shrink.Completed:Wait()
+    miniCircle.Visible = false
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 0, 0, 0)
+    mainFrame.Position = UDim2.new(0, 12, 0, 12)
+    local expand = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 780, 0, 500),
+        Position = UDim2.new(0.5, -390, 0.5, -250)
+    })
+    expand:Play()
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    state.running = false
+end)
+
+localPlayer.Idled:Connect(function()
+    pcall(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+end)
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.F5 then
+        state.running = false
+        state.cashTransfer.running = false
+        for key in pairs(state.farms) do state.farms[key] = false end
+        for key, _ in pairs(farmThreads) do farmThreads[key] = nil end
+        teleportSystem.generation = teleportSystem.generation + 1
+        teleportSystem.usedTeleports = 0
+        if antiAFKConnection then antiAFKConnection:Disconnect(); antiAFKConnection = nil end
+    end
+end)
+
+switchTab("Farms")
+
+-- Startup
+task.spawn(function()
+    local char = localPlayer.Character
+    while not char or not char:FindFirstChild("HumanoidRootPart") do
+        task.wait(0.5)
+        char = localPlayer.Character
+    end
+    skipIntro()
+    task.wait(0.5)
+    local Event = ReplicatedStorage:FindFirstChild("Events")
+    if Event then
+        local reset = Event:FindFirstChild("Reset")
+        if reset then pcall(function() reset:FireServer("Reset") end) end
+    end
+    local oldChar = localPlayer.Character
+    local t = 0
+    repeat task.wait(0.1); t = t + 0.1
+    until (localPlayer.Character and localPlayer.Character ~= oldChar and localPlayer.Character:FindFirstChild("HumanoidRootPart")) or t > 8
+    task.wait(0.5)
+    skipIntro()
+    task.wait(0.3)
+    teleportToIdleForce()
+
+    task.wait(1)
+    local autoName = getAutoLoadConfig()
+    if autoName and state.autoReExecute then
+        local data = loadConfigData(autoName)
+        if data then
+            applyConfigData(data)
+            state.loadedConfigName = autoName
+            if state.currentTab == "Farms" then buildFarmsTab() end
+        end
+    end
+end)
+
+print("Made by the OneAndOnlyXen.")erKnob
+    local registerBtn = Instance.new("TextButton")
+    registerBtn.Size = UDim2.new(1, 0, 1, 0)
+    registerBtn.BackgroundTransparency = 1
+    registerBtn.Text = ""
+    registerBtn.Parent = registerRow
+    registerBtn.MouseButton1Click:Connect(function()
+        local val = not state.farms.Register
+        state.farms.Register = val
+        registerToggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(48, 56, 64)
+        registerKnob.Position = val and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+        if val then
+            for _, k in ipairs({"Dumpster", "Cash", "Register", "SuperFarm"}) do
+                if k ~= "Register" then state.farms[k] = false end
+            end
+            state.farms.Register = true
+            selectedFarmKey = "Register"
+            resetTeleportSystem()
+            startFarmModule("Register")
+        else
+            for k, _ in pairs(farmThreads) do farmThreads[k] = nil end
+            if selectedFarmKey == "Register" then selectedFarmKey = nil end
+            teleportToIdleForce()
+        end
+    end)
+    createDivider(scroll)
+
+    local statusRow = createRow(scroll, "Status")
+    local counterLabel = Instance.new("TextLabel")
+    counterLabel.Size = UDim2.new(0, 120, 0, 24)
+    counterLabel.Position = UDim2.new(1, -120, 0.5, -12)
+    counterLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+    counterLabel.Text = "0 / " .. TP_CAP
+    counterLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
+    counterLabel.TextSize = 12
+    counterLabel.Font = Enum.Font.Gotham
+    counterLabel.TextXAlignment = Enum.TextXAlignment.Center
+    counterLabel.Parent = statusRow
+    local counterCorner = Instance.new("UICorner")
+    counterCorner.CornerRadius = UDim.new(0, 6)
+    counterCorner.Parent = counterLabel
+    createDivider(scroll)
+
+    local resetRow = createRow(scroll, "Actions")
+    local resetBtn = Instance.new("TextButton")
+    resetBtn.Size = UDim2.new(0, 80, 0, 28)
+    resetBtn.Position = UDim2.new(1, -80, 0.5, -14)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    resetBtn.Text = "Reset"
+    resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    resetBtn.TextSize = 12
+    resetBtn.Font = Enum.Font.GothamMedium
+    resetBtn.BorderSizePixel = 0
+    resetBtn.Parent = resetRow
+    local resetCorner = Instance.new("UICorner")
+    resetCorner.CornerRadius = UDim.new(0, 6)
+    resetCorner.Parent = resetBtn
+    resetBtn.MouseButton1Click:Connect(function()
+        task.spawn(function() forceResetCharacter() end)
+    end)
+
+    -- Update status
+    local updateStatus = function()
+        local used = teleportSystem.usedTeleports
+        local current = selectedFarmKey or "None"
+        counterLabel.Text = used .. " / " .. TP_CAP
+        counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 200, 100) or Color3.fromRGB(0, 217, 196)
+    end
+    updateStatus()
+    local statusUpdater = task.spawn(function()
+        while state.running and state.currentTab == "Farms" do
+            updateStatus()
+            task.wait(0.5)
+        end
+    end)
+    -- Store for cleanup
+    if not scroll:FindFirstChild("StatusUpdater") then
+        local conn = Instance.new("ObjectValue")
+        conn.Name = "StatusUpdater"
+        conn.Value = statusUpdater
+        conn.Parent = scroll
+    end
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
 
     local statusRow = createRow(scroll, "Status")
     local counterLabel = Instance.new("TextLabel")
@@ -1571,8 +2308,427 @@ local function buildCashTransferTab()
     createDivider(scroll)
 
     local playersHeader = Instance.new("TextLabel")
-    playersHeader.Size = UDim2.new(1, 0, 0, 28)
-    playersHeader.BackgroundTransparency = 1
+playersHeader.Size = UDim2.new(1, 0, 0, 28)
+playersHeader.BackgroundTransparency = 1
+playersHeader.Text = "Players in server"
+playersHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+playersHeader.TextSize = 14
+playersHeader.Font = Enum.Font.GothamSemibold
+playersHeader.Parent = scroll
+createDivider(scroll)
+
+local function refreshPlayerList()
+    -- Clear existing player rows
+    for _, child in ipairs(scroll:GetChildren()) do
+        if child.Name == "PlayerRow" then child:Destroy() end
+    end
+    local players = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer then table.insert(players, player) end
+    end
+    table.sort(players, function(a,b) return a.Name < b.Name end)
+    for _, player in ipairs(players) do
+        local playerRow = createRow(scroll, player.Name)
+        playerRow.Name = "PlayerRow"
+        local selectBtn = Instance.new("TextButton")
+        selectBtn.Size = UDim2.new(0, 80, 0, 28)
+        selectBtn.Position = UDim2.new(1, -80, 0.5, -14)
+        selectBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+        selectBtn.Text = "Select"
+        selectBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+        selectBtn.TextSize = 12
+        selectBtn.Font = Enum.Font.GothamMedium
+        selectBtn.BorderSizePixel = 0
+        selectBtn.Parent = playerRow
+        local selectCorner = Instance.new("UICorner")
+        selectCorner.CornerRadius = UDim.new(0, 6)
+        selectCorner.Parent = selectBtn
+        selectBtn.MouseButton1Click:Connect(function()
+            state.cashTransfer.selectedName = player.Name
+            searchInput.Text = player.Name
+            selectedLabel.Text = player.Name
+            selectedLabel.TextColor3 = Color3.fromRGB(0, 217, 196)
+        end)
+        createDivider(scroll)
+    end
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+refreshPlayerList()
+
+local execRow = createRow(scroll, "Execute transfer")
+local execBtn = Instance.new("TextButton")
+execBtn.Size = UDim2.new(0, 120, 0, 32)
+execBtn.Position = UDim2.new(1, -120, 0.5, -16)
+execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+execBtn.Text = "Execute"
+execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+execBtn.TextSize = 12
+execBtn.Font = Enum.Font.GothamMedium
+execBtn.BorderSizePixel = 0
+execBtn.Parent = execRow
+local execCorner = Instance.new("UICorner")
+execCorner.CornerRadius = UDim.new(0, 8)
+execCorner.Parent = execBtn
+execBtn.MouseButton1Click:Connect(function()
+    if state.cashTransfer.running then
+        state.cashTransfer.running = false
+        execBtn.Text = "Execute"
+        execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+        return
+    end
+    local targetName = state.cashTransfer.selectedName
+    if not targetName or targetName == "" then
+        selectedLabel.Text = "No player selected"
+        selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
+        return
+    end
+    local targetPlayer = nil
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Name == targetName then targetPlayer = p; break end
+    end
+    if not targetPlayer then
+        selectedLabel.Text = "Player no longer in server"
+        selectedLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
+        return
+    end
+    execBtn.Text = "Stop"
+    execBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30)
+    task.spawn(function()
+        cashTransferLoop(targetPlayer)
+        execBtn.Text = "Execute"
+        execBtn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+    end)
+end)
+createDivider(scroll)
+
+local infoRow = createRow(scroll, "Event status")
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(0, 320, 0, 24)
+infoLabel.Position = UDim2.new(1, -320, 0.5, -12)
+infoLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+infoLabel.Text = "DropCash: " .. (DROP_CASH_EVENT and "Found" or "Not found")
+infoLabel.TextColor3 = DROP_CASH_EVENT and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(255, 150, 150)
+infoLabel.TextSize = 12
+infoLabel.Font = Enum.Font.Gotham
+infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+infoLabel.Parent = infoRow
+local infoCorner = Instance.new("UICorner")
+infoCorner.CornerRadius = UDim.new(0, 6)
+infoCorner.Parent = infoLabel
+createDivider(scroll)
+
+scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+-- ═══════════════════════════════
+-- ANTI-ADMIN TAB
+-- ═══════════════════════════════
+local function buildAntiAdminTab()
+    clearContent()
+    titleText.Text = "Anti-Admin"
+
+    createToggle(scroll, "Protection", state.protection, "AntiAdmin", function(val)
+        antiAdmin.enabled = val
+        antiAdmin.autoLeave = val
+    end)
+    createDivider(scroll)
+
+    local refreshRow = createRow(scroll, "Tracker")
+    local refreshBtn = Instance.new("TextButton")
+    refreshBtn.Size = UDim2.new(0, 100, 0, 32)
+    refreshBtn.Position = UDim2.new(1, -100, 0.5, -16)
+    refreshBtn.BackgroundColor3 = Color3.fromRGB(48, 56, 64)
+    refreshBtn.Text = "Refresh"
+    refreshBtn.TextColor3 = Color3.fromRGB(229, 235, 237)
+    refreshBtn.TextSize = 12
+    refreshBtn.Font = Enum.Font.GothamMedium
+    refreshBtn.BorderSizePixel = 0
+    refreshBtn.Parent = refreshRow
+    local refreshCorner = Instance.new("UICorner")
+    refreshCorner.CornerRadius = UDim.new(0, 8)
+    refreshCorner.Parent = refreshBtn
+    refreshBtn.MouseButton1Click:Connect(function()
+        refreshBtn.Text = "Fetching..."
+        antiAdmin.lastGroupFetch = 0
+        task.spawn(function()
+            local success = pcall(updateAdminTracker)
+            refreshBtn.Text = success and "Refresh" or "Failed"
+            if not success then task.wait(2); refreshBtn.Text = "Refresh" end
+            if state.currentTab == "Anti-Admin" then buildAntiAdminTab() end
+        end)
+    end)
+    createDivider(scroll)
+
+    if #antiAdmin.sameServerAdmins > 0 then
+        local alertRow = createRow(scroll, "Alert")
+        local alertLabel = Instance.new("TextLabel")
+        alertLabel.Size = UDim2.new(0, 280, 0, 24)
+        alertLabel.Position = UDim2.new(1, -280, 0.5, -12)
+        alertLabel.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+        alertLabel.Text = #antiAdmin.sameServerAdmins .. " admin(s) in server"
+        alertLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+        alertLabel.TextSize = 12
+        alertLabel.Font = Enum.Font.Gotham
+        alertLabel.TextXAlignment = Enum.TextXAlignment.Center
+        alertLabel.Parent = alertRow
+        local alertCorner = Instance.new("UICorner")
+        alertCorner.CornerRadius = UDim.new(0, 6)
+        alertCorner.Parent = alertLabel
+        createDivider(scroll)
+    end
+
+    local watchlistHeader = Instance.new("TextLabel")
+    watchlistHeader.Size = UDim2.new(1, 0, 0, 28)
+    watchlistHeader.BackgroundTransparency = 1
+    watchlistHeader.Text = "Watchlist (" .. #WATCHLIST .. ")"
+    watchlistHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    watchlistHeader.TextSize = 14
+    watchlistHeader.Font = Enum.Font.GothamSemibold
+    watchlistHeader.Parent = scroll
+    createDivider(scroll)
+
+    for userId, entry in pairs(WATCHLIST) do
+        local inServer = false
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.UserId == userId then inServer = true break end
+        end
+        local watchRow = createRow(scroll, entry.username)
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(0, 120, 0, 24)
+        statusLabel.Position = UDim2.new(1, -120, 0.5, -12)
+        statusLabel.BackgroundColor3 = inServer and Color3.fromRGB(60, 30, 30) or Color3.fromRGB(36, 43, 49)
+        statusLabel.Text = inServer and "In Server" or "Not Here"
+        statusLabel.TextColor3 = inServer and Color3.fromRGB(255, 150, 150) or Color3.fromRGB(129, 133, 137)
+        statusLabel.TextSize = 12
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Center
+        statusLabel.Parent = watchRow
+        local statusCorner = Instance.new("UICorner")
+        statusCorner.CornerRadius = UDim.new(0, 6)
+        statusCorner.Parent = watchRow
+        createDivider(scroll)
+    end
+
+    local groupHeader = Instance.new("TextLabel")
+    groupHeader.Size = UDim2.new(1, 0, 0, 28)
+    groupHeader.BackgroundTransparency = 1
+    groupHeader.Text = "Group Admins (" .. #antiAdmin.groupMembers .. ")"
+    groupHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
+    groupHeader.TextSize = 14
+    groupHeader.Font = Enum.Font.GothamSemibold
+    groupHeader.Parent = scroll
+    createDivider(scroll)
+
+    local sortedAdmins = {}
+    for _, admin in ipairs(antiAdmin.groupMembers) do table.insert(sortedAdmins, admin) end
+    table.sort(sortedAdmins, function(a, b)
+        local aTrack = antiAdmin.trackedAdmins[a.userId]
+        local bTrack = antiAdmin.trackedAdmins[b.userId]
+        local aScore = (aTrack and aTrack.sameServer and 4) or (aTrack and aTrack.isOnline and 3) or (aTrack and aTrack.isInGame and 2) or 1
+        local bScore = (bTrack and bTrack.sameServer and 4) or (bTrack and bTrack.isOnline and 3) or (bTrack and bTrack.isInGame and 2) or 1
+        if aScore ~= bScore then return aScore > bScore end
+        return a.username < b.username
+    end)
+
+    for _, admin in ipairs(sortedAdmins) do
+        local tracked = antiAdmin.trackedAdmins[admin.userId] or {}
+        local adminRow = createRow(scroll, admin.username)
+        local statusText = "Offline"
+        local statusColor = Color3.fromRGB(129, 133, 137)
+        if tracked.sameServer then statusText = "In Server"; statusColor = Color3.fromRGB(255, 150, 150)
+        elseif tracked.isInGame then statusText = "In Game"; statusColor = Color3.fromRGB(255, 200, 100)
+        elseif tracked.isOnline then statusText = "Online"; statusColor = Color3.fromRGB(100, 255, 100) end
+        local adminStatus = Instance.new("TextLabel")
+        adminStatus.Size = UDim2.new(0, 120, 0, 24)
+        adminStatus.Position = UDim2.new(1, -120, 0.5, -12)
+        adminStatus.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        adminStatus.Text = statusText
+        adminStatus.TextColor3 = statusColor
+        adminStatus.TextSize = 12
+        adminStatus.Font = Enum.Font.Gotham
+        adminStatus.TextXAlignment = Enum.TextXAlignment.Center
+        adminStatus.Parent = adminRow
+        local adminCorner = Instance.new("UICorner")
+        adminCorner.CornerRadius = UDim.new(0, 6)
+        adminStatus.Parent = adminRow
+        createDivider(scroll)
+    end
+
+    if #sortedAdmins == 0 then
+        local emptyRow = createRow(scroll, "No admins cached")
+        local emptyLabel = Instance.new("TextLabel")
+        emptyLabel.Size = UDim2.new(0, 320, 0, 24)
+        emptyLabel.Position = UDim2.new(1, -320, 0.5, -12)
+        emptyLabel.BackgroundColor3 = Color3.fromRGB(36, 43, 49)
+        emptyLabel.Text = "Tap refresh to fetch"
+        emptyLabel.TextColor3 = Color3.fromRGB(129, 133, 137)
+        emptyLabel.TextSize = 12
+        emptyLabel.Font = Enum.Font.Gotham
+        emptyLabel.TextXAlignment = Enum.TextXAlignment.Center
+        emptyLabel.Parent = emptyRow
+        local emptyCorner = Instance.new("UICorner")
+        emptyCorner.CornerRadius = UDim.new(0, 6)
+        emptyCorner.Parent = emptyLabel
+        createDivider(scroll)
+    end
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y)
+end
+
+local function switchTab(name)
+    state.currentTab = name
+    for tabName, btn in pairs(tabButtons) do
+        local isActive = tabName == name
+        btn.BackgroundTransparency = isActive and 0 or 1
+        if isActive then
+            btn.BackgroundColor3 = Color3.fromRGB(58, 159, 232)
+            btn.Icon.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            local glow = Instance.new("UIGradient")
+            glow.Color = ColorSequence.new(Color3.fromRGB(58, 159, 232), Color3.fromRGB(0, 217, 196))
+            glow.Parent = btn
+        else
+            btn.Icon.TextColor3 = Color3.fromRGB(155, 167, 173)
+            btn.Label.TextColor3 = Color3.fromRGB(120, 133, 140)
+            for _, child in ipairs(btn:GetChildren()) do
+                if child:IsA("UIGradient") then child:Destroy() end
+            end
+        end
+    end
+    if name == "Farms" then buildFarmsTab()
+    elseif name == "Cash Transfer" then buildCashTransferTab()
+    elseif name == "Anti-Admin" then buildAntiAdminTab()
+    end
+end
+
+for name, btn in pairs(tabButtons) do
+    btn.MouseButton1Click:Connect(function() switchTab(name) end)
+end
+
+-- Minimize
+local miniCircle = Instance.new("Frame")
+miniCircle.Size = UDim2.new(0, 0, 0, 0)
+miniCircle.Position = UDim2.new(0, 12, 0, 12)
+miniCircle.BackgroundColor3 = Color3.fromRGB(7, 26, 36)
+miniCircle.BorderSizePixel = 1
+miniCircle.BorderColor3 = Color3.fromRGB(0, 217, 196)
+miniCircle.Parent = screenGui
+miniCircle.Visible = false
+miniCircle.Active = true
+local circleCorner = Instance.new("UICorner")
+circleCorner.CornerRadius = UDim.new(1, 0)
+circleCorner.Parent = miniCircle
+local circleText = Instance.new("TextLabel")
+circleText.Size = UDim2.new(1, 0, 1, 0)
+circleText.BackgroundTransparency = 1
+circleText.Text = "N"
+circleText.TextColor3 = Color3.fromRGB(95, 255, 240)
+circleText.TextSize = 20
+circleText.Font = Enum.Font.Code
+circleText.TextScaled = true
+circleText.Parent = miniCircle
+local miniClick = Instance.new("TextButton")
+miniClick.Size = UDim2.new(1, 0, 1, 0)
+miniClick.BackgroundTransparency = 1
+miniClick.Text = ""
+miniClick.Parent = miniCircle
+
+minimizeBtn.MouseButton1Click:Connect(function()
+    if state.minimized then return end
+    state.minimized = true
+    local shrink = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0, 12, 0, 12)
+    })
+    shrink:Play()
+    shrink.Completed:Wait()
+    mainFrame.Visible = false
+    miniCircle.Visible = true
+    miniCircle.Size = UDim2.new(0, 0, 0, 0)
+    local expand = TweenService:Create(miniCircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 48, 0, 48)})
+    expand:Play()
+end)
+
+miniClick.MouseButton1Click:Connect(function()
+    if not state.minimized then return end
+    state.minimized = false
+    local shrink = TweenService:Create(miniCircle, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
+    shrink:Play()
+    shrink.Completed:Wait()
+    miniCircle.Visible = false
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 0, 0, 0)
+    mainFrame.Position = UDim2.new(0, 12, 0, 12)
+    local expand = TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 780, 0, 500),
+        Position = UDim2.new(0.5, -390, 0.5, -250)
+    })
+    expand:Play()
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    state.running = false
+end)
+
+localPlayer.Idled:Connect(function()
+    pcall(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+end)
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.F5 then
+        state.running = false
+        state.cashTransfer.running = false
+        for key in pairs(state.farms) do state.farms[key] = false end
+        for key, _ in pairs(farmThreads) do farmThreads[key] = nil end
+        teleportSystem.generation = teleportSystem.generation + 1
+        teleportSystem.usedTeleports = 0
+        if antiAFKConnection then antiAFKConnection:Disconnect(); antiAFKConnection = nil end
+    end
+end)
+
+switchTab("Farms")
+
+-- Startup
+task.spawn(function()
+    local char = localPlayer.Character
+    while not char or not char:FindFirstChild("HumanoidRootPart") do
+        task.wait(0.5)
+        char = localPlayer.Character
+    end
+    skipIntro()
+    task.wait(0.5)
+    local Event = ReplicatedStorage:FindFirstChild("Events")
+    if Event then
+        local reset = Event:FindFirstChild("Reset")
+        if reset then pcall(function() reset:FireServer("Reset") end) end
+    end
+    local oldChar = localPlayer.Character
+    local t = 0
+    repeat task.wait(0.1); t = t + 0.1
+    until (localPlayer.Character and localPlayer.Character ~= oldChar and localPlayer.Character:FindFirstChild("HumanoidRootPart")) or t > 8
+    task.wait(0.5)
+    skipIntro()
+    task.wait(0.3)
+    teleportToIdleForce()
+
+    task.wait(1)
+    local autoName = getAutoLoadConfig()
+    if autoName and state.autoReExecute then
+        local data = loadConfigData(autoName)
+        if data then
+            applyConfigData(data)
+            state.loadedConfigName = autoName
+            if state.currentTab == "Farms" then buildFarmsTab() end
+        end
+    end
+end)
+
+print("Made by the OneAndOnlyXen.")dTransparency = 1
     playersHeader.Text = "Players in server"
     playersHeader.TextColor3 = Color3.fromRGB(241, 245, 246)
     playersHeader.TextSize = 14
