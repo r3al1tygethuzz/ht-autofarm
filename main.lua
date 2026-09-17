@@ -553,71 +553,53 @@ local function chainTeleport(pos)
     end
 
     local target = CFrame.new(pos + Vector3.new(0, 3, 0))
-    local hum = getHumanoid()
 
-    -- Tween mode deliberately does NOT consume the limited TP counter.
-    if state.farmMovementMode == "Tween" then
-        local distance = (hrp.Position - target.Position).Magnitude
-        if distance < 2 then
-            hrp.CFrame = target
-            return true
-        end
-
-        local duration = math.clamp(distance / 150, 0.10, 0.45)
-        local driver = Instance.new("CFrameValue")
-        driver.Value = hrp.CFrame
-
-        movementTween = TweenService:Create(
-            driver,
-            TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
-            {Value = target}
-        )
-
-        local connection
-        connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
-            if myMovement ~= movementGeneration then return end
-            local currentHRP = getHRP()
-            if currentHRP then
-                currentHRP.CFrame = driver.Value
-                currentHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                currentHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-            end
-        end)
-
-        movementTween:Play()
-        movementTween.Completed:Wait()
-
-        if connection then connection:Disconnect() end
-        driver:Destroy()
-        movementTween = nil
-
-        local finalHRP = getHRP()
-        if finalHRP and myMovement == movementGeneration then
-            finalHRP.CFrame = target
-            finalHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            finalHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-        end
+    -- TP mode intentionally preserves the original farm teleport logic.
+    if state.farmMovementMode ~= "Tween" then
+        local hum = getHumanoid()
+        if hum then hum.PlatformStand = true; hum.WalkSpeed = 0 end
+        hrp.CFrame = target
+        hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+        hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+        task.wait(0.05)
+        if hum then hum.PlatformStand = false; hum.WalkSpeed = 16 end
+        useTeleport()
         return true
     end
 
-    -- TP mode: instant move, with a PivotTo fallback for characters that
-    -- reject a direct HRP CFrame assignment.
-    local ok = pcall(function()
-        hrp.CFrame = target
-    end)
-    if not ok or (hrp.Position - target.Position).Magnitude > 8 then
-        local char = localPlayer.Character
-        if char then pcall(function() char:PivotTo(target) end) end
-    end
+    -- Tween mode: constant 30 studs/second, independent of distance.
+    local distance = (hrp.Position - target.Position).Magnitude
+    if distance <= 1 then return true end
 
-    task.wait()
+    local duration = distance / 30
+    local driver = Instance.new("CFrameValue")
+    driver.Value = hrp.CFrame
+
+    local connection
+    connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
+        if myMovement ~= movementGeneration then return end
+        local currentHRP = getHRP()
+        if currentHRP then
+            currentHRP.CFrame = driver.Value
+            currentHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
+            currentHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
+        end
+    end)
+
+    movementTween = TweenService:Create(driver, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Value = target})
+    movementTween:Play()
+    movementTween.Completed:Wait()
+
+    if connection then connection:Disconnect() end
+    driver:Destroy()
+    movementTween = nil
+
     local finalHRP = getHRP()
-    if finalHRP then
+    if finalHRP and myMovement == movementGeneration then
         finalHRP.CFrame = target
-        finalHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        finalHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        finalHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
+        finalHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
     end
-    useTeleport()
     return true
 end
 
@@ -1237,7 +1219,7 @@ logoArea.BackgroundTransparency = 1
 logoArea.Parent = leftSidebar
 
 local logoText = Instance.new("TextLabel")
-logoText.Size = UDim2.new(1, 0, 0.6, 0)
+logoText.Size = UDim2.new(1, 0, 0, 30)
 logoText.BackgroundTransparency = 1
 logoText.Text = "XENON"
 logoText.TextColor3 = Color3.fromRGB(232, 241, 244)
@@ -1247,15 +1229,15 @@ logoText.TextXAlignment = Enum.TextXAlignment.Left
 logoText.Parent = logoArea
 
 local logoAccent = Instance.new("Frame")
-logoAccent.Size = UDim2.new(0, 4, 0.6, 0)
+logoAccent.Size = UDim2.new(0, 4, 0, 24)
 logoAccent.Position = UDim2.new(0, -6, 0, 0)
 logoAccent.BackgroundColor3 = Color3.fromRGB(0, 198, 188)
 logoAccent.BorderSizePixel = 0
 logoAccent.Parent = logoText
 
 local logoSub = Instance.new("TextLabel")
-logoSub.Size = UDim2.new(1, 0, 0.4, 0)
-logoSub.Position = UDim2.new(0, 0, 0.6, 0)
+logoSub.Size = UDim2.new(1, 0, 0, 20)
+logoSub.Position = UDim2.new(0, 0, 0, 34)
 logoSub.BackgroundTransparency = 1
 logoSub.Text = "compact workspace"
 logoSub.TextColor3 = Color3.fromRGB(101, 116, 125)
@@ -1355,20 +1337,20 @@ closeBtn.Parent = headerBar
 -- XENON identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
 watermark.Name = "XenonWatermark"
-watermark.Size = UDim2.new(0, 282, 0, 42)
+watermark.Size = UDim2.new(0, 292, 0, 44)
 watermark.AnchorPoint = Vector2.new(1, 0)
 watermark.Position = UDim2.new(1, -18, 0, 16)
-watermark.BackgroundColor3 = Color3.fromRGB(12, 18, 22)
-watermark.BackgroundTransparency = 0.08
+watermark.BackgroundColor3 = Color3.fromRGB(8, 18, 30)
+watermark.BackgroundTransparency = 0.02
 watermark.BorderSizePixel = 0
 watermark.ZIndex = 100
 watermark.Parent = screenGui
 local watermarkCorner = Instance.new("UICorner")
-watermarkCorner.CornerRadius = UDim.new(0, 12)
+watermarkCorner.CornerRadius = UDim.new(0, 14)
 watermarkCorner.Parent = watermark
 local watermarkStroke = Instance.new("UIStroke")
-watermarkStroke.Color = Color3.fromRGB(37, 136, 199)
-watermarkStroke.Transparency = 0.72
+watermarkStroke.Color = Color3.fromRGB(45, 191, 139)
+watermarkStroke.Transparency = 0.45
 watermarkStroke.Thickness = 1
 watermarkStroke.Parent = watermark
 local watermarkName = Instance.new("TextLabel")
@@ -1376,7 +1358,7 @@ watermarkName.Size = UDim2.new(0, 60, 1, 0)
 watermarkName.Position = UDim2.new(0, 12, 0, 0)
 watermarkName.BackgroundTransparency = 1
 watermarkName.Text = "XENON"
-watermarkName.TextColor3 = Color3.fromRGB(76, 171, 232)
+watermarkName.TextColor3 = Color3.fromRGB(78, 190, 255)
 watermarkName.TextSize = 13
 watermarkName.Font = Enum.Font.GothamBold
 watermarkName.TextXAlignment = Enum.TextXAlignment.Left
@@ -1434,6 +1416,7 @@ local function createCard(parent, title, icon)
     card.BackgroundColor3 = Color3.fromRGB(14, 19, 24)
     card.BackgroundTransparency = 0.08
     card.BorderSizePixel = 0
+    card.ClipsDescendants = false
     card.Parent = parent
 
     local cardCorner = Instance.new("UICorner")
@@ -1485,6 +1468,7 @@ local function createCard(parent, title, icon)
     content.Size = UDim2.new(1, -24, 0, 0)
     content.Position = UDim2.new(0, 12, 0, 52)
     content.BackgroundTransparency = 1
+    content.ClipsDescendants = false
     content.Parent = card
 
     local list = Instance.new("UIListLayout")
@@ -1499,6 +1483,7 @@ local function createToggle(parent, name, stateRef, key, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, 44)
     frame.BackgroundTransparency = 1
+    frame.ZIndex = 40
     frame.Parent = parent
 
     local label = Instance.new("TextLabel")
@@ -1578,6 +1563,7 @@ local function createMovementDropdown(parent)
     button.Font = Enum.Font.GothamMedium
     button.Text = state.farmMovementMode .. "  ▾"
     button.AutoButtonColor = false
+    button.ZIndex = 42
     button.Parent = frame
 
     local corner = Instance.new("UICorner")
@@ -1591,7 +1577,7 @@ local function createMovementDropdown(parent)
     menu.BorderSizePixel = 1
     menu.BorderColor3 = Color3.fromRGB(37, 136, 199)
     menu.Visible = false
-    menu.ZIndex = 50
+    menu.ZIndex = 100
     menu.Parent = frame
 
     local menuCorner = Instance.new("UICorner")
@@ -1611,7 +1597,7 @@ local function createMovementDropdown(parent)
         option.TextSize = 11
         option.Font = Enum.Font.GothamMedium
         option.BorderSizePixel = 0
-        option.ZIndex = 21
+        option.ZIndex = 101
         option.Parent = menu
         option.MouseButton1Click:Connect(function()
             state.farmMovementMode = name
