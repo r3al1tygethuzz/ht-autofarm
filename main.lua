@@ -23,6 +23,18 @@ local SELF_PATH = "PhotonConfigs/_script.lua"
 local hasFileAPI = (writefile and readfile and isfile and listfiles and makefolder and isfolder)
 local hasQueue = (queue_on_teleport ~= nil) or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport)
 
+local state = {
+    farms = { Dumpster = false, Cash = false, Register = false, SuperFarm = false },
+    
+    protection = { AntiAFK = false, AntiAdmin = true },
+    cashTransfer = { selectedName = "", running = false },
+    running = true, minimized = false, currentTab = "Farms",
+    farmMovementMode = "TP",
+    autoReExecute = true,
+    loadedConfigName = nil
+}
+
+
 local function safeWrite(path, data)
     if not writefile then return false end
     return (pcall(function() writefile(path, data) end))
@@ -121,6 +133,10 @@ local function getAutoLoadConfig()
     return nil
 end
 
+state.loadedConfigName = getAutoLoadConfig()
+
+
+
 -- Self source save
 local SELF_SOURCE = nil
 do
@@ -149,7 +165,7 @@ local function queueReload()
     pcall(function() if queue_on_teleport then queue_on_teleport(reloadCode); queued = true end end)
     if not queued then pcall(function() if syn and syn.queue_on_teleport then syn.queue_on_teleport(reloadCode); queued = true end end) end
     if not queued then pcall(function() if fluxus and fluxus.queue_on_teleport then fluxus.queue_on_teleport(reloadCode); queued = true end end) end
-    if queued then print("[NYRA] ✅ Queued reload") end
+    if queued then print("[XENON] ✅ Queued reload") end
 end
 
 -- ═══════════════════════════════
@@ -387,7 +403,7 @@ end
 local function handleAdminDetection(reason)
     if antiAdmin.isHandlingAdmin then return end
     antiAdmin.isHandlingAdmin = true
-    print("[NYRA] ⚠️ ADMIN DETECTED — " .. reason)
+    print("[XENON] ⚠️ ADMIN DETECTED — " .. reason)
     queueReload()
     task.wait(0.5)
     local hopSuccess = attemptServerHop()
@@ -522,31 +538,85 @@ local function useTeleport()
     return false
 end
 
+local movementTween = nil
+local movementGeneration = 0
+
 local function chainTeleport(pos)
     local hrp = getHRP()
     if not hrp then return false end
+
+    movementGeneration = movementGeneration + 1
+    local myMovement = movementGeneration
+    if movementTween then
+        pcall(function() movementTween:Cancel() end)
+        movementTween = nil
+    end
+
     local target = CFrame.new(pos + Vector3.new(0, 3, 0))
     local hum = getHumanoid()
 
+    -- Tween mode deliberately does NOT consume the limited TP counter.
     if state.farmMovementMode == "Tween" then
-        if hum then hum.PlatformStand = true; hum.WalkSpeed = 0 end
         local distance = (hrp.Position - target.Position).Magnitude
-        local duration = math.clamp(distance / 120, 0.08, 0.35)
-        local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {CFrame = target})
-        tween:Play()
-        tween.Completed:Wait()
-        hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-        hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
-        if hum then hum.PlatformStand = false; hum.WalkSpeed = 16 end
+        if distance < 2 then
+            hrp.CFrame = target
+            return true
+        end
+
+        local duration = math.clamp(distance / 150, 0.10, 0.45)
+        local driver = Instance.new("CFrameValue")
+        driver.Value = hrp.CFrame
+
+        movementTween = TweenService:Create(
+            driver,
+            TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+            {Value = target}
+        )
+
+        local connection
+        connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
+            if myMovement ~= movementGeneration then return end
+            local currentHRP = getHRP()
+            if currentHRP then
+                currentHRP.CFrame = driver.Value
+                currentHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                currentHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+            end
+        end)
+
+        movementTween:Play()
+        movementTween.Completed:Wait()
+
+        if connection then connection:Disconnect() end
+        driver:Destroy()
+        movementTween = nil
+
+        local finalHRP = getHRP()
+        if finalHRP and myMovement == movementGeneration then
+            finalHRP.CFrame = target
+            finalHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            finalHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        end
         return true
     end
 
-    if hum then hum.PlatformStand = true; hum.WalkSpeed = 0 end
-    hrp.CFrame = target
-    hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-    hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
-    task.wait(0.05)
-    if hum then hum.PlatformStand = false; hum.WalkSpeed = 16 end
+    -- TP mode: instant move, with a PivotTo fallback for characters that
+    -- reject a direct HRP CFrame assignment.
+    local ok = pcall(function()
+        hrp.CFrame = target
+    end)
+    if not ok or (hrp.Position - target.Position).Magnitude > 8 then
+        local char = localPlayer.Character
+        if char then pcall(function() char:PivotTo(target) end) end
+    end
+
+    task.wait()
+    local finalHRP = getHRP()
+    if finalHRP then
+        finalHRP.CFrame = target
+        finalHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        finalHRP.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end
     useTeleport()
     return true
 end
@@ -598,16 +668,6 @@ end
 -- ═══════════════════════════════
 -- STATE
 -- ═══════════════════════════════
-local state = {
-    farms = { Dumpster = false, Cash = false, Register = false, SuperFarm = false },
-    
-    protection = { AntiAFK = false, AntiAdmin = true },
-    cashTransfer = { selectedName = "", running = false },
-    running = true, minimized = false, currentTab = "Farms",
-    farmMovementMode = "TP",
-    autoReExecute = true,
-    loadedConfigName = getAutoLoadConfig()
-}
 
 local farmThreads = {}
 local antiAFKConnection = nil
@@ -834,11 +894,11 @@ local function findPlayerByName(name)
 end
 
 local function cashTransferLoop(targetPlayer)
-    print("[NYRA] 💸 Cash Transfer starting → " .. targetPlayer.Name)
+    print("[XENON] 💸 Cash Transfer starting → " .. targetPlayer.Name)
     state.cashTransfer.running = true
 
     -- Reset character to ensure clean state
-    print("[NYRA] 🔄 Resetting character first...")
+    print("[XENON] 🔄 Resetting character first...")
     local Event = ReplicatedStorage:FindFirstChild("Events")
     if Event then
         local reset = Event:FindFirstChild("Reset")
@@ -856,13 +916,13 @@ local function cashTransferLoop(targetPlayer)
     -- TP to target player
     local targetHRP = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not targetHRP then
-        print("[NYRA] ⚠️ Target has no character — aborting")
+        print("[XENON] ⚠️ Target has no character — aborting")
         state.cashTransfer.running = false
         teleportToIdleForce()
         return
     end
 
-    print("[NYRA] 📍 TPing to " .. targetPlayer.Name)
+    print("[XENON] 📍 TPing to " .. targetPlayer.Name)
     local hrp = getHRP()
     if hrp then
         local hum = getHumanoid()
@@ -875,7 +935,7 @@ local function cashTransferLoop(targetPlayer)
     end
 
     if not DROP_CASH_EVENT then
-        print("[NYRA] ⚠️ DropCash event not found — aborting")
+        print("[XENON] ⚠️ DropCash event not found — aborting")
         state.cashTransfer.running = false
         teleportToIdleForce()
         return
@@ -894,20 +954,20 @@ local function cashTransferLoop(targetPlayer)
             lastCash = cash
             noValueStreak = 0
             if cash < 5000 then
-                print("[NYRA] ✅ Cash under 5000 (" .. cash .. ") — stopping")
+                print("[XENON] ✅ Cash under 5000 (" .. cash .. ") — stopping")
                 break
             end
         else
             noValueStreak = noValueStreak + 1
             if noValueStreak > 60 then
                 -- 30 seconds without detecting cash — bail
-                print("[NYRA] ⚠️ Could not read cash value — stopping after 30s")
+                print("[XENON] ⚠️ Could not read cash value — stopping after 30s")
                 break
             end
         end
 
         if spamCount >= maxSpam then
-            print("[NYRA] ⚠️ Hit spam cap (" .. maxSpam .. ") — stopping")
+            print("[XENON] ⚠️ Hit spam cap (" .. maxSpam .. ") — stopping")
             break
         end
 
@@ -927,12 +987,12 @@ local function cashTransferLoop(targetPlayer)
         task.wait(0.05)
     end
 
-    print("[NYRA] 💸 Cash Transfer finished. Fires: " .. spamCount .. " | Last cash: " .. tostring(lastCash))
+    print("[XENON] 💸 Cash Transfer finished. Fires: " .. spamCount .. " | Last cash: " .. tostring(lastCash))
 
     -- TP back to idle
     task.wait(0.5)
     teleportToIdleForce()
-    print("[NYRA] 📍 Returned to idle")
+    print("[XENON] 📍 Returned to idle")
 
     state.cashTransfer.running = false
 end
@@ -1292,7 +1352,7 @@ closeBtn.Font = Enum.Font.GothamMedium
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = headerBar
 
--- NYRA identity watermark (screen-level, top-right; independent of the window)
+-- XENON identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
 watermark.Name = "XenonWatermark"
 watermark.Size = UDim2.new(0, 282, 0, 42)
@@ -1346,18 +1406,6 @@ watermarkRouteDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkRouteDivider.BorderSizePixel = 0
 watermarkRouteDivider.Parent = watermark
 
-local routeStatus = Instance.new("TextLabel")
-routeStatus.Name = "RouteCounter"
-routeStatus.Size = UDim2.new(0, 62, 0, 18)
-routeStatus.Position = UDim2.new(1, -72, 0.5, -9)
-routeStatus.BackgroundTransparency = 1
-routeStatus.Text = "0 / " .. tostring(TP_CAP)
-routeStatus.TextColor3 = Color3.fromRGB(95, 255, 240)
-routeStatus.TextSize = 9
-routeStatus.Font = Enum.Font.GothamMedium
-routeStatus.TextXAlignment = Enum.TextXAlignment.Right
-routeStatus.Parent = watermark
-
 local contentArea = Instance.new("Frame")
 contentArea.Size = UDim2.new(1, -108, 1, -56)
 contentArea.Position = UDim2.new(0, 108, 0, 56)
@@ -1389,12 +1437,12 @@ local function createCard(parent, title, icon)
     card.Parent = parent
 
     local cardCorner = Instance.new("UICorner")
-    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.CornerRadius = UDim.new(0, 12)
     cardCorner.Parent = card
 
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(31, 40, 47)
-    stroke.Transparency = 0.35
+    stroke.Transparency = 0.22
     stroke.Thickness = 1
     stroke.Parent = card
 
@@ -1442,14 +1490,14 @@ local function createCard(parent, title, icon)
     local list = Instance.new("UIListLayout")
     list.Parent = content
     list.SortOrder = Enum.SortOrder.LayoutOrder
-    list.Padding = UDim.new(0, 2)
+    list.Padding = UDim.new(0, 4)
 
     return card, content
 end
 
 local function createToggle(parent, name, stateRef, key, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 0, 42)
+    frame.Size = UDim2.new(1, 0, 0, 44)
     frame.BackgroundTransparency = 1
     frame.Parent = parent
 
@@ -1465,8 +1513,8 @@ local function createToggle(parent, name, stateRef, key, callback)
     label.Parent = frame
 
     local toggle = Instance.new("Frame")
-    toggle.Size = UDim2.new(0, 38, 0, 20)
-    toggle.Position = UDim2.new(1, -38, 0.5, -10)
+    toggle.Size = UDim2.new(0, 40, 0, 22)
+    toggle.Position = UDim2.new(1, -40, 0.5, -11)
     toggle.BackgroundColor3 = stateRef[key] and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(43, 51, 57)
     toggle.BorderSizePixel = 0
     toggle.Parent = frame
@@ -1476,8 +1524,8 @@ local function createToggle(parent, name, stateRef, key, callback)
     toggleCorner.Parent = toggle
 
     local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 14, 0, 14)
-    knob.Position = stateRef[key] and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+    knob.Size = UDim2.new(0, 16, 0, 16)
+    knob.Position = stateRef[key] and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
     knob.BackgroundColor3 = Color3.fromRGB(244, 249, 250)
     knob.BorderSizePixel = 0
     knob.Parent = toggle
@@ -1496,7 +1544,7 @@ local function createToggle(parent, name, stateRef, key, callback)
         stateRef[key] = not stateRef[key]
         local val = stateRef[key]
         toggle.BackgroundColor3 = val and Color3.fromRGB(58, 159, 232) or Color3.fromRGB(43, 51, 57)
-        knob.Position = val and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+        knob.Position = val and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
         if callback then callback(val) end
     end)
 
@@ -1520,8 +1568,8 @@ local function createMovementDropdown(parent)
     label.Parent = frame
 
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 150, 0, 30)
-    button.Position = UDim2.new(1, -150, 0.5, -15)
+    button.Size = UDim2.new(0, 156, 0, 32)
+    button.Position = UDim2.new(1, -156, 0.5, -16)
     button.BackgroundColor3 = Color3.fromRGB(16, 25, 37)
     button.BorderSizePixel = 1
     button.BorderColor3 = Color3.fromRGB(37, 136, 199)
@@ -1537,13 +1585,13 @@ local function createMovementDropdown(parent)
     corner.Parent = button
 
     local menu = Instance.new("Frame")
-    menu.Size = UDim2.new(0, 150, 0, 68)
-    menu.Position = UDim2.new(1, -150, 1, 2)
+    menu.Size = UDim2.new(0, 156, 0, 68)
+    menu.Position = UDim2.new(1, -156, 1, 2)
     menu.BackgroundColor3 = Color3.fromRGB(12, 18, 24)
     menu.BorderSizePixel = 1
     menu.BorderColor3 = Color3.fromRGB(37, 136, 199)
     menu.Visible = false
-    menu.ZIndex = 20
+    menu.ZIndex = 50
     menu.Parent = frame
 
     local menuCorner = Instance.new("UICorner")
@@ -1657,48 +1705,46 @@ local function buildFarmsTab()
         end
     end)
 
-    local card2, content2 = createCard(scroll, "Session", "🔹")
-    local counterLabel = Instance.new("TextLabel")
-    counterLabel.Size = UDim2.new(1, 0, 0, 20)
-    counterLabel.BackgroundTransparency = 1
-    counterLabel.Text = "Route 0 / " .. TP_CAP .. "  •  Idle"
-    counterLabel.TextColor3 = Color3.fromRGB(0, 198, 188)
-    counterLabel.TextSize = 12
-    counterLabel.Font = Enum.Font.Gotham
-    counterLabel.TextXAlignment = Enum.TextXAlignment.Left
-    counterLabel.Parent = content2
+    local card2, content2 = createCard(scroll, "Controls", "↻")
+
+    local resetHint = Instance.new("TextLabel")
+    resetHint.Size = UDim2.new(1, 0, 0, 28)
+    resetHint.BackgroundTransparency = 1
+    resetHint.Text = "Restart your character and refresh the farm route state."
+    resetHint.TextColor3 = Color3.fromRGB(126, 143, 153)
+    resetHint.TextSize = 10
+    resetHint.Font = Enum.Font.Gotham
+    resetHint.TextXAlignment = Enum.TextXAlignment.Left
+    resetHint.TextYAlignment = Enum.TextYAlignment.Center
+    resetHint.TextWrapped = true
+    resetHint.Parent = content2
 
     local resetBtn = Instance.new("TextButton")
-    resetBtn.Size = UDim2.new(1, 0, 0, 32)
-    resetBtn.BackgroundColor3 = Color3.fromRGB(20, 107, 145)
-    resetBtn.Text = "Reset state"
-    resetBtn.TextColor3 = Color3.fromRGB(239, 255, 252)
-    resetBtn.TextSize = 12
-    resetBtn.Font = Enum.Font.Gotham
+    resetBtn.Size = UDim2.new(1, 0, 0, 38)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(20, 33, 47)
+    resetBtn.Text = "↻   Reset Farm State"
+    resetBtn.TextColor3 = Color3.fromRGB(218, 235, 246)
+    resetBtn.TextSize = 11
+    resetBtn.Font = Enum.Font.GothamSemibold
     resetBtn.BorderSizePixel = 0
+    resetBtn.AutoButtonColor = false
     resetBtn.Parent = content2
     local resetCorner = Instance.new("UICorner")
-    resetCorner.CornerRadius = UDim.new(0, 6)
+    resetCorner.CornerRadius = UDim.new(0, 9)
     resetCorner.Parent = resetBtn
+    local resetStroke = Instance.new("UIStroke")
+    resetStroke.Color = Color3.fromRGB(37, 136, 199)
+    resetStroke.Transparency = 0.55
+    resetStroke.Thickness = 1
+    resetStroke.Parent = resetBtn
+    resetBtn.MouseEnter:Connect(function()
+        resetBtn.BackgroundColor3 = Color3.fromRGB(27, 49, 69)
+    end)
+    resetBtn.MouseLeave:Connect(function()
+        resetBtn.BackgroundColor3 = Color3.fromRGB(20, 33, 47)
+    end)
     resetBtn.MouseButton1Click:Connect(function()
         task.spawn(function() forceResetCharacter() end)
-    end)
-
-    task.spawn(function()
-        local lastUsed = -1
-        local lastCurrent = ""
-        while state.running do
-            local used = teleportSystem.usedTeleports
-            local current = selectedFarmKey or "None"
-            if used ~= lastUsed or current ~= lastCurrent then
-                counterLabel.Text = "Route " .. used .. " / " .. TP_CAP .. "  •  " .. current
-                counterLabel.TextColor3 = used >= TP_CAP and Color3.fromRGB(255, 196, 92) or Color3.fromRGB(0, 217, 196)
-                routeStatus.Text = used .. " / " .. TP_CAP
-                lastUsed = used
-                lastCurrent = current
-            end
-            task.wait(0.5)
-        end
     end)
 
     -- Adjust card sizes
