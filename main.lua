@@ -30,6 +30,7 @@ local state = {
     cashTransfer = { selectedName = "", running = false },
     running = true, minimized = false, currentTab = "Farms",
     farmMovementMode = "TP",
+    tweenSpeed = 30,
     autoReExecute = true,
     loadedConfigName = nil
 }
@@ -102,6 +103,7 @@ local function saveConfig(name)
     local data = {
         farms = state.farms,
         farmMovementMode = state.farmMovementMode,
+        tweenSpeed = state.tweenSpeed,
         
         protection = state.protection,
         antiAdmin = { enabled = antiAdmin.enabled, autoLeave = antiAdmin.autoLeave },
@@ -586,9 +588,13 @@ local function chainTeleport(pos)
 
     -- Tween mode: constant 30 studs/second, independent of distance.
     local distance = (hrp.Position - target.Position).Magnitude
-    if distance <= 1 then return true end
+    if distance <= 1 then
+        if myMovement == movementGeneration then useTweenMovement() end
+        return true
+    end
 
-    local duration = distance / 30
+    local speed = math.clamp(tonumber(state.tweenSpeed) or 30, 10, 60)
+    local duration = distance / speed
     local driver = Instance.new("CFrameValue")
     driver.Value = hrp.CFrame
 
@@ -622,6 +628,7 @@ local function chainTeleport(pos)
     -- reset cycle as TP, while allowing the farm loop to interact with
     -- the target immediately after arriving.
     if myMovement == movementGeneration then
+        task.wait(0.04)
         useTweenMovement()
     end
     return true
@@ -658,27 +665,52 @@ local function firePromptLong(prompt, duration)
 end
 
 -- Reliable interaction helper for floor cash, ATMs/registers, and other ProximityPrompt farm targets.
-local function collectPrompt(prompt, attempts, holdTime)
-    if not prompt then return false end
-    attempts = attempts or 4
-    holdTime = holdTime or 0.12
-    local collected = false
-    for _ = 1, attempts do
-        if not prompt or not prompt.Parent then break end
-        if prompt.Enabled then
-            if fireproximityprompt then
-                local ok = pcall(function() fireproximityprompt(prompt, holdTime, true) end)
-                if not ok then pcall(function() fireproximityprompt(prompt) end) end
-                collected = true
-            else
-                pcall(function() prompt:InputHoldBegin(); task.wait(holdTime); prompt:InputHoldEnd() end)
-                collected = true
-            end
-        end
-        task.wait(0.08)
-        if not prompt.Parent or not prompt.Enabled then break end
+local function collectPrompt(prompt, kind)
+    if not prompt or not prompt.Parent then return false end
+
+    -- Match the reference farm interaction logic: registers/ATMs get
+    -- several prompt fires plus a long hold; floor cash gets a shorter
+    -- double-fire + hold sequence. This is shared by both TP and Tween.
+    local quickAttempts, holdTime, gap = 1, 0.08, 0.04
+    if kind == "Register" or kind == "ATM" then
+        quickAttempts, holdTime, gap = 5, 1.2, 0.04
+    elseif kind == "Cash" then
+        quickAttempts, holdTime, gap = 2, 0.3, 0.03
+    elseif kind == "Dumpster" then
+        quickAttempts, holdTime, gap = 1, 0.08, 0.04
     end
-    return collected
+
+    local fired = false
+    for _ = 1, quickAttempts do
+        if not prompt or not prompt.Parent or not prompt.Enabled then break end
+        if fireproximityprompt then
+            pcall(function() fireproximityprompt(prompt) end)
+        else
+            pcall(function()
+                prompt:InputHoldBegin()
+                task.wait(0.08)
+                prompt:InputHoldEnd()
+            end)
+        end
+        fired = true
+        task.wait(gap)
+    end
+
+    if prompt and prompt.Parent and prompt.Enabled and holdTime > 0 then
+        if fireproximityprompt then
+            pcall(function() fireproximityprompt(prompt) end)
+        else
+            pcall(function()
+                prompt:InputHoldBegin()
+                task.wait(holdTime)
+                prompt:InputHoldEnd()
+            end)
+        end
+        fired = true
+    end
+
+    task.wait(0.05)
+    return fired
 end
 
 local IDLE_COORDINATES = Vector3.new(-1383.37, -6.14, -601.22)
@@ -726,42 +758,49 @@ end
 
 local function getRegisters()
     local hrp = getHRP()
-    if not hrp then return nil, nil end
+    if not hrp then return nil, nil, nil end
     local map = Workspace:FindFirstChild("HardTime") or Workspace
-    local closest, cPrompt, cDist = nil, nil, 999999999
+    local closest, cPrompt, cDist, cKind = nil, nil, 999999999, nil
     local memory = teleportSystem.farms.Register.memory
+
     for _, desc in ipairs(map:GetDescendants()) do
         if desc:IsA("BasePart") and not memory[desc] then
-            local name = string.lower(desc.Name)
-            local pname = desc.Parent and string.lower(desc.Parent.Name) or ""
-            local isRegister = name:find("register") or pname:find("register")
-            local isATM = name:find("atm") or pname:find("atm") or name:find("cashmachine") or pname:find("cashmachine") or name:find("cash_machine") or pname:find("cash_machine")
-            if (isRegister or isATM) and not name:find("button") and not name:find("gui") then
-                -- Registers/ATMs are valid farm targets even though their names
-                -- may match the generic cash-register/ATM blacklist. Keep the
-                -- broader bank/vault blacklist protection in place.
-                local blocked = false
-                local parent = desc.Parent
+            local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
+            if prompt and prompt.Enabled then
+                local isRegister, isATM, blocked = false, false, false
+                local node = desc
                 local depth = 0
-                while parent and parent ~= Workspace and depth < 8 do
-                    local pn = string.lower(parent.Name)
-                    if pn:find("casino") or pn:find("vault") or pn:find("gunpowder") or pn:find("safebox") or pn:find("deposit") then
+                while node and node ~= Workspace and depth < 8 do
+                    local n = string.lower(node.Name)
+                    if n:find("register") or n:find("cashregister") then isRegister = true end
+                    if n:find("atm") or n:find("cashmachine") or n:find("cash_machine") then isATM = true end
+                    if n:find("casino") or n:find("vault") or n:find("gunpowder") or
+                       n:find("gunpowder_vault") or n:find("safebox") or n:find("deposit") then
                         blocked = true
                         break
                     end
-                    parent = parent.Parent
+                    node = node.Parent
                     depth = depth + 1
                 end
-                if blocked then continue end
-                local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
-                if prompt and prompt.Enabled then
+
+                local name = string.lower(desc.Name)
+                if name:find("button") or name:find("gui") then
+                    isRegister, isATM = false, false
+                end
+
+                if not blocked and (isRegister or isATM) then
                     local dist = (hrp.Position - desc.Position).Magnitude
-                    if dist < cDist then cDist = dist; closest = desc; cPrompt = prompt end
+                    if dist < cDist then
+                        cDist = dist
+                        closest = desc
+                        cPrompt = prompt
+                        cKind = isATM and "ATM" or "Register"
+                    end
                 end
             end
         end
     end
-    return closest, cPrompt
+    return closest, cPrompt, cKind
 end
 
 local function getDumpsters()
@@ -1053,12 +1092,12 @@ local function superFarmLoop(myGen)
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local didSomething = false
         if not didSomething and teleportSystem.usedTeleports < TP_CAP and not isResetting then
-            local reg, regPrompt = getRegisters()
+            local reg, regPrompt, regKind = getRegisters()
             if reg and regPrompt then
                 local height = reg.Size.Y or 2
                 chainTeleport(reg.Position + Vector3.new(0, height + 1.5, 0))
                 task.wait(0.05)
-                collectPrompt(regPrompt, 7, 0.2)
+                collectPrompt(regPrompt, regKind or "Register")
                 teleportSystem.farms.Register.memory[reg] = true
                 teleportSystem.farms.Register.memory[regPrompt] = true
                 task.wait(0.4)
@@ -1069,7 +1108,7 @@ local function superFarmLoop(myGen)
                     if not teleportSystem.farms.Register.memory[c.Part] then
                         chainTeleport(c.Part.Position + Vector3.new(0, 2, 0))
                         task.wait(0.05)
-                        if c.Prompt then collectPrompt(c.Prompt, 5, 0.15) end
+                        if c.Prompt then collectPrompt(c.Prompt, "Cash") end
                         teleportSystem.farms.Register.memory[c.Part] = true
                         teleportSystem.farms.Register.memory[c.Prompt] = true
                         task.wait(0.05)
@@ -1083,7 +1122,7 @@ local function superFarmLoop(myGen)
             if cash and cashPrompt then
                 chainTeleport(cash.Position + Vector3.new(0, -4, 0))
                 task.wait(0.05)
-                collectPrompt(cashPrompt, 5, 0.15)
+                collectPrompt(cashPrompt, "Cash")
                 teleportSystem.farms.Cash.memory[cash] = true
                 teleportSystem.farms.Cash.memory[cashPrompt] = true
                 didSomething = true
@@ -1095,7 +1134,7 @@ local function superFarmLoop(myGen)
                 local dump = dumpsters[1]
                 chainTeleport(dump.Part.Position)
                 task.wait(0.05)
-                collectPrompt(dump.Prompt, 3, 0.12)
+                collectPrompt(dump.Prompt, "Dumpster")
                 teleportSystem.farms.Dumpster.memory[dump.Part] = true
                 teleportSystem.farms.Dumpster.memory[dump.Prompt] = true
                 didSomething = true
@@ -1124,7 +1163,7 @@ local function dumpsterLoop(myGen)
                 if myGen ~= teleportSystem.generation then return end
                 chainTeleport(d.Part.Position)
                 task.wait(0.05)
-                if d.Prompt then collectPrompt(d.Prompt, 3, 0.12) end
+                if d.Prompt then collectPrompt(d.Prompt, "Dumpster") end
                 teleportSystem.farms.Dumpster.memory[d.Part] = true
                 teleportSystem.farms.Dumpster.memory[d.Prompt] = true
                 task.wait(0.05)
@@ -1149,7 +1188,7 @@ local function cashLoop(myGen)
         if target and prompt then
             chainTeleport(target.Position + Vector3.new(0, -4, 0))
             task.wait(0.05)
-            if prompt then collectPrompt(prompt, 5, 0.15) end
+            if prompt then collectPrompt(prompt, "Cash") end
             teleportSystem.farms.Cash.memory[target] = true
             teleportSystem.farms.Cash.memory[prompt] = true
             task.wait(0.1)
@@ -1165,13 +1204,13 @@ local function regLoop(myGen)
     while state.farms.Register and state.running do
         if myGen ~= teleportSystem.generation then return end
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
-        local target, prompt = getRegisters()
+        local target, prompt, targetKind = getRegisters()
         if target and prompt then
             local height = target.Size.Y or 2
             chainTeleport(target.Position + Vector3.new(0, height + 1.5, 0))
             task.wait(0.05)
             if prompt and prompt.Enabled then
-                collectPrompt(prompt, 7, 0.2)
+                collectPrompt(prompt, targetKind or "Register")
             end
             teleportSystem.farms.Register.memory[target] = true
             teleportSystem.farms.Register.memory[prompt] = true
@@ -1208,6 +1247,9 @@ local function applyConfigData(data)
     if not data then return end
     if data.farmMovementMode == "TP" or data.farmMovementMode == "Tween" then
         state.farmMovementMode = data.farmMovementMode
+    end
+    if tonumber(data.tweenSpeed) then
+        state.tweenSpeed = math.clamp(tonumber(data.tweenSpeed), 10, 60)
     end
     if data.farms then
         for k, v in pairs(data.farms) do state.farms[k] = v end
@@ -1599,10 +1641,99 @@ local function createToggle(parent, name, stateRef, key, callback)
     return frame
 end
 
-local function createMovementDropdown(parent)
+local function createTweenSpeedSlider(parent)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 58)
+    frame.BackgroundTransparency = 1
+    frame.Visible = state.farmMovementMode == "Tween"
+    frame.LayoutOrder = 2
+    frame.Parent = parent
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.55, 0, 0, 22)
+    label.BackgroundTransparency = 1
+    label.Text = "Tween Speed  " .. tostring(math.floor(state.tweenSpeed)) .. " studs/s"
+    label.TextColor3 = Color3.fromRGB(218, 227, 231)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local track = Instance.new("Frame")
+    track.Size = UDim2.new(1, 0, 0, 6)
+    track.Position = UDim2.new(0, 0, 0, 34)
+    track.BackgroundColor3 = Color3.fromRGB(34, 52, 65)
+    track.BorderSizePixel = 0
+    track.Parent = frame
+    local tc = Instance.new("UICorner")
+    tc.CornerRadius = UDim.new(1, 0)
+    tc.Parent = track
+
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((state.tweenSpeed - 10) / 50, 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(45, 191, 139)
+    fill.BorderSizePixel = 0
+    fill.Parent = track
+    local fc = Instance.new("UICorner")
+    fc.CornerRadius = UDim.new(1, 0)
+    fc.Parent = fill
+
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 14, 0, 14)
+    knob.AnchorPoint = Vector2.new(0.5, 0.5)
+    knob.Position = UDim2.new((state.tweenSpeed - 10) / 50, 0, 0.5, 0)
+    knob.BackgroundColor3 = Color3.fromRGB(232, 241, 244)
+    knob.BorderSizePixel = 0
+    knob.Parent = track
+    local kc = Instance.new("UICorner")
+    kc.CornerRadius = UDim.new(1, 0)
+    kc.Parent = knob
+
+    local hit = Instance.new("TextButton")
+    hit.Size = UDim2.new(1, 16, 0, 28)
+    hit.Position = UDim2.new(0, -8, 0, -11)
+    hit.BackgroundTransparency = 1
+    hit.Text = ""
+    hit.AutoButtonColor = false
+    hit.Parent = track
+
+    local dragging = false
+    local function setFromX(x)
+        local left = track.AbsolutePosition.X
+        local width = math.max(track.AbsoluteSize.X, 1)
+        local alpha = math.clamp((x - left) / width, 0, 1)
+        local value = math.floor(10 + alpha * 50 + 0.5)
+        state.tweenSpeed = value
+        label.Text = "Tween Speed  " .. tostring(value) .. " studs/s"
+        fill.Size = UDim2.new(alpha, 0, 1, 0)
+        knob.Position = UDim2.new(alpha, 0, 0.5, 0)
+    end
+
+    hit.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            setFromX(input.Position.X)
+        end
+    end)
+    hit.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            setFromX(input.Position.X)
+        end
+    end)
+
+    return frame
+end
+
+local function createMovementDropdown(parent, onChanged)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, 42)
     frame.BackgroundTransparency = 1
+    frame.LayoutOrder = 1
     frame.Parent = parent
 
     local label = Instance.new("TextLabel")
@@ -1666,6 +1797,7 @@ local function createMovementDropdown(parent)
             state.farmMovementMode = name
             button.Text = name .. "  ▾"
             menu.Visible = false
+            if onChanged then onChanged(name) end
         end)
     end
 
@@ -1694,7 +1826,17 @@ local function buildFarmsTab()
     titleText.Text = "Automation"
 
     local card1, content1 = createCard(scroll, "Automation", "⚡")
-    createMovementDropdown(content1)
+    local tweenSpeedSlider
+    createMovementDropdown(content1, function(mode)
+        if tweenSpeedSlider then
+            tweenSpeedSlider.Visible = mode == "Tween"
+        end
+        task.defer(function()
+            card1.Size = UDim2.new(1, 0, 0, content1.UIListLayout.AbsoluteContentSize.Y + 62)
+            scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 24)
+        end)
+    end)
+    tweenSpeedSlider = createTweenSpeedSlider(content1)
     createToggle(content1, "All Routes", state.farms, "SuperFarm", function(val)
         if val then
             for _, key in ipairs({"Dumpster", "Cash", "Register"}) do state.farms[key] = false end
