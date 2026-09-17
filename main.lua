@@ -722,6 +722,22 @@ local function collectPromptLong(prompt, duration)
     return false
 end
 
+local function collectUntilGone(part, prompt, attempts, holdDuration)
+    if not part or not prompt then return false end
+    attempts = attempts or 3
+    holdDuration = holdDuration or 0.25
+    for _ = 1, attempts do
+        if not part.Parent or not prompt.Parent or not prompt.Enabled then
+            return true
+        end
+        collectPrompt(prompt)
+        if holdDuration > 0 then collectPromptLong(prompt, holdDuration) end
+        task.wait(0.05)
+    end
+    -- Only treat the target as collected when the game actually made it unavailable.
+    return (not part.Parent) or (not prompt.Parent) or (not prompt.Enabled)
+end
+
 local IDLE_COORDINATES = Vector3.new(-1383.37, -6.14, -601.22)
 
 local function teleportToIdleForce()
@@ -1110,106 +1126,85 @@ local function superFarmLoop(myGen)
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local didSomething = false
 
-        -- Reference order: Register -> newly spawned floor Cash -> Dumpster.
-        if not didSomething and teleportSystem.usedTeleports < TP_CAP and not isResetting then
-            local reg, regPrompt = getRegisters()
-            if reg and regPrompt and reg.Parent and regPrompt.Parent and regPrompt.Enabled then
-                local height = reg.Size.Y or 2
-                chainTeleport(reg.Position + Vector3.new(0, height + 1.5, 0))
+        -- Register route: collect the actual register first, then look for the
+        -- cash it really spawned. Never predict a cash location.
+        local reg, regPrompt = getRegisters()
+        if reg and regPrompt and reg.Parent and regPrompt.Parent and regPrompt.Enabled
+            and teleportSystem.usedTeleports < TP_CAP and not isResetting then
+            local height = reg.Size.Y or 2
+            if chainTeleport(reg.Position + Vector3.new(0, height + 1.5, 0)) then
                 task.wait(0.05)
-
-                -- Re-check readiness after movement. Never assume the register
-                -- is still available after arriving.
                 if reg.Parent and regPrompt.Parent and regPrompt.Enabled then
-                    for i = 1, 5 do
-                        collectPrompt(regPrompt)
-                        task.wait(0.04)
-                    end
-                    collectPromptLong(regPrompt, 1.2)
+                    for i = 1, 5 do firePrompt(regPrompt); task.wait(0.04) end
+                    firePromptLong(regPrompt, 1.2)
                     teleportSystem.farms.Register.memory[reg] = true
                     teleportSystem.farms.Register.memory[regPrompt] = true
+                    didSomething = true
 
-                    -- Reference behavior: wait for actual spawned floor cash near
-                    -- the register. Do not predict a spawn position.
-                    local spawned = {}
-                    local cashDeadline = os.clock() + 2.0
-                    repeat
-                        task.wait(0.1)
-                        spawned = findCashNear(reg.Position, 50)
-                        if #spawned > 0 then break end
-                    until os.clock() >= cashDeadline or isResetting or myGen ~= teleportSystem.generation
-
+                    task.wait(0.4)
+                    local spawned = findCashNear(reg.Position, 50)
                     for _, c in ipairs(spawned) do
                         if teleportSystem.usedTeleports >= TP_CAP or isResetting then break end
                         if myGen ~= teleportSystem.generation then return end
-                        if c.Part and c.Part.Parent and c.Prompt and c.Prompt.Parent and
-                           c.Prompt.Enabled and not teleportSystem.farms.Register.memory[c.Part] then
-                            chainTeleport(c.Part.Position + Vector3.new(0, 2, 0))
-                            task.wait(0.05)
-
-                            -- Target must still exist and be ready after arrival.
-                            if c.Part.Parent and c.Prompt.Parent and c.Prompt.Enabled then
-                                collectPrompt(c.Prompt)
-                                task.wait(0.03)
-                                collectPromptLong(c.Prompt, 0.3)
-                                teleportSystem.farms.Register.memory[c.Part] = true
-                                teleportSystem.farms.Register.memory[c.Prompt] = true
+                        if c.Part and c.Part.Parent and c.Prompt and c.Prompt.Parent and c.Prompt.Enabled
+                            and not teleportSystem.farms.Register.memory[c.Part] then
+                            if chainTeleport(c.Part.Position + Vector3.new(0, 2, 0)) then
+                                task.wait(0.05)
+                                if c.Part.Parent and c.Prompt.Parent and c.Prompt.Enabled then
+                                    firePrompt(c.Prompt)
+                                    task.wait(0.03)
+                                    firePromptLong(c.Prompt, 0.3)
+                                    teleportSystem.farms.Register.memory[c.Part] = true
+                                    teleportSystem.farms.Register.memory[c.Prompt] = true
+                                end
                             end
-                            task.wait(0.05)
                         end
                     end
-                    didSomething = true
                 end
             end
         end
 
-        if not didSomething and teleportSystem.usedTeleports < TP_CAP and not isResetting then
+        -- Cash route: only real, currently spawned floor cash.
+        if teleportSystem.usedTeleports < TP_CAP and not isResetting and myGen == teleportSystem.generation then
             local cash, cashPrompt = getCash()
             if cash and cashPrompt and cash.Parent and cashPrompt.Parent and cashPrompt.Enabled then
-                chainTeleport(cash.Position + Vector3.new(0, -4, 0))
-                task.wait(0.05)
-                if cash.Parent and cashPrompt.Parent and cashPrompt.Enabled then
-                    collectPrompt(cashPrompt)
-                    task.wait(0.03)
-                    collectPrompt(cashPrompt)
-                    task.wait(0.03)
-                    collectPromptLong(cashPrompt, 0.3)
-                    teleportSystem.farms.Cash.memory[cash] = true
-                    teleportSystem.farms.Cash.memory[cashPrompt] = true
-                    didSomething = true
+                if chainTeleport(cash.Position + Vector3.new(0, -4, 0)) then
+                    task.wait(0.05)
+                    if cash.Parent and cashPrompt.Parent and cashPrompt.Enabled then
+                        firePrompt(cashPrompt)
+                        task.wait(0.03)
+                        firePrompt(cashPrompt)
+                        task.wait(0.03)
+                        firePromptLong(cashPrompt, 0.3)
+                        teleportSystem.farms.Cash.memory[cash] = true
+                        teleportSystem.farms.Cash.memory[cashPrompt] = true
+                        didSomething = true
+                    end
                 end
             end
         end
 
-        if not didSomething and teleportSystem.usedTeleports < TP_CAP and not isResetting then
+        -- Dumpster route.
+        if teleportSystem.usedTeleports < TP_CAP and not isResetting and myGen == teleportSystem.generation then
             local dumpsters = getDumpsters()
-            if #dumpsters > 0 then
-                local dump = dumpsters[1]
-                if dump.Part and dump.Part.Parent and dump.Prompt and dump.Prompt.Parent and dump.Prompt.Enabled then
-                    chainTeleport(dump.Part.Position)
+            local dump = dumpsters[1]
+            if dump and dump.Part and dump.Prompt and dump.Part.Parent and dump.Prompt.Parent and dump.Prompt.Enabled then
+                if chainTeleport(dump.Part.Position) then
                     task.wait(0.05)
                     if dump.Part.Parent and dump.Prompt.Parent and dump.Prompt.Enabled then
-                        collectPrompt(dump.Prompt)
+                        firePrompt(dump.Prompt)
                         teleportSystem.farms.Dumpster.memory[dump.Part] = true
                         teleportSystem.farms.Dumpster.memory[dump.Prompt] = true
                         didSomething = true
-                    end
-                    if didSomething and #dumpsters <= 1 then
-                        task.wait(0.3)
-                        dumpsterSellRoutine()
                     end
                 end
             end
         end
 
         if not didSomething then
-            teleportToIdleForce()
-            task.wait(1.5)
-            for _, farm in pairs(teleportSystem.farms) do
-                if #farm.memory > 20 then farm.memory = {} end
-            end
+            task.wait(0.35)
         else
-            task.wait(0.1)
+            task.wait(0.08)
         end
     end
 end
@@ -1219,30 +1214,28 @@ local function dumpsterLoop(myGen)
         if myGen ~= teleportSystem.generation then return end
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local dumpsters = getDumpsters()
-        if #dumpsters > 0 then
-            for _, d in ipairs(dumpsters) do
-                if not state.farms.Dumpster or isResetting then break end
-                if teleportSystem.usedTeleports >= TP_CAP then break end
-                if myGen ~= teleportSystem.generation then return end
-                if d.Part and d.Part.Parent and d.Prompt and d.Prompt.Parent and d.Prompt.Enabled then
-                    chainTeleport(d.Part.Position)
+        local did = false
+        for _, d in ipairs(dumpsters) do
+            if not state.farms.Dumpster or isResetting or teleportSystem.usedTeleports >= TP_CAP then break end
+            if myGen ~= teleportSystem.generation then return end
+            if d.Part and d.Prompt and d.Part.Parent and d.Prompt.Parent and d.Prompt.Enabled then
+                if chainTeleport(d.Part.Position) then
                     task.wait(0.05)
                     if d.Part.Parent and d.Prompt.Parent and d.Prompt.Enabled then
-                        collectPrompt(d.Prompt)
-                        teleportSystem.farms.Dumpster.memory[d.Part] = true
-                        teleportSystem.farms.Dumpster.memory[d.Prompt] = true
+                        local collected = collectUntilGone(d.Part, d.Prompt, 3, 0.2)
+                        if collected then
+                            teleportSystem.farms.Dumpster.memory[d.Part] = true
+                            teleportSystem.farms.Dumpster.memory[d.Prompt] = true
+                        end
+                        did = true
                     end
-                    task.wait(0.05)
                 end
             end
-            if state.farms.Dumpster and teleportSystem.usedTeleports < TP_CAP and not isResetting then
-                dumpsterSellRoutine()
-                task.wait(0.3)
-            end
-        else
-            teleportToIdleForce()
-            task.wait(2)
-            if #teleportSystem.farms.Dumpster.memory > 20 then teleportSystem.farms.Dumpster.memory = {} end
+        end
+        if did and state.farms.Dumpster and teleportSystem.usedTeleports < TP_CAP and not isResetting then
+            dumpsterSellRoutine()
+        elseif not did then
+            task.wait(0.35)
         end
     end
 end
@@ -1253,22 +1246,18 @@ local function cashLoop(myGen)
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local target, prompt = getCash()
         if target and prompt and target.Parent and prompt.Parent and prompt.Enabled then
-            chainTeleport(target.Position + Vector3.new(0, -4, 0))
-            task.wait(0.05)
-            if target.Parent and prompt.Parent and prompt.Enabled then
-                collectPrompt(prompt)
-                task.wait(0.03)
-                collectPrompt(prompt)
-                task.wait(0.03)
-                collectPromptLong(prompt, 0.3)
-                teleportSystem.farms.Cash.memory[target] = true
-                teleportSystem.farms.Cash.memory[prompt] = true
-                task.wait(0.1)
+            if chainTeleport(target.Position + Vector3.new(0, -4, 0)) then
+                task.wait(0.05)
+                if target.Parent and prompt.Parent and prompt.Enabled then
+                    local collected = collectUntilGone(target, prompt, 3, 0.2)
+                    if collected then
+                        teleportSystem.farms.Cash.memory[target] = true
+                        teleportSystem.farms.Cash.memory[prompt] = true
+                    end
+                end
             end
         else
-            teleportToIdleForce()
-            task.wait(2)
-            if #teleportSystem.farms.Cash.memory > 20 then teleportSystem.farms.Cash.memory = {} end
+            task.wait(0.35)
         end
     end
 end
@@ -1280,23 +1269,39 @@ local function regLoop(myGen)
         local target, prompt = getRegisters()
         if target and prompt and target.Parent and prompt.Parent and prompt.Enabled then
             local height = target.Size.Y or 2
-            chainTeleport(target.Position + Vector3.new(0, height + 1.5, 0))
-            task.wait(0.05)
-            if target.Parent and prompt.Parent and prompt.Enabled then
-                for i = 1, 5 do
-                    collectPrompt(prompt)
-                    task.wait(0.04)
+            if chainTeleport(target.Position + Vector3.new(0, height + 1.5, 0)) then
+                task.wait(0.05)
+                if target.Parent and prompt.Parent and prompt.Enabled then
+                    for i = 1, 5 do firePrompt(prompt); task.wait(0.04) end
+                    firePromptLong(prompt, 1.2)
+                    teleportSystem.farms.Register.memory[target] = true
+                    teleportSystem.farms.Register.memory[prompt] = true
+
+                    -- Register route also collects the cash that actually spawns
+                    -- from this register, matching the route's intended behavior.
+                    task.wait(0.4)
+                    local spawned = findCashNear(target.Position, 50)
+                    for _, c in ipairs(spawned) do
+                        if not state.farms.Register or isResetting or teleportSystem.usedTeleports >= TP_CAP then break end
+                        if myGen ~= teleportSystem.generation then return end
+                        if c.Part and c.Part.Parent and c.Prompt and c.Prompt.Parent and c.Prompt.Enabled
+                            and not teleportSystem.farms.Register.memory[c.Part] then
+                            if chainTeleport(c.Part.Position + Vector3.new(0, 2, 0)) then
+                                task.wait(0.05)
+                                if c.Part.Parent and c.Prompt.Parent and c.Prompt.Enabled then
+                                    firePrompt(c.Prompt)
+                                    task.wait(0.03)
+                                    firePromptLong(c.Prompt, 0.3)
+                                    teleportSystem.farms.Register.memory[c.Part] = true
+                                    teleportSystem.farms.Register.memory[c.Prompt] = true
+                                end
+                            end
+                        end
+                    end
                 end
-                collectPromptLong(prompt, 1.2)
-                teleportSystem.farms.Register.memory[target] = true
-                teleportSystem.farms.Register.memory[prompt] = true
-                task.wait(0.5)
-                task.wait(0.1)
             end
         else
-            teleportToIdleForce()
-            task.wait(2)
-            if #teleportSystem.farms.Register.memory > 20 then teleportSystem.farms.Register.memory = {} end
+            task.wait(0.35)
         end
     end
 end
