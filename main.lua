@@ -541,6 +541,23 @@ end
 local movementTween = nil
 local movementGeneration = 0
 
+-- Tween has its own reset counter so the original TP reset behavior stays
+-- untouched. The reset is delayed very slightly after the 8th arrival so
+-- the interaction at that destination has time to fire.
+local function useTweenMovement()
+    teleportSystem.usedTeleports = teleportSystem.usedTeleports + 1
+    if teleportSystem.usedTeleports >= TP_CAP and not isResetting then
+        task.delay(0.2, function()
+            if not isResetting and teleportSystem.usedTeleports >= TP_CAP then
+                isResetting = true
+                task.spawn(function() forceResetCharacter() end)
+            end
+        end)
+        return true
+    end
+    return false
+end
+
 local function chainTeleport(pos)
     local hrp = getHRP()
     if not hrp then return false end
@@ -600,6 +617,13 @@ local function chainTeleport(pos)
         finalHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
         finalHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
     end
+
+    -- Count tween movements too. This keeps the exact same 8-movement
+    -- reset cycle as TP, while allowing the farm loop to interact with
+    -- the target immediately after arriving.
+    if myMovement == movementGeneration then
+        useTweenMovement()
+    end
     return true
 end
 
@@ -631,6 +655,30 @@ local function firePromptLong(prompt, duration)
         return true
     end
     return false
+end
+
+-- Reliable interaction helper for floor cash, ATMs/registers, and other ProximityPrompt farm targets.
+local function collectPrompt(prompt, attempts, holdTime)
+    if not prompt then return false end
+    attempts = attempts or 4
+    holdTime = holdTime or 0.12
+    local collected = false
+    for _ = 1, attempts do
+        if not prompt or not prompt.Parent then break end
+        if prompt.Enabled then
+            if fireproximityprompt then
+                local ok = pcall(function() fireproximityprompt(prompt, holdTime, true) end)
+                if not ok then pcall(function() fireproximityprompt(prompt) end) end
+                collected = true
+            else
+                pcall(function() prompt:InputHoldBegin(); task.wait(holdTime); prompt:InputHoldEnd() end)
+                collected = true
+            end
+        end
+        task.wait(0.08)
+        if not prompt.Parent or not prompt.Enabled then break end
+    end
+    return collected
 end
 
 local IDLE_COORDINATES = Vector3.new(-1383.37, -6.14, -601.22)
@@ -686,8 +734,25 @@ local function getRegisters()
         if desc:IsA("BasePart") and not memory[desc] then
             local name = string.lower(desc.Name)
             local pname = desc.Parent and string.lower(desc.Parent.Name) or ""
-            if (name:find("register") or pname:find("register")) and not name:find("button") and not name:find("gui") then
-                if isBlacklisted(desc) then continue end
+            local isRegister = name:find("register") or pname:find("register")
+            local isATM = name:find("atm") or pname:find("atm") or name:find("cashmachine") or pname:find("cashmachine") or name:find("cash_machine") or pname:find("cash_machine")
+            if (isRegister or isATM) and not name:find("button") and not name:find("gui") then
+                -- Registers/ATMs are valid farm targets even though their names
+                -- may match the generic cash-register/ATM blacklist. Keep the
+                -- broader bank/vault blacklist protection in place.
+                local blocked = false
+                local parent = desc.Parent
+                local depth = 0
+                while parent and parent ~= Workspace and depth < 8 do
+                    local pn = string.lower(parent.Name)
+                    if pn:find("casino") or pn:find("vault") or pn:find("gunpowder") or pn:find("safebox") or pn:find("deposit") then
+                        blocked = true
+                        break
+                    end
+                    parent = parent.Parent
+                    depth = depth + 1
+                end
+                if blocked then continue end
                 local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
                 if prompt and prompt.Enabled then
                     local dist = (hrp.Position - desc.Position).Magnitude
@@ -993,8 +1058,7 @@ local function superFarmLoop(myGen)
                 local height = reg.Size.Y or 2
                 chainTeleport(reg.Position + Vector3.new(0, height + 1.5, 0))
                 task.wait(0.05)
-                for i = 1, 5 do firePrompt(regPrompt); task.wait(0.04) end
-                firePromptLong(regPrompt, 1.2)
+                collectPrompt(regPrompt, 7, 0.2)
                 teleportSystem.farms.Register.memory[reg] = true
                 teleportSystem.farms.Register.memory[regPrompt] = true
                 task.wait(0.4)
@@ -1005,7 +1069,7 @@ local function superFarmLoop(myGen)
                     if not teleportSystem.farms.Register.memory[c.Part] then
                         chainTeleport(c.Part.Position + Vector3.new(0, 2, 0))
                         task.wait(0.05)
-                        if c.Prompt and c.Prompt.Enabled then firePrompt(c.Prompt); task.wait(0.03); firePromptLong(c.Prompt, 0.3) end
+                        if c.Prompt then collectPrompt(c.Prompt, 5, 0.15) end
                         teleportSystem.farms.Register.memory[c.Part] = true
                         teleportSystem.farms.Register.memory[c.Prompt] = true
                         task.wait(0.05)
@@ -1019,7 +1083,7 @@ local function superFarmLoop(myGen)
             if cash and cashPrompt then
                 chainTeleport(cash.Position + Vector3.new(0, -4, 0))
                 task.wait(0.05)
-                firePrompt(cashPrompt); task.wait(0.03); firePrompt(cashPrompt); task.wait(0.03); firePromptLong(cashPrompt, 0.3)
+                collectPrompt(cashPrompt, 5, 0.15)
                 teleportSystem.farms.Cash.memory[cash] = true
                 teleportSystem.farms.Cash.memory[cashPrompt] = true
                 didSomething = true
@@ -1031,7 +1095,7 @@ local function superFarmLoop(myGen)
                 local dump = dumpsters[1]
                 chainTeleport(dump.Part.Position)
                 task.wait(0.05)
-                firePrompt(dump.Prompt)
+                collectPrompt(dump.Prompt, 3, 0.12)
                 teleportSystem.farms.Dumpster.memory[dump.Part] = true
                 teleportSystem.farms.Dumpster.memory[dump.Prompt] = true
                 didSomething = true
@@ -1060,7 +1124,7 @@ local function dumpsterLoop(myGen)
                 if myGen ~= teleportSystem.generation then return end
                 chainTeleport(d.Part.Position)
                 task.wait(0.05)
-                if d.Prompt and d.Prompt.Enabled then firePrompt(d.Prompt) end
+                if d.Prompt then collectPrompt(d.Prompt, 3, 0.12) end
                 teleportSystem.farms.Dumpster.memory[d.Part] = true
                 teleportSystem.farms.Dumpster.memory[d.Prompt] = true
                 task.wait(0.05)
@@ -1085,7 +1149,7 @@ local function cashLoop(myGen)
         if target and prompt then
             chainTeleport(target.Position + Vector3.new(0, -4, 0))
             task.wait(0.05)
-            if prompt and prompt.Enabled then firePrompt(prompt); task.wait(0.03); firePrompt(prompt); task.wait(0.03); firePromptLong(prompt, 0.3) end
+            if prompt then collectPrompt(prompt, 5, 0.15) end
             teleportSystem.farms.Cash.memory[target] = true
             teleportSystem.farms.Cash.memory[prompt] = true
             task.wait(0.1)
@@ -1107,8 +1171,7 @@ local function regLoop(myGen)
             chainTeleport(target.Position + Vector3.new(0, height + 1.5, 0))
             task.wait(0.05)
             if prompt and prompt.Enabled then
-                for i = 1, 5 do firePrompt(prompt); task.wait(0.04) end
-                firePromptLong(prompt, 1.2)
+                collectPrompt(prompt, 7, 0.2)
             end
             teleportSystem.farms.Register.memory[target] = true
             teleportSystem.farms.Register.memory[prompt] = true
@@ -1193,51 +1256,51 @@ screenGui.ResetOnSpawn = false
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 760, 0, 470)
 mainFrame.Position = UDim2.new(0.5, -380, 0.5, -235)
-mainFrame.BackgroundColor3 = Color3.fromRGB(8, 11, 14)
+mainFrame.BackgroundColor3 = Color3.fromRGB(7, 17, 29)
 mainFrame.BorderSizePixel = 1
-mainFrame.BorderColor3 = Color3.fromRGB(24, 36, 44)
+mainFrame.BorderColor3 = Color3.fromRGB(30, 70, 72)
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
+corner.CornerRadius = UDim.new(0, 16)
 corner.Parent = mainFrame
 
 local leftSidebar = Instance.new("Frame")
 leftSidebar.Size = UDim2.new(0, 108, 1, 0)
-leftSidebar.BackgroundColor3 = Color3.fromRGB(16, 20, 25)
+leftSidebar.BackgroundColor3 = Color3.fromRGB(8, 22, 35)
 leftSidebar.BorderSizePixel = 1
-leftSidebar.BorderColor3 = Color3.fromRGB(24, 36, 44)
+leftSidebar.BorderColor3 = Color3.fromRGB(28, 67, 69)
 leftSidebar.Parent = mainFrame
 
 local logoArea = Instance.new("Frame")
 logoArea.Size = UDim2.new(1, -28, 0, 70)
-logoArea.Position = UDim2.new(0, 14, 0, 14)
+logoArea.Position = UDim2.new(0, 18, 0, 9)
 logoArea.BackgroundTransparency = 1
 logoArea.Parent = leftSidebar
 
 local logoText = Instance.new("TextLabel")
-logoText.Size = UDim2.new(1, 0, 0, 30)
+logoText.Size = UDim2.new(1, 0, 0, 28)
 logoText.BackgroundTransparency = 1
 logoText.Text = "XENON"
 logoText.TextColor3 = Color3.fromRGB(232, 241, 244)
-logoText.TextSize = 18
+logoText.TextSize = 17
 logoText.Font = Enum.Font.GothamSemibold
 logoText.TextXAlignment = Enum.TextXAlignment.Left
 logoText.Parent = logoArea
 
 local logoAccent = Instance.new("Frame")
 logoAccent.Size = UDim2.new(0, 4, 0, 24)
-logoAccent.Position = UDim2.new(0, -6, 0, 0)
+logoAccent.Position = UDim2.new(0, -7, 0, 2)
 logoAccent.BackgroundColor3 = Color3.fromRGB(0, 198, 188)
 logoAccent.BorderSizePixel = 0
 logoAccent.Parent = logoText
 
 local logoSub = Instance.new("TextLabel")
 logoSub.Size = UDim2.new(1, 0, 0, 20)
-logoSub.Position = UDim2.new(0, 0, 0, 34)
+logoSub.Position = UDim2.new(0, 0, 0, 31)
 logoSub.BackgroundTransparency = 1
 logoSub.Text = "compact workspace"
 logoSub.TextColor3 = Color3.fromRGB(101, 116, 125)
@@ -1289,14 +1352,14 @@ end
 local headerBar = Instance.new("Frame")
 headerBar.Size = UDim2.new(1, -108, 0, 56)
 headerBar.Position = UDim2.new(0, 108, 0, 0)
-headerBar.BackgroundColor3 = Color3.fromRGB(11, 15, 19)
+headerBar.BackgroundColor3 = Color3.fromRGB(8, 20, 32)
 headerBar.BorderSizePixel = 0
 headerBar.Parent = mainFrame
 
 local headerDivider = Instance.new("Frame")
 headerDivider.Size = UDim2.new(1, -28, 0, 1)
 headerDivider.Position = UDim2.new(0, 14, 1, -1)
-headerDivider.BackgroundColor3 = Color3.fromRGB(22, 33, 40)
+headerDivider.BackgroundColor3 = Color3.fromRGB(29, 67, 69)
 headerDivider.BorderSizePixel = 0
 headerDivider.Parent = headerBar
 
@@ -1337,7 +1400,7 @@ closeBtn.Parent = headerBar
 -- XENON identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
 watermark.Name = "XenonWatermark"
-watermark.Size = UDim2.new(0, 292, 0, 44)
+watermark.Size = UDim2.new(0, 340, 0, 44)
 watermark.AnchorPoint = Vector2.new(1, 0)
 watermark.Position = UDim2.new(1, -18, 0, 16)
 watermark.BackgroundColor3 = Color3.fromRGB(8, 18, 30)
@@ -1354,8 +1417,8 @@ watermarkStroke.Transparency = 0.45
 watermarkStroke.Thickness = 1
 watermarkStroke.Parent = watermark
 local watermarkName = Instance.new("TextLabel")
-watermarkName.Size = UDim2.new(0, 60, 1, 0)
-watermarkName.Position = UDim2.new(0, 12, 0, 0)
+watermarkName.Size = UDim2.new(0, 68, 1, 0)
+watermarkName.Position = UDim2.new(0, 14, 0, 0)
 watermarkName.BackgroundTransparency = 1
 watermarkName.Text = "XENON"
 watermarkName.TextColor3 = Color3.fromRGB(78, 190, 255)
@@ -1365,13 +1428,13 @@ watermarkName.TextXAlignment = Enum.TextXAlignment.Left
 watermarkName.Parent = watermark
 local watermarkDivider = Instance.new("Frame")
 watermarkDivider.Size = UDim2.new(0, 1, 0, 20)
-watermarkDivider.Position = UDim2.new(0, 72, 0.5, -10)
+watermarkDivider.Position = UDim2.new(0, 82, 0.5, -10)
 watermarkDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkDivider.BorderSizePixel = 0
 watermarkDivider.Parent = watermark
 local watermarkUser = Instance.new("TextLabel")
-watermarkUser.Size = UDim2.new(0, 112, 1, 0)
-watermarkUser.Position = UDim2.new(0, 84, 0, 0)
+watermarkUser.Size = UDim2.new(0, 150, 1, 0)
+watermarkUser.Position = UDim2.new(0, 96, 0, 0)
 watermarkUser.BackgroundTransparency = 1
 watermarkUser.Text = "@" .. localPlayer.Name
 watermarkUser.TextColor3 = Color3.fromRGB(203, 214, 218)
@@ -1383,7 +1446,7 @@ watermarkUser.Parent = watermark
 
 local watermarkRouteDivider = Instance.new("Frame")
 watermarkRouteDivider.Size = UDim2.new(0, 1, 0, 20)
-watermarkRouteDivider.Position = UDim2.new(0, 204, 0.5, -10)
+watermarkRouteDivider.Position = UDim2.new(0, 258, 0.5, -10)
 watermarkRouteDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkRouteDivider.BorderSizePixel = 0
 watermarkRouteDivider.Parent = watermark
