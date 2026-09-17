@@ -590,9 +590,10 @@ local function chainTeleport(pos)
     -- ACTUAL detected destination, then come straight back up. TP mode above
     -- is intentionally untouched.
     local startPos = hrp.Position
-    local undergroundY = math.min(startPos.Y, target.Position.Y) - 75
-    local downPos = Vector3.new(startPos.X, undergroundY, startPos.Z)
-    local underTargetPos = Vector3.new(target.Position.X, undergroundY, target.Position.Z)
+    local startUnderY = startPos.Y - 14
+    local targetUnderY = target.Position.Y - 14
+    local downPos = Vector3.new(startPos.X, startUnderY, startPos.Z)
+    local underTargetPos = Vector3.new(target.Position.X, targetUnderY, target.Position.Z)
     local speed = math.clamp(tonumber(state.tweenSpeed) or 30, 10, 60)
 
     local function tweenToPosition(position)
@@ -610,8 +611,6 @@ local function chainTeleport(pos)
             local liveHRP = getHRP()
             if liveHRP then
                 liveHRP.CFrame = driver.Value
-                liveHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
-                liveHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
             end
         end)
 
@@ -682,26 +681,32 @@ end
 
 -- Reliable interaction helper for floor cash, ATMs/registers, and other ProximityPrompt farm targets.
 local function collectPrompt(prompt)
-    if not prompt or not prompt.Enabled then return false end
-    task.wait(0.04)
+    if not prompt or not prompt.Parent or not prompt.Enabled then return false end
+
     if fireproximityprompt then
-        pcall(function() fireproximityprompt(prompt) end)
-        return true
+        local fired = false
+        for i = 1, 2 do
+            if not prompt.Parent or not prompt.Enabled then break end
+            pcall(function() fireproximityprompt(prompt) end)
+            fired = true
+            task.wait(0.035)
+        end
+        return fired
     end
+
     if prompt and prompt.Parent then
-        pcall(function()
+        local ok = pcall(function()
             prompt:InputHoldBegin()
             task.wait(0.08)
             prompt:InputHoldEnd()
         end)
-        return true
+        return ok
     end
     return false
 end
 
 local function collectPromptLong(prompt, duration)
-    if not prompt or not prompt.Enabled then return false end
-    task.wait(0.04)
+    if not prompt or not prompt.Parent or not prompt.Enabled then return false end
     if fireproximityprompt then
         pcall(function() fireproximityprompt(prompt) end)
         return true
@@ -1514,7 +1519,7 @@ closeBtn.Parent = headerBar
 -- XENON identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
 watermark.Name = "XenonWatermark"
-watermark.Size = UDim2.new(0, 340, 0, 44)
+watermark.Size = UDim2.new(0, 300, 0, 44)
 watermark.AnchorPoint = Vector2.new(1, 0)
 watermark.Position = UDim2.new(1, -18, 0, 16)
 watermark.BackgroundColor3 = Color3.fromRGB(8, 18, 30)
@@ -1531,24 +1536,24 @@ watermarkStroke.Transparency = 0.45
 watermarkStroke.Thickness = 1
 watermarkStroke.Parent = watermark
 local watermarkName = Instance.new("TextLabel")
-watermarkName.Size = UDim2.new(0, 68, 1, 0)
+watermarkName.Size = UDim2.new(0, 76, 1, 0)
 watermarkName.Position = UDim2.new(0, 14, 0, 0)
 watermarkName.BackgroundTransparency = 1
 watermarkName.Text = "XENON"
-watermarkName.TextColor3 = Color3.fromRGB(78, 190, 255)
+watermarkName.TextColor3 = Color3.fromRGB(45, 220, 145)
 watermarkName.TextSize = 13
 watermarkName.Font = Enum.Font.GothamBold
 watermarkName.TextXAlignment = Enum.TextXAlignment.Left
 watermarkName.Parent = watermark
 local watermarkDivider = Instance.new("Frame")
 watermarkDivider.Size = UDim2.new(0, 1, 0, 20)
-watermarkDivider.Position = UDim2.new(0, 82, 0.5, -10)
+watermarkDivider.Position = UDim2.new(0, 90, 0.5, -10)
 watermarkDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkDivider.BorderSizePixel = 0
 watermarkDivider.Parent = watermark
 local watermarkUser = Instance.new("TextLabel")
 watermarkUser.Size = UDim2.new(0, 150, 1, 0)
-watermarkUser.Position = UDim2.new(0, 96, 0, 0)
+watermarkUser.Position = UDim2.new(0, 104, 0, 0)
 watermarkUser.BackgroundTransparency = 1
 watermarkUser.Text = "@" .. localPlayer.Name
 watermarkUser.TextColor3 = Color3.fromRGB(203, 214, 218)
