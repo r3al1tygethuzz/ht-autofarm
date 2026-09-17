@@ -665,52 +665,40 @@ local function firePromptLong(prompt, duration)
 end
 
 -- Reliable interaction helper for floor cash, ATMs/registers, and other ProximityPrompt farm targets.
-local function collectPrompt(prompt, kind)
-    if not prompt or not prompt.Parent then return false end
-
-    -- Match the reference farm interaction logic: registers/ATMs get
-    -- several prompt fires plus a long hold; floor cash gets a shorter
-    -- double-fire + hold sequence. This is shared by both TP and Tween.
-    local quickAttempts, holdTime, gap = 1, 0.08, 0.04
-    if kind == "Register" or kind == "ATM" then
-        quickAttempts, holdTime, gap = 5, 1.2, 0.04
-    elseif kind == "Cash" then
-        quickAttempts, holdTime, gap = 2, 0.3, 0.03
-    elseif kind == "Dumpster" then
-        quickAttempts, holdTime, gap = 1, 0.08, 0.04
+local function collectPrompt(prompt)
+    if not prompt or not prompt.Enabled then return false end
+    task.wait(0.04)
+    if fireproximityprompt then
+        pcall(function() fireproximityprompt(prompt) end)
+        return true
     end
-
-    local fired = false
-    for _ = 1, quickAttempts do
-        if not prompt or not prompt.Parent or not prompt.Enabled then break end
-        if fireproximityprompt then
-            pcall(function() fireproximityprompt(prompt) end)
-        else
-            pcall(function()
-                prompt:InputHoldBegin()
-                task.wait(0.08)
-                prompt:InputHoldEnd()
-            end)
-        end
-        fired = true
-        task.wait(gap)
+    if prompt and prompt.Parent then
+        pcall(function()
+            prompt:InputHoldBegin()
+            task.wait(0.08)
+            prompt:InputHoldEnd()
+        end)
+        return true
     end
+    return false
+end
 
-    if prompt and prompt.Parent and prompt.Enabled and holdTime > 0 then
-        if fireproximityprompt then
-            pcall(function() fireproximityprompt(prompt) end)
-        else
-            pcall(function()
-                prompt:InputHoldBegin()
-                task.wait(holdTime)
-                prompt:InputHoldEnd()
-            end)
-        end
-        fired = true
+local function collectPromptLong(prompt, duration)
+    if not prompt or not prompt.Enabled then return false end
+    task.wait(0.04)
+    if fireproximityprompt then
+        pcall(function() fireproximityprompt(prompt) end)
+        return true
     end
-
-    task.wait(0.05)
-    return fired
+    if prompt and prompt.Parent then
+        pcall(function()
+            prompt:InputHoldBegin()
+            task.wait(duration)
+            prompt:InputHoldEnd()
+        end)
+        return true
+    end
+    return false
 end
 
 local IDLE_COORDINATES = Vector3.new(-1383.37, -6.14, -601.22)
@@ -758,49 +746,33 @@ end
 
 local function getRegisters()
     local hrp = getHRP()
-    if not hrp then return nil, nil, nil end
+    if not hrp then return nil, nil end
     local map = Workspace:FindFirstChild("HardTime") or Workspace
-    local closest, cPrompt, cDist, cKind = nil, nil, 999999999, nil
+    local closest, cPrompt, cDist = nil, nil, 999999999
     local memory = teleportSystem.farms.Register.memory
 
+    -- Match the reference: only treat an actual register part/model as a
+    -- target, and only when its ProximityPrompt is currently enabled.
     for _, desc in ipairs(map:GetDescendants()) do
         if desc:IsA("BasePart") and not memory[desc] then
-            local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
-            if prompt and prompt.Enabled then
-                local isRegister, isATM, blocked = false, false, false
-                local node = desc
-                local depth = 0
-                while node and node ~= Workspace and depth < 8 do
-                    local n = string.lower(node.Name)
-                    if n:find("register") or n:find("cashregister") then isRegister = true end
-                    if n:find("atm") or n:find("cashmachine") or n:find("cash_machine") then isATM = true end
-                    if n:find("casino") or n:find("vault") or n:find("gunpowder") or
-                       n:find("gunpowder_vault") or n:find("safebox") or n:find("deposit") then
-                        blocked = true
-                        break
-                    end
-                    node = node.Parent
-                    depth = depth + 1
-                end
-
-                local name = string.lower(desc.Name)
-                if name:find("button") or name:find("gui") then
-                    isRegister, isATM = false, false
-                end
-
-                if not blocked and (isRegister or isATM) then
+            local name = string.lower(desc.Name)
+            local pname = desc.Parent and string.lower(desc.Parent.Name) or ""
+            if (name:find("register") or pname:find("register"))
+                and not name:find("button") and not name:find("gui") then
+                if isBlacklisted(desc) then continue end
+                local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
+                if prompt and prompt.Enabled then
                     local dist = (hrp.Position - desc.Position).Magnitude
                     if dist < cDist then
                         cDist = dist
                         closest = desc
                         cPrompt = prompt
-                        cKind = isATM and "ATM" or "Register"
                     end
                 end
             end
         end
     end
-    return closest, cPrompt, cKind
+    return closest, cPrompt
 end
 
 local function getDumpsters()
@@ -1092,25 +1064,44 @@ local function superFarmLoop(myGen)
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local didSomething = false
         if not didSomething and teleportSystem.usedTeleports < TP_CAP and not isResetting then
-            local reg, regPrompt, regKind = getRegisters()
+            local reg, regPrompt = getRegisters()
             if reg and regPrompt then
                 local height = reg.Size.Y or 2
                 chainTeleport(reg.Position + Vector3.new(0, height + 1.5, 0))
                 task.wait(0.05)
-                collectPrompt(regPrompt, regKind or "Register")
+                for i = 1, 5 do collectPrompt(regPrompt); task.wait(0.04) end
+                collectPromptLong(regPrompt, 1.2)
                 teleportSystem.farms.Register.memory[reg] = true
                 teleportSystem.farms.Register.memory[regPrompt] = true
-                task.wait(0.4)
-                local spawned = findCashNear(reg.Position, 50)
+                -- Do not assume cash spawned at a predicted location.
+                -- Poll the live map until an actual floor-cash part with an
+                -- enabled ProximityPrompt exists near this register.
+                local spawned = {}
+                local cashDeadline = os.clock() + 2.0
+                repeat
+                    task.wait(0.1)
+                    spawned = findCashNear(reg.Position, 50)
+                    if #spawned > 0 then break end
+                until os.clock() >= cashDeadline or isResetting or myGen ~= teleportSystem.generation
+
                 for _, c in ipairs(spawned) do
                     if teleportSystem.usedTeleports >= TP_CAP or isResetting then break end
                     if myGen ~= teleportSystem.generation then return end
-                    if not teleportSystem.farms.Register.memory[c.Part] then
+                    if not teleportSystem.farms.Register.memory[c.Part]
+                        and c.Part and c.Part.Parent
+                        and c.Prompt and c.Prompt.Parent and c.Prompt.Enabled then
                         chainTeleport(c.Part.Position + Vector3.new(0, 2, 0))
                         task.wait(0.05)
-                        if c.Prompt then collectPrompt(c.Prompt, "Cash") end
-                        teleportSystem.farms.Register.memory[c.Part] = true
-                        teleportSystem.farms.Register.memory[c.Prompt] = true
+
+                        -- Re-check the live prompt after arrival. If the
+                        -- cash disappeared/disabled, do not mark it collected.
+                        if c.Part.Parent and c.Prompt.Parent and c.Prompt.Enabled then
+                            collectPrompt(c.Prompt)
+                            task.wait(0.03)
+                            collectPromptLong(c.Prompt, 0.3)
+                            teleportSystem.farms.Register.memory[c.Part] = true
+                            teleportSystem.farms.Register.memory[c.Prompt] = true
+                        end
                         task.wait(0.05)
                     end
                 end
@@ -1122,7 +1113,7 @@ local function superFarmLoop(myGen)
             if cash and cashPrompt then
                 chainTeleport(cash.Position + Vector3.new(0, -4, 0))
                 task.wait(0.05)
-                collectPrompt(cashPrompt, "Cash")
+                collectPrompt(cashPrompt); task.wait(0.03); collectPrompt(cashPrompt); task.wait(0.03); collectPromptLong(cashPrompt, 0.3)
                 teleportSystem.farms.Cash.memory[cash] = true
                 teleportSystem.farms.Cash.memory[cashPrompt] = true
                 didSomething = true
@@ -1134,7 +1125,7 @@ local function superFarmLoop(myGen)
                 local dump = dumpsters[1]
                 chainTeleport(dump.Part.Position)
                 task.wait(0.05)
-                collectPrompt(dump.Prompt, "Dumpster")
+                collectPrompt(dump.Prompt)
                 teleportSystem.farms.Dumpster.memory[dump.Part] = true
                 teleportSystem.farms.Dumpster.memory[dump.Prompt] = true
                 didSomething = true
@@ -1163,7 +1154,7 @@ local function dumpsterLoop(myGen)
                 if myGen ~= teleportSystem.generation then return end
                 chainTeleport(d.Part.Position)
                 task.wait(0.05)
-                if d.Prompt then collectPrompt(d.Prompt, "Dumpster") end
+                if d.Prompt then collectPrompt(d.Prompt) end
                 teleportSystem.farms.Dumpster.memory[d.Part] = true
                 teleportSystem.farms.Dumpster.memory[d.Prompt] = true
                 task.wait(0.05)
@@ -1185,12 +1176,18 @@ local function cashLoop(myGen)
         if myGen ~= teleportSystem.generation then return end
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
         local target, prompt = getCash()
-        if target and prompt then
+        if target and prompt and target.Parent and prompt.Parent and prompt.Enabled then
             chainTeleport(target.Position + Vector3.new(0, -4, 0))
             task.wait(0.05)
-            if prompt then collectPrompt(prompt, "Cash") end
-            teleportSystem.farms.Cash.memory[target] = true
-            teleportSystem.farms.Cash.memory[prompt] = true
+            if target.Parent and prompt.Parent and prompt.Enabled then
+                collectPrompt(prompt)
+                task.wait(0.03)
+                collectPrompt(prompt)
+                task.wait(0.03)
+                collectPromptLong(prompt, 0.3)
+                teleportSystem.farms.Cash.memory[target] = true
+                teleportSystem.farms.Cash.memory[prompt] = true
+            end
             task.wait(0.1)
         else
             teleportToIdleForce()
@@ -1204,16 +1201,17 @@ local function regLoop(myGen)
     while state.farms.Register and state.running do
         if myGen ~= teleportSystem.generation then return end
         if isResetting or teleportSystem.usedTeleports >= TP_CAP then task.wait(0.3) continue end
-        local target, prompt, targetKind = getRegisters()
-        if target and prompt then
+        local target, prompt = getRegisters()
+        if target and prompt and target.Parent and prompt.Parent and prompt.Enabled then
             local height = target.Size.Y or 2
             chainTeleport(target.Position + Vector3.new(0, height + 1.5, 0))
             task.wait(0.05)
-            if prompt and prompt.Enabled then
-                collectPrompt(prompt, targetKind or "Register")
+            if target.Parent and prompt.Parent and prompt.Enabled then
+                for i = 1, 5 do collectPrompt(prompt); task.wait(0.04) end
+                collectPromptLong(prompt, 1.2)
+                teleportSystem.farms.Register.memory[target] = true
+                teleportSystem.farms.Register.memory[prompt] = true
             end
-            teleportSystem.farms.Register.memory[target] = true
-            teleportSystem.farms.Register.memory[prompt] = true
             task.wait(0.5)
             task.wait(0.1)
         else
