@@ -586,36 +586,52 @@ local function chainTeleport(pos)
         return true
     end
 
-    -- Tween mode: configurable constant speed, independent of distance.
-    local distance = (hrp.Position - target.Position).Magnitude
-    if distance <= 1 then
-        if myMovement == movementGeneration then useTweenMovement() end
-        return true
+    -- Tween mode only: travel underneath the map, move horizontally to the
+    -- ACTUAL detected destination, then come straight back up. TP mode above
+    -- is intentionally untouched.
+    local startPos = hrp.Position
+    local undergroundY = math.min(startPos.Y, target.Position.Y) - 75
+    local downPos = Vector3.new(startPos.X, undergroundY, startPos.Z)
+    local underTargetPos = Vector3.new(target.Position.X, undergroundY, target.Position.Z)
+    local speed = math.clamp(tonumber(state.tweenSpeed) or 30, 10, 60)
+
+    local function tweenToPosition(position)
+        local currentHRP = getHRP()
+        if not currentHRP or myMovement ~= movementGeneration then return false end
+        local from = currentHRP.Position
+        local distance = (from - position).Magnitude
+        if distance <= 0.5 then return true end
+
+        local driver = Instance.new("CFrameValue")
+        driver.Value = currentHRP.CFrame
+        local connection
+        connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
+            if myMovement ~= movementGeneration then return end
+            local liveHRP = getHRP()
+            if liveHRP then
+                liveHRP.CFrame = driver.Value
+                liveHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
+                liveHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
+            end
+        end)
+
+        local duration = distance / speed
+        movementTween = TweenService:Create(driver, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+            Value = CFrame.new(position)
+        })
+        movementTween:Play()
+        movementTween.Completed:Wait()
+
+        if connection then connection:Disconnect() end
+        driver:Destroy()
+        movementTween = nil
+        return myMovement == movementGeneration
     end
 
-    local speed = math.clamp(tonumber(state.tweenSpeed) or 30, 10, 60)
-    local duration = distance / speed
-    local driver = Instance.new("CFrameValue")
-    driver.Value = hrp.CFrame
-
-    local connection
-    connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
-        if myMovement ~= movementGeneration then return end
-        local currentHRP = getHRP()
-        if currentHRP then
-            currentHRP.CFrame = driver.Value
-            currentHRP.AssemblyLinearVelocity = Vector3.new(0,0,0)
-            currentHRP.AssemblyAngularVelocity = Vector3.new(0,0,0)
-        end
-    end)
-
-    movementTween = TweenService:Create(driver, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Value = target})
-    movementTween:Play()
-    movementTween.Completed:Wait()
-
-    if connection then connection:Disconnect() end
-    driver:Destroy()
-    movementTween = nil
+    -- Down -> across underneath the map -> up at the real target.
+    if not tweenToPosition(downPos) then return false end
+    if not tweenToPosition(underTargetPos) then return false end
+    if not tweenToPosition(target.Position) then return false end
 
     local finalHRP = getHRP()
     if finalHRP and myMovement == movementGeneration then
@@ -813,6 +829,13 @@ local function getDumpsters()
         end
     end
     table.sort(list, function(a,b) return a.Dist < b.Dist end)
+    if state.farmMovementMode == "Tween" then
+        table.sort(list, function(a, b)
+            local da = (hrp.Position - a.Part.Position).Magnitude
+            local db = (hrp.Position - b.Part.Position).Magnitude
+            return da < db
+        end)
+    end
     return list
 end
 
