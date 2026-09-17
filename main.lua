@@ -89,6 +89,7 @@ end
 local function saveConfig(name)
     local data = {
         farms = state.farms,
+        farmMovementMode = state.farmMovementMode,
         
         protection = state.protection,
         antiAdmin = { enabled = antiAdmin.enabled, autoLeave = antiAdmin.autoLeave },
@@ -524,9 +525,24 @@ end
 local function chainTeleport(pos)
     local hrp = getHRP()
     if not hrp then return false end
+    local target = CFrame.new(pos + Vector3.new(0, 3, 0))
     local hum = getHumanoid()
+
+    if state.farmMovementMode == "Tween" then
+        if hum then hum.PlatformStand = true; hum.WalkSpeed = 0 end
+        local distance = (hrp.Position - target.Position).Magnitude
+        local duration = math.clamp(distance / 120, 0.08, 0.35)
+        local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {CFrame = target})
+        tween:Play()
+        tween.Completed:Wait()
+        hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+        hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+        if hum then hum.PlatformStand = false; hum.WalkSpeed = 16 end
+        return true
+    end
+
     if hum then hum.PlatformStand = true; hum.WalkSpeed = 0 end
-    hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+    hrp.CFrame = target
     hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
     hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
     task.wait(0.05)
@@ -588,6 +604,7 @@ local state = {
     protection = { AntiAFK = false, AntiAdmin = true },
     cashTransfer = { selectedName = "", running = false },
     running = true, minimized = false, currentTab = "Farms",
+    farmMovementMode = "TP",
     autoReExecute = true,
     loadedConfigName = getAutoLoadConfig()
 }
@@ -1084,6 +1101,9 @@ end
 -- ═══════════════════════════════
 local function applyConfigData(data)
     if not data then return end
+    if data.farmMovementMode == "TP" or data.farmMovementMode == "Tween" then
+        state.farmMovementMode = data.farmMovementMode
+    end
     if data.farms then
         for k, v in pairs(data.farms) do state.farms[k] = v end
         local activeFarm = nil
@@ -1123,7 +1143,7 @@ end
 -- UI
 -- ═══════════════════════════════
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "NyraUI"
+screenGui.Name = "XenonUI"
 screenGui.Parent = CoreGui
 screenGui.Enabled = true
 screenGui.ResetOnSpawn = false
@@ -1159,7 +1179,7 @@ logoArea.Parent = leftSidebar
 local logoText = Instance.new("TextLabel")
 logoText.Size = UDim2.new(1, 0, 0.6, 0)
 logoText.BackgroundTransparency = 1
-logoText.Text = "NYRA"
+logoText.Text = "XENON"
 logoText.TextColor3 = Color3.fromRGB(232, 241, 244)
 logoText.TextSize = 18
 logoText.Font = Enum.Font.GothamSemibold
@@ -1195,7 +1215,7 @@ navList.Parent = navContainer
 navList.SortOrder = Enum.SortOrder.LayoutOrder
 navList.Padding = UDim.new(0, 8)
 
-local tabs = {"Farms", "Cash Transfer"}
+local tabs = {"Farms"}
 local tabButtons = {}
 
 for i, name in ipairs(tabs) do
@@ -1203,7 +1223,7 @@ for i, name in ipairs(tabs) do
     btn.Size = UDim2.new(1, 0, 0, 50)
     btn.BackgroundTransparency = i == 1 and 0 or 1
     btn.BackgroundColor3 = i == 1 and Color3.fromRGB(37, 136, 199) or Color3.fromRGB(16, 20, 25)
-    btn.Text = (i == 1 and "◈  Automation" or i == 2 and "↗  Transfer" or name)
+    btn.Text = (i == 1 and "◈  Automation" or name)
     btn.TextColor3 = Color3.fromRGB(232, 241, 244)
     btn.TextSize = 10
     btn.Font = Enum.Font.GothamMedium
@@ -1274,8 +1294,8 @@ closeBtn.Parent = headerBar
 
 -- NYRA identity watermark (screen-level, top-right; independent of the window)
 local watermark = Instance.new("Frame")
-watermark.Name = "NYRAWatermark"
-watermark.Size = UDim2.new(0, 270, 0, 42)
+watermark.Name = "XenonWatermark"
+watermark.Size = UDim2.new(0, 282, 0, 42)
 watermark.AnchorPoint = Vector2.new(1, 0)
 watermark.Position = UDim2.new(1, -18, 0, 16)
 watermark.BackgroundColor3 = Color3.fromRGB(12, 18, 22)
@@ -1287,29 +1307,29 @@ local watermarkCorner = Instance.new("UICorner")
 watermarkCorner.CornerRadius = UDim.new(0, 12)
 watermarkCorner.Parent = watermark
 local watermarkStroke = Instance.new("UIStroke")
-watermarkStroke.Color = Color3.fromRGB(0, 169, 157)
+watermarkStroke.Color = Color3.fromRGB(37, 136, 199)
 watermarkStroke.Transparency = 0.72
 watermarkStroke.Thickness = 1
 watermarkStroke.Parent = watermark
 local watermarkName = Instance.new("TextLabel")
-watermarkName.Size = UDim2.new(0, 52, 1, 0)
+watermarkName.Size = UDim2.new(0, 60, 1, 0)
 watermarkName.Position = UDim2.new(0, 12, 0, 0)
 watermarkName.BackgroundTransparency = 1
-watermarkName.Text = "NYRA"
-watermarkName.TextColor3 = Color3.fromRGB(95, 235, 222)
+watermarkName.Text = "XENON"
+watermarkName.TextColor3 = Color3.fromRGB(76, 171, 232)
 watermarkName.TextSize = 13
 watermarkName.Font = Enum.Font.GothamBold
 watermarkName.TextXAlignment = Enum.TextXAlignment.Left
 watermarkName.Parent = watermark
 local watermarkDivider = Instance.new("Frame")
 watermarkDivider.Size = UDim2.new(0, 1, 0, 20)
-watermarkDivider.Position = UDim2.new(0, 66, 0.5, -10)
+watermarkDivider.Position = UDim2.new(0, 72, 0.5, -10)
 watermarkDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkDivider.BorderSizePixel = 0
 watermarkDivider.Parent = watermark
 local watermarkUser = Instance.new("TextLabel")
 watermarkUser.Size = UDim2.new(0, 112, 1, 0)
-watermarkUser.Position = UDim2.new(0, 78, 0, 0)
+watermarkUser.Position = UDim2.new(0, 84, 0, 0)
 watermarkUser.BackgroundTransparency = 1
 watermarkUser.Text = "@" .. localPlayer.Name
 watermarkUser.TextColor3 = Color3.fromRGB(203, 214, 218)
@@ -1321,7 +1341,7 @@ watermarkUser.Parent = watermark
 
 local watermarkRouteDivider = Instance.new("Frame")
 watermarkRouteDivider.Size = UDim2.new(0, 1, 0, 20)
-watermarkRouteDivider.Position = UDim2.new(0, 198, 0.5, -10)
+watermarkRouteDivider.Position = UDim2.new(0, 204, 0.5, -10)
 watermarkRouteDivider.BackgroundColor3 = Color3.fromRGB(44, 67, 73)
 watermarkRouteDivider.BorderSizePixel = 0
 watermarkRouteDivider.Parent = watermark
@@ -1483,6 +1503,85 @@ local function createToggle(parent, name, stateRef, key, callback)
     return frame
 end
 
+local function createMovementDropdown(parent)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 42)
+    frame.BackgroundTransparency = 1
+    frame.Parent = parent
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.55, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "Movement Mode"
+    label.TextColor3 = Color3.fromRGB(218, 227, 231)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 150, 0, 30)
+    button.Position = UDim2.new(1, -150, 0.5, -15)
+    button.BackgroundColor3 = Color3.fromRGB(16, 25, 37)
+    button.BorderSizePixel = 1
+    button.BorderColor3 = Color3.fromRGB(37, 136, 199)
+    button.TextColor3 = Color3.fromRGB(100, 200, 255)
+    button.TextSize = 11
+    button.Font = Enum.Font.GothamMedium
+    button.Text = state.farmMovementMode .. "  ▾"
+    button.AutoButtonColor = false
+    button.Parent = frame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = button
+
+    local menu = Instance.new("Frame")
+    menu.Size = UDim2.new(0, 150, 0, 68)
+    menu.Position = UDim2.new(1, -150, 1, 2)
+    menu.BackgroundColor3 = Color3.fromRGB(12, 18, 24)
+    menu.BorderSizePixel = 1
+    menu.BorderColor3 = Color3.fromRGB(37, 136, 199)
+    menu.Visible = false
+    menu.ZIndex = 20
+    menu.Parent = frame
+
+    local menuCorner = Instance.new("UICorner")
+    menuCorner.CornerRadius = UDim.new(0, 6)
+    menuCorner.Parent = menu
+
+    local list = Instance.new("UIListLayout")
+    list.Padding = UDim.new(0, 2)
+    list.Parent = menu
+
+    local function addOption(name)
+        local option = Instance.new("TextButton")
+        option.Size = UDim2.new(1, 0, 0, 32)
+        option.BackgroundTransparency = 1
+        option.Text = name
+        option.TextColor3 = Color3.fromRGB(218, 227, 231)
+        option.TextSize = 11
+        option.Font = Enum.Font.GothamMedium
+        option.BorderSizePixel = 0
+        option.ZIndex = 21
+        option.Parent = menu
+        option.MouseButton1Click:Connect(function()
+            state.farmMovementMode = name
+            button.Text = name .. "  ▾"
+            menu.Visible = false
+        end)
+    end
+
+    addOption("TP")
+    addOption("Tween")
+
+    button.MouseButton1Click:Connect(function()
+        menu.Visible = not menu.Visible
+    end)
+
+    return frame
+end
+
 local function clearContent()
     for _, child in ipairs(scroll:GetChildren()) do
         if child ~= contentGrid then child:Destroy() end
@@ -1498,6 +1597,7 @@ local function buildFarmsTab()
     titleText.Text = "Automation"
 
     local card1, content1 = createCard(scroll, "Automation", "⚡")
+    createMovementDropdown(content1)
     createToggle(content1, "All Routes", state.farms, "SuperFarm", function(val)
         if val then
             for _, key in ipairs({"Dumpster", "Cash", "Register"}) do state.farms[key] = false end
@@ -2458,12 +2558,10 @@ local function switchTab(name)
         local isActive = tabName == name
         btn.BackgroundColor3 = isActive and Color3.fromRGB(37, 136, 199) or Color3.fromRGB(16, 20, 25)
         btn.TextColor3 = isActive and Color3.fromRGB(232, 241, 244) or Color3.fromRGB(101, 116, 125)
-        btn.Text = (tabName == "Farms" and "◈  Automation" or "↗  Transfer")
+        btn.Text = (tabName == "Farms" and "◈  Automation" or tabName)
     end
     if name == "Farms" then
         buildFarmsTab()
-    elseif name == "Cash Transfer" then
-        buildCashTransferTab()
     elseif name == "Anti-Admin" then
         buildAntiAdminTab()
     end
