@@ -488,26 +488,20 @@ local function isBlacklisted(part)
     return false
 end
 
-local function isValidFloorCash(desc)
+local function isValidFloorCash(desc, rayParams)
     if not desc:IsA("BasePart") then return false end
-    if desc.Transparency >= 0.5 or desc.Size.Y > 3 then return false end
-    if desc.Size.Y <= 0.1 then return false end
-    if isBlacklisted(desc) then return false end
+    if desc.Transparency >= 0.5 or desc.Size.Y > 3 or desc.Size.Y <= 0.1 then return false end
     local name = string.lower(desc.Name)
     local pname = desc.Parent and string.lower(desc.Parent.Name) or ""
-    local nameMatch = false
-    if name == "cash" or name == "cashspawn" or name == "part" or
-       pname == "cash" or pname == "cashspawn" or pname == "part" or
-       name:find("cash") or name:find("money") then nameMatch = true end
+    local nameMatch = name == "cash" or name == "cashspawn" or name == "part" or
+        pname == "cash" or pname == "cashspawn" or pname == "part" or
+        name:find("cash") or name:find("money")
     if not nameMatch then return false end
+    if isBlacklisted(desc) then return false end
     local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
     if not prompt or not prompt.Enabled then return false end
-    local rayParams = RaycastParams.new()
-    rayParams.FilterType = Enum.RaycastFilterType.Exclude
     rayParams.FilterDescendantsInstances = {desc, localPlayer.Character}
-    local result = Workspace:Raycast(desc.Position + Vector3.new(0, 0.5, 0), Vector3.new(0, -5, 0), rayParams)
-    if not result then return false end
-    return true
+    return Workspace:Raycast(desc.Position + Vector3.new(0, 0.5, 0), Vector3.new(0, -5, 0), rayParams) ~= nil
 end
 
 -- ═══════════════════════════════
@@ -769,12 +763,14 @@ local function getCash()
     local map = Workspace:FindFirstChild("HardTime") or Workspace
     local closest, cPrompt, cDist = nil, nil, 999999999
     local memory = teleportSystem.farms.Cash.memory
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Exclude
 
     -- Reference route logic: only accept a real floor-cash object that
     -- currently has an enabled ProximityPrompt and passes the floor raycast.
     for _, desc in ipairs(map:GetDescendants()) do
         if desc:IsA("BasePart") and not memory[desc] then
-            if isValidFloorCash(desc) then
+            if isValidFloorCash(desc, rayParams) then
                 local prompt = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
                 if prompt and prompt.Enabled then
                     local dist = (hrp.Position - desc.Position).Magnitude
@@ -850,21 +846,16 @@ local function getDumpsters()
         end
     end
     table.sort(list, function(a,b) return a.Dist < b.Dist end)
-    if state.farmMovementMode == "Tween" then
-        table.sort(list, function(a, b)
-            local da = (hrp.Position - a.Part.Position).Magnitude
-            local db = (hrp.Position - b.Part.Position).Magnitude
-            return da < db
-        end)
-    end
     return list
 end
 
 local function findCashNear(pos, radius)
     local map = Workspace:FindFirstChild("HardTime") or Workspace
     local found = {}
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Exclude
     for _, desc in ipairs(map:GetDescendants()) do
-        if desc:IsA("BasePart") and isValidFloorCash(desc) then
+        if desc:IsA("BasePart") and isValidFloorCash(desc, rayParams) then
             local pr = desc:FindFirstChildWhichIsA("ProximityPrompt", true)
             if pr and pr.Enabled and not teleportSystem.farms.Register.memory[desc] then
                 local d = (pos - desc.Position).Magnitude
